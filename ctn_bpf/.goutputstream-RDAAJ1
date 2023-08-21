@@ -1,0 +1,57 @@
+from django.urls import path
+from . import views
+app_name = 'ctn_bpf'
+
+urlpatterns = [
+   path('',views.index,name ='index'),
+   path('admin_institution/',views.admin_institution,name='admin_institutio'),
+   path('edit_institution/<int:institution_id>/',views.edit_institution,name='edit_institution'),
+   path('save_institution/',views.save_institution,name='save_institution'),
+   path('main/',views.main,name='main'),
+   path('bad_auth/',views.bad_auth,name='bad_auth'),
+   path('log/',views.log,name='log'),
+   path('log/<int:out>/',views.log,name='log_out'),
+   path('gestionnaire/<str:gest_val>/',views.gestionnaire,name='gest_val'),
+   path('gestionnaire/<str:gest_val>/<int:gest_id>/',views.gestionnaire,name='gest_val_id'),
+   path('modify/<str:arg_val>/',views.modify,name='modify'),
+   path('planifier/',views.planifier2,name='planifier'),
+   path('planifier/<int:period_id>/',views.planifier2,name='planifier'),   
+   path('repartir_tache/',views.repartir_tache,name='repartir_tache'),
+   path('roles/',views.roles,name='roles'),
+   path('operations/',views.operations_home,name='operations_home'),
+   path('operations/<int:operation_id>/',views.operations_details,name='operations_details'),
+   path('assign_supervisor/',views.assign_supervisor,name='assign_supervisor'),
+   path('valid_rapport/',views.valid_rapport,name='valid_rapport'),
+   path('in_valid_rapport/',views.in_valid_rapport,name='in_valid_rapport'),
+   path('delete/',views.delete,name='delete'),
+   path('configurations/',views.configurations,name='configurations'),
+   path('institution/',views.institutions,name='institution'),
+   path('profile/',views.profile,name='profile'),
+   path('filter_op/',views.filter_op,name='filter_op'),
+   path('history/',views.history,name='history'),
+   path('save_period/',views.save_period,name='save_period'),
+   path('set_period/<int:period>/',views.set_default_period,name='set_session'),
+   path('set_institution/<int:institution_id>/',views.set_institution,name='set_institution'),
+   path('set_period/<int:period>/<int:sub_period>/',views.set_default_period,name='set_session2')
+]
+gestionnaire_url_patterns = [
+   path('structures/',views.structures,name='structures'),
+   path('personnels/',views.personnels,name='personnels'),
+   path('roles/',views.roles,name='roles')
+]
+ajax_urls_patterns = [
+   path('count_notifs/',views.notifs,name='notifs'),
+   path('ajax_graphiques/',views.ajax_graphiques,name='ajax_graphiques'),
+   path('ajax_lines/',views.ajax_lines,name='ajax_lines')
+]
+save_url_patterns = [
+   path('save_entity/',views.save_entity,name='save_entity'),
+   path('save_entity_value/',views.save_entity_value,name='save_entity_value'),
+   path('save_gestion/',views.save_gestion,name='save_gestion'),
+   path('save_plannify/',views.save_plannify,name='save_plannify'),
+   path('save_rapport/',views.save_rapport,name='save_rapport'),
+]
+urlpatterns += ajax_urls_patterns
+urlpatterns += gestionnaire_url_patterns
+urlpatterns += save_url_patterns
+#path('calendar/',views.calendar,name='calendar'),

@@ -1,0 +1,34 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block add_title %} 
+Assistance Technique
+{% endblock %}
+
+
+{% block content %}
+<div>
+	<div class="h2 text-center">Une préoccupation concernant Opera ?</div>
+	<div class="h5 text-secondary text-center"> Faites confiance à notre Equipe Technique </div>
+</div>
+
+<form method="POST" action="/save_gestion/">
+	{% csrf_token %}
+<div class="mt-5 d-flex justify-content-center">
+	<div class="card col-lg-7" style="border:none;">
+		<div class="card-body">
+			<div class="text-center"> <label> Quel est le soucis que vous avez rencontré ? </label></div>
+			<div>
+				<textarea placeholder="Ecrivez le problème rencontré" name="message" rows=5 class="form-control"></textarea>
+				<input type="hidden" name="generator" value='a0'>
+				<input type="hidden" name="edit_or_create" value="c">
+				<input type="hidden" value="{{user.id}}" name="user">
+			</div>
+			<div class="mt-2 text-center">
+				<input type="submit" class="btn btn-success" value="Envoyer" >
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+{% endblock %}

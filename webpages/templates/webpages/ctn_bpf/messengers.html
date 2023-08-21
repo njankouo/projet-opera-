@@ -1,0 +1,22 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block add_title %} 
+Messagerie
+{% endblock %}
+
+{% block content %}
+<section>
+	<div class="h2 text-center" style="font-weight:bold;color:pink;"> <i class="fas fa-enveloppe"></i>&nbsp; Ma Messagerie</div>
+	<div class="mt-4 pt-4">
+		<div class="py-2" style="border-bottom:2px solid #aaa;">
+			Boite de Reception
+		</div>
+		<div class="pt-2">
+			<div>	
+				<span class="badge" style="background:pink;">Aucun Message</span>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

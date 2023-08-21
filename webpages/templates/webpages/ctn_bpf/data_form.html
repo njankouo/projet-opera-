@@ -1,0 +1,264 @@
+{% extends './evaluer.html' %}
+{% load static %}
+
+{% block add_title %} 
+Formulaires de Données 
+{% if element != None %}
+- {{element}}
+{% endif %}
+
+{% endblock %}
+
+{% block style %}
+<style type="text/css">
+.deleteSBM{
+	display: none;
+}
+</style>
+{% endblock %}
+
+{% block search_filters %}
+<h3> Formulaires de Données  {% if element != None %}
+- <span class="h3 text-success">{{element}}</span>
+{% endif %}
+<!-- <span class="h3 text-success">{{element}}</span> --> </h3>
+{% endblock %}
+
+{% block table %}
+<div>
+</div>
+
+<div class="pt-4 col-12 d-flex w-100">
+
+	<div class="col-lg-12">
+		{% if permissions > 0 %}
+		<div class="text-success p-2">
+			<a href="/data_sets/0/"><b>+ Nouveau Formulaire</b></a>
+		</div>
+		{% endif %}
+		<table class="table table-responsive">
+		<thead>
+			<tr>	
+				<td>Nom Formulaire</td>
+				<td>Variables </td>
+				<td>Structures Concernees</td>
+				<td>Roles concernes</td>
+				<td>Periode de Renseignement</td>
+				<td class="text-primary">Fiche</td>
+				{% if permissions > 0 %}
+				<td class="text-success">Actions</td>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+
+		{% for l in pages_o %}
+		{% if l != None %}
+		<tr>
+			<td><a href="/data_form/{{l.id}}/0/">{{l}}</a></td>
+			<td class=""><div class="d-flex flex-wrap">{% for v in l.m_dataelements.filter %} <div class="px-2"><a href="#"><small class=" badge badge-primary">{{v}}</small></a></div> {% endfor %}</div></td>
+			<td class=""><div class="d-flex flex-wrap">{% for v in l.m_structures.filter %} <div class="px-2"><a href="#"><small class=" badge badge-success">{{v}}</small></a></div> {% endfor %}</div></td>
+			<td class=""><div class="d-flex flex-wrap">{% for v in l.m_roles.filter %} <div class="px-2"><a href="#"><small class=" badge badge-warning">{{v}}</small></a></div> {% endfor %}</div></td>
+			<td><span class="text-primary">{{l.period}}</span> : {{l.m_sub_periode}}</td>
+			<td><div class="text-primary" style="cursor:pointer;" data-toggle="modal" data-target="#dataFormModal" onclick="LaunchFormData({{l.id}})"><i class="fas fa-file"></i>&nbsp;<span>Apercu du Formulaire</span></div></td>
+			{% if permissions > 0 %}
+			<th><div class="d-flex">
+				<div class="px-2"><a href="/data_sets/{{l.id}}/"><i class="btn btn-success fas fa-pen"></i></a></div>
+				<div class="px-2"><i data-target="#deleteModal" onclick="merde(this)" data-id="{{l.id}}" data-toggle="modal" class="btn btn-danger fas fa-trash"></i></div>
+				<!-- <div class="px-2"><i class="btn btn-info fas fa-table"></i></div> -->
+			</div></th>
+			{% endif %}
+		</tr>
+		{% endif %}
+		{% endfor %}
+		</tbody>
+		</table>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="formDataModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form class="form-horizontal bordered-row" action="/save_gestion/" method="post">
+				{% csrf_token %}
+				<div class="modal-header">
+					<h5> Renseigner des Donnees </h5>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="edit_or_create" name="edit_or_create" value="c">
+					<input type="hidden" id='generator' name="generator" value="i3">
+					<input type="hidden" class="entity_id form-control" name="id_entity">
+					<input type="hidden" name="hierachy" value="{{hierachy}}">
+					<h5 class="text-info">Indicateur <span class="h5" id="indi_name"></span></h5>
+					<input type="hidden" name="indi_id_hidden" id="indi_id_hidden">
+					<input type="hidden" name="nb_dataE" id="nb_dataE">
+					<input type="hidden" name="u1" value="{{nature}}">
+					<input type="hidden" name="u2" value="{{elt_id}}">
+					<div id='indicaBody'>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+					<button type="submit" class="btn btn-primary"> Enregistrer</button>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+	<div class="modal fade" id="dataFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div id="dF_Div">
+						<div class="text-center"> Recuperation des Information</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+function loadIndi(indi_id,arg_elt){
+elt = arg_elt;
+$.ajax({
+	url: '/get_indi_data/',
+	data: {
+		'indi_id':indi_id,
+	},
+	dataType: 'json',
+	success: function (data) {
+		indi_name = document.getElementById("indi_name");
+		indi_name.textContent = data.nom;
+		indicaBody = document.getElementById("indicaBody");
+		indicaBody.innerHTML = "<div>";
+		indicaBody.innerHTML = "<div> Entite : <label class='text-success'> "+elt+"</label> </div>";
+		indicaBody.innerHTML += "<div class='my-3'>";
+		indicaBody.innerHTML += "<div class='text-danger'> Periode de Saisie </div>";
+		indicaBody.innerHTML += "<div class='d-flex'> <div class='px-2'> <input name='tmp_per1' class='form-control' value='2023'> </div> <div class='px-2'> <select name='tmp_per2' class='form-control'> <option value='2'>Janvier </option> </select> </div> </div>"
+		indicaBody.innerHTML += "</div></div><div>"
+
+		indi_id_hidden = document.getElementById("indi_id_hidden");
+		indi_id_hidden.value = indi_id;
+		nb_dataE = document.getElementById("nb_dataE");
+		nb_dataE.value = data.nums.length; 
+		indicaBody.innerHTML += "<div class='mt-3 mb-2 pt-3'><small> Renseignement des Donnees </small></div>"
+		for (var i=0;i<data.nums.length;i++){
+			indicaBody.innerHTML += "<div><label>"+data.nums[i]+"</label></div>"
+			indicaBody.innerHTML += "<input type='hidden' name='indiID"+i+"' value='"+data.ids[i]+"''>"
+			indicaBody.innerHTML += "<div style='width:250px;'><input class='form-control' type='text' name='indiVal"+i+"'></div>";
+		}
+		indicaBody.innerHTML += "</div>";
+
+
+	},
+	error: function(data){
+		alert("error")
+	}
+});
+}
+
+period_cell = document.getElementsByClassName("period_cell");
+for (var i=0;i<period_cell.length;i++){
+	months = ["","Jan","Fev","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"];
+	tmp =  period_cell[i].textContent.split("#");
+	period_cell[i].textContent = months[parseInt(tmp[1])] + " "+tmp[0]
+}
+// Rattacher la Periode pourt la Validation
+// Afficher les Periodes de Suivi
+
+actual_month = new Date().getMonth();
+function LaunchFormData(indi_id,Idiv="dF_Div"){
+	months = ["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"]
+	$.ajax({
+		url: '/ajax_form/',
+		data: {
+			'id_dataset':indi_id,
+		},
+		dataType: 'json',
+		success: function (data) {
+			dF_Div = document.getElementById(Idiv);
+			tmp = "<div id='saisie_period' class='my-2'> Periode de Saisie </div>"
+			if (true){//data.periode == "0"
+				tmp += "<div style='border-bottom:1px solid #aaa;' class='py-2 col-12 d-flex'> <div class='col-6 px-3'> <label> Année </label>  <div>  <input class='form-control' name='period1_saisie' value='2023' type='number'> </div> </div>"
+				if (true){//data.subperiode == "Mensuelle"
+					
+				tmp += "<div> <label> Mois </label> <div> <select name='period2_saisie' class='form-control'>"
+				for (var j=0;j<months.length;j++){
+					tmp += "<option value='"+months[j]+"' ";
+					if (j == actual_month){
+							tmp += " selected ";
+					} 
+					tmp +=">"+months[j]+"</option>";	
+				}
+				tmp += "</select> </div> <div> </div> </div> ";
+				}
+			}
+			tmp +=  "</div>";
+
+			tmp2 = "<div class='my-2'> Strucures concernees </div> <div id='saisie_structures' style='border-bottom:1px solid #aaa;' Class='py-2 d-flex'>"
+			for (var i=0;i<data.structures.length;i++){
+				tmp2 += "<div class='px-2'><input type='radio' name='struc_selec' value='"+data.structures_id[i]+"'  class='mr-2'>"+data.structures[i]+" </div>"
+			}
+			tmp2 += "</div>";
+
+			tmp3 = " <div class='pt-2'>";
+			tmp3 += data.form;
+			tmp3 += "</div>";
+
+			dF_Div.innerHTML = tmp+tmp2+tmp3
+		},
+		error: function(data){
+
+		}
+	});        
+}
+
+
+function submitForm(){
+	// Recuperation des Variables
+	variables = document.getElementsByClassName("variableSelector");
+	variables_value = document.getElementById("variables_value");
+	variables_names = document.getElementById("variables_names");
+
+	tmp = "";
+	tmp2 = "";
+	for (var i=0;i<variables.length;i++){
+		input = variables[i].getElementsByTagName("input")[0];
+		if (input.value != "")
+		{tmp += input.value + "#";
+		tmp2 += input.getAttribute("name")+ "#";}
+	}
+	variables_value.value = tmp;
+	variables_names.value = tmp2
+
+
+	// Recuperation des Structures
+	saisie_structures = document.getElementById("saisie_structures")
+	structures_value = document.getElementById("structures_value");
+	tmp = "";
+	inputs = saisie_structures.getElementsByTagName("input")
+	for (var i=0;i<inputs.length;i++){
+		if (inputs[i].checked == true){
+			tmp += inputs[i].value + "#"
+		}
+	}
+	structures_value.value = tmp
+
+	// Recuperation des Periodes
+}
+
+</script>
+{% block add_script %}
+
+{% endblock %}
+
+{% endblock %}

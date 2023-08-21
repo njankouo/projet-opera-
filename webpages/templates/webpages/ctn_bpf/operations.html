@@ -1,0 +1,736 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block add_title %} 
+{{base_val}}
+{% endblock %}
+
+
+{% block semaines_operations %}
+<div class="px-4 col-12  col-md-4" style="min-width:300px;max-height:350px;overflow:auto;">
+    <div class="h5"> {{actual_institution.default_subperiod.m_periode}} </div>
+    <div>
+        {% for s in searches %}
+        {% for val in s.values %}
+        <div class=" mb-2"> <a href="/taches/{{base_val.id}}/{{forloop.counter}}" class="btn btn-light">{{val}}</a> </div>
+        {% endfor %}
+    </select>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
+
+
+
+{% block table %}
+{% block caption_table %} {% endblock %}
+
+<table class="table table-hover table-responsives display dataTable no-footer" id="tache" style="min-width:100%;" role="grid" aria-describedby="datatable_info">
+    <thead id='thead_tache'>
+        {% block fields %}
+        <tr role="row">
+            <th></th>
+            <th>Nom {{actual_institution.operations_name}}</th>
+            {% if actual_institution.default_options == False %}
+            {% for th in actual_institution.operations_modules.fields %}
+            <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+                {{th}}
+            </th>
+            {% endfor %}
+            {% endif %}
+            <th>Période</th>
+            <th>Personnel</th>
+            {% if False %}<th>Chronogramme</th> {% else %} <th> Rapports </th> {% endif %}
+            {% if actual_institution.default_options == False %}
+            <!--
+            {% for th in actual_institution.operations_modules.fill_fields_rapp %}
+            <th class="sorting text-primary" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style=" ">
+                {% if th.type != 'choix' %} {{th.field}} {% else %} {{th.extras}} {% endif %} 
+            </th>
+            {% endfor %} -->
+            {% else %}
+            <th> Priorité </th>
+            <th> Montant </th>
+            <th> Rapport Technique </th>
+            {% endif %}
+            <th>Actions</th>
+            <th> Date </th>
+        </tr>
+        {% endblock %}
+    </thead>
+    <tbody id='tbody_tache'>
+        {% block tbody %}
+        {% for line in lines %}
+        <tr>
+            <th><input type="checkbox" class="entity_chbox" name="" value="{{line.id}}"></th>
+            <td style="cursor:pointer;" onclick="document.location='/operations/details/{{line.id}}/';" class="t_cell table-hover">{{line}}</td>
+            {% if actual_institution.default_options == False %}
+            {% for th in line.values_spl1 %}
+            <td onclick="document.location='/operations/details/{{line.id}}/';" class="sorting t_cell value_liner" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+                {{th}}
+            </td>
+            {% endfor %}
+            {% endif %}
+
+            <td onclick="document.location='/operations/details/{{line.id}}/';" class="t_cell planni_life" data-id="{{line.m_tache_plannification}}">{% if line.m_tache_plannification != None %}{{line.m_tache_plannification}}{% else %} Par Défaut {% endif %}</td>
+
+            <td class="t_cell" style="max-height:120px;overflow:auto;" {% if line.personnel != None %} data-id="{{line.personnel.id}}" {% else %} data-id="0" {% endif %}>{% if line.is_RACI == 0 %}
+                {% if line.personnel != None %}
+                <div><b><span class='text-success'> R : </span> &nbsp;{{line.personnel}}</b></div>
+                {% else %}
+                <div><span class="text-success">cliquez sur "<i class="fas fa-pen"></i>"</span></div>
+                {% endif %}
+                {% if line.accountable != None %} <div><b><span class='text-danger'> A : </span> &nbsp;{{line.accountable}}</b></div>{% endif %}
+                {% if line.consulted != None %} <div><b><span class='text-primary'> C : </span> &nbsp;{{line.consulted}}</b></div>{% endif %}
+                {% if line.informed != None %} <div><b><span style="color:orange;"> I : </span> &nbsp;{{line.informed}}</b></div>{% endif %}
+                {% else %} <!--{% for r in line.raci_roles %}<div>{% for r2 in r.role_racis %}<small class="btn-info badge p-1" >{{r2}}</small> {% endfor %} <small><b>{{r.m_personnel}}</b></small></div> {% endfor %}--> <span class="btn btn-info" data-op="{{line}}" data-toggle="modal" data-target="#RACIModal" onclick="updateRACI(this)" data-racis="{% for r in line.raci_roles %} {% for r2 in r.role_racis %} {{r2}} - {% endfor %}#{{r.m_personnel}}| {% endfor %}">    Fiche RACI </span> {% endif %}</td>
+                <td style="display:none;"></td>
+                <td style="display:none;" {% if line.accountable != None %} data-id="{{line.accountable.id}}" {% endif %}>
+                    <td style="display:none;" {% if line.consulted != None %} data-id="{{line.consulted.id}}" {% endif %}>
+                        <td style="display:none;" {% if line.informed != None %}data-id="{{line.informed.id}}" {% endif %}>
+
+                            <td style="display:none;"></td>
+                            <td style="display:none;"></td><!--  Role Column -->
+                            {% if actual_institution.default_options == True %}
+                            {% if line.periodes != None %}
+                            <td data-id="{{actual_institution.default_subperiod}}" data-desc="{{line.periodes.m_chronogramme.m_decoupage}}" data-period="{{line.periodes.m_desc_realisation}}"><div style="display:flex;justify-content: space-between;">{% for period in line.periodes.chrono_split %}<div style="padding:5px;" >{{period}}&nbsp;&nbsp;</div>{% endfor %}</div><div style="display:flex;justify-content: space-between;" class="">{% for period in line.periodes.desc_split %}<div style="font-weight:bold;">{% if period != '9' %}{% if period == '0' %}<i class="fas fa-clock"></i>{% elif period == '1' %}<i class="fas fa-check"></i>{% elif period == '2' %}<i class="fas fa-check text-success"></i>{% endif %}{% else %}<i style="opacity:0;'" class="fas fa-pen"></i>{% endif %}</div>{% endfor %}</div></td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+
+                            {% else %}
+                            {% if false_vr == False %}
+                            {% if line.periodes != None %}
+
+                            <td data-id="{{actual_institution.default_subperiod}}" data-desc="{{line.periodes.m_chronogramme.m_decoupage}}" data-is_period="1" data-period="{{line.periodes.m_desc_realisation}}"><div style="display:flex;justify-content: space-between;">{% for period in line.periodes.chrono_split %}<div style="padding:5px;" >{{period}}&nbsp;&nbsp;</div>{% endfor %}</div><div style="display:flex;justify-content: space-between;" class="">{% for period in line.periodes.desc_split %}  <div style="font-weight:bold;">{% if period != '9' %}{% if line.etat == '0' %}<i class="fas fa-clock"></i>{% elif line.etat == '1' %}<i class="fas fa-check"></i>{% elif line.etat == '2' %}<i class="fas fa-check text-success"></i>{% endif %}{% else %}<i style="opacity:0;'" class="fas fa-pen"></i>{% endif %}</div>{% endfor %}</div><div><small class="text-primary">{{line.periodes.actu_value}}</small></div></td>
+
+                            {% else %}
+                            <td></td>
+
+                            {% endif %}
+                            {% else %}
+                            <td>
+                                <div>
+                                    {% for op_detail in line.get_operation_details %}
+                                    <div class="py-1" style="border-bottom:1px solid #aaa;"><a class="{% if op_detail.etat == '2' %} text-success {% else %} text-danger {% endif %}" href="/operations/details/{{line.id}}"> <small><i class="fas fa-file"></i> {{op_detail}}</small> </a> </div>
+                                    {% empty %}
+                                    <div> Aucun Rapport pour le Moment</div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <!-- Operation Details -->
+                            {% endif %}
+                            <!-- Operation Details -->
+
+                            {% endif %}
+
+                            {% if actual_institution.default_options == False %}
+
+                            <!-- {% for val in line.values_spl2 %}
+                            <td class="t_cell value_liner text-primary">{{val}}</td>
+                            {% endfor %} -->
+                            {% else %}
+                            <td data-id='{{line.priorite}}'>{{line.priorite}}</td>
+                        </td>
+                        <td class="t_cell"  >{{line.montant}} </td>
+                        
+                        <td class="t_cell">{% if line.rapported.date_creation == None %}<span style="cursor:pointer;" class="p-2  btn-rapport" data-id="{{line.id}}" data-tache="{{line}}" data-result="{{line.result_process}}" data-target="#addModal" data-toggle='modal'>Aucun Rapport</span>{% else %}<a href="{{line.rapported.piece_jointe.url}}" class=""> {% if line.rapported.nom_piece_jointe != None %} {{line.rapported.nom_piece_jointe}}{% else %} {{line.rapported.piece_jointe}} {% endif %}</a> {% if line.tech_rapports.first.commentaire != None %}<span data-toggle="modal" data-html="true" data-target='#commentOperModal' title="{{line.tech_rapports.first.commentaire}}" style="cursor:pointer;" class="badge bg-comment" data-comments="{{line.tech_rapports.first.commentaire}}" data-operation="{{line}}" data-personnel="{{line.personnel}}" data-tache="s">Voir Commentaires</span> {% endif %}{% endif %}</td>
+                        {% endif %}
+                        <td><button class="btn btn-success" onclick="editBTN(this)" data-target="#addActionModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-pencil-alt"></i> </button>   <button class="btn btn-danger delete-btn"  onclick='merde(this);' data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button>  <button class="btn btn-info dup_btn" data-id="{{line.id}}" data-name="{{line}}" data-target="#dupliqModal" data-toggle='modal'> <i class="fas fa-copy"></i> </button> </td>
+                        <td class="t_cell">{{line.date_creation}}</td>
+                    </tr>
+                    <!--
+                    <tr>
+                        <td colspan="28" class="bg-info text-white" style="cursor:pointer;"> Afficher Liste </td>
+                    </tr>
+                    <tr style="display:none;" class="td-op_details" data-name="{{line.id}}">
+                        
+                    </tr> -->
+                    {% endfor %} 
+                    {% endblock %}
+                </tbody>
+            </table>
+
+
+            {% endblock %}
+
+            {% block add_modal %}
+            <div class="modal fade" id="RACIModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog ">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                            <h4 class="modal-title" >Repartition RACI <span class="h4 text-primary" id="RACI_operation"></span>  </h4>
+                            <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div><small> Repartition des Rôles</small></div>
+                            <div id="RACI_details_div">
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        <div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div style='max-width:1050px;' class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                        <h4 class="modal-title"  id="modify_title">Ajouter {{actual_institution.operations_name}}  </h4>
+                        <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-4" style="border-bottom:2px solid #f0f0f0;">
+                            <div>
+                                <div class="h5">{{base_val}}</div>
+                            </div>
+
+                        </div>
+                        <form onsubmit="saveOperation(this)" class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post" data-toggle="validator" enctype="multipart/form-data" >
+                            {% csrf_token %}
+                            <div class=" d-flex justify-content-center row">
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        Nom {{sub_entity}}
+                                        <input type="text" class="form-control" name="nom" id="nomAct" required="">
+                                    </div>
+                                </div>                             
+                            </div>
+                            {% if actual_institution.default_options != True %}
+                            <input type="hidden" name="operation_aggregates" id="operation_aggregates">
+                            {% for th in actual_institution.operations_modules.fill_fields %}
+                            <div class=" d-flex justify-content-center row">
+                                <div class="col-sm-8 form-group">
+                                    <label>{{th.field}}</label>
+                                    {% if th.type == 'string' or th.type == 'text' or th.type == 'char' %}
+                                    <input type="text" class="form-control agg1">
+                                    {% elif th.type == 'int' or th.type == 'number'  %}
+                                    <input type="number" class="form-control agg1">
+                                    {% elif th.type == 'choix' %}
+                                    <div><small>Les valeurs doivent être séparées par des Sauts de Ligne</small></div>
+                                    <textarea value="" class="form-control agg1"></textarea>
+                                    {% elif th.type == 'file' or th.type == 'image'  %}
+                                    <input type="file" name="{{th.field}}_nam" class="form-control agg1">
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            <div  class=" d-flex justify-content-center row">
+                                <div class="col-sm-8 form-group">
+                                    <label> Période : {{base_val.m_type_entity}} </label>
+                                    {% for s in searches %}
+                                    <select id='modal_per_select' name="tache_periode" class="col-sm-8 form-control">
+                                        {% for val in s.values %}
+                                        <option value="{{val}}">{{val}}</option>
+                                        {% endfor %}}
+                                    </select>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <input type="hidden" name="redirect" {% if detail_g_v == True %} value="{{base_val.id}}" {% else %} value="-1" {% endif %}>
+
+
+                            <div id="prinRESP" class=" justify-content-center row">
+                                <div class="col-sm-8">
+                                    <div class="assiDIV form-group text-center">
+                                        <label class="text-success"><span class="badge badge-success">R</span>  Principal Responsable</label>
+                                <!-- <div class="justify-content-around">
+                                    <input class="form-control" list="browsers" name="browser" id="browser">
+<datalist id="browsers">
+    {% for perso in personnels %}
+                                        <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
+                                        {% endfor %}
+                                    </datalist> -->
+                                    <select name="perso" class="responsable_selector form-control">
+                                        {% for perso in personnels %}
+                                        <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
+                                        {% endfor %}
+                                        <option value="0">Non Défini</option>
+                                    </select>
+                                    <div class="d-none mt-1 form-group">
+                                        <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style='display:none;' class="assiDIV form-group">
+                                Rôle
+                                <div class="">
+                                    <select name="role" class="form-control">
+                                        {% for role in roles %}
+                                        <option value="{{role.id}}">{{role}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="mt-1 form-group">
+                                        <span style="cursor:pointer;" data-launch='0' class="assiLAUNCH text-success">Assigner à un Personnel</span>
+                                    </div> 
+                                </div>  
+                            </div>
+                        </div>
+                    </div>   
+
+                    {% if actual_institution.default_options == True %}
+                    <div class=" d-flex justify-content-center row mb-3">
+                        <div class="col-lg-8">
+                            <label>Ajouter des Pieces Jointes ? ( Optionnel )</label>
+                            <input class="form-control" type="file" name="file_oko">
+                        </div>
+                    </div>
+                    {% endif %}
+                    <center>
+                        <div class="">  
+                            <div class="col-sm-8">
+                                <div class="assiDIV form-group">
+                                    <label class="text-danger"><span class="badge badge-danger">A</span> Accountable</label>
+
+                                    <div class="justify-content-around">
+                                        <select name="accountable" class="accounted_selector form-control">
+                                            <option value="0">Non Défini</option>
+                                            {% for perso in personnels %}
+                                            <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="d-none mt-1 form-group">
+                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="assiDIV form-group">
+                                    <label class="text-warning"><span class="badge badge-warning">C</span>  Consulted</label>
+
+                                    <div class="justify-content-around">
+                                        <select name="consulted" class="consulted_selector form-control">
+                                            <option value="0">Non Défini</option>
+                                            {% for perso in personnels %}
+                                            <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="d-none mt-1 form-group">
+                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="assiDIV form-group">
+                                    <label class="text-success"><span class="badge badge-info">I</span>Informed</label>
+
+                                    <div class="justify-content-around">
+                                        <select name="informed" class="informed_selector form-control">
+                                            <option value="0">Non Défini</option>
+                                            {% for perso in personnels %}
+                                            <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="d-none mt-1 form-group">
+                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </center>
+
+                    <div class=" d-none justify-content-center row mb-3" id="shit_hidden">
+                        <input type="hidden" name="RACI_hidden" id="RACI_hidden">
+                        <input type="hidden" name="RACI_hidden_roles" id="RACI_hidden_roles">
+                        <div class="col-lg-12">
+                            <center><div><input type="checkbox" id="showRACI" value="1" name="showRACI" onclick="displayRACI()"><label for="showRACI">Découpage RACI</label></div></center>
+                            <center>
+                                <div style="display:none;" id="RACI_DIV">
+                                    <div class="d-flex justify-content-center flex-wrap my-2">
+                                        <div class="text-success"><small style="cursor:pointer;" onclick="addRaciLine()">+ Ajouter une Ligne</small> </div>
+                                        <div class="p-4"></div>
+                                        <div class="text-danger"><small style="cursor:pointer;" onclick="removeRaciLine()">- Enlever une Ligne</small> </div>
+                                    </div>
+
+                                    <table id="table_RACI" class="table table-responsive" style="max-height:300px;overflow: auto;">
+                                        <thead>
+                                            <td> Utilisateur </td>
+                                            {% for rol in actual_institution.structures_split %}
+                                            <td class="text-info"> {{rol}} </td>
+                                            {% endfor %}
+                                        </thead>
+                                        <tbody id='table_RACI_lines'>
+                                            <tr>
+                                                <td>
+                                                            <!-- <input type="text" for="persos_li" class="form-control" name="">
+                                                            <datalist id="persos_li">   
+                                                                {% for perso in personnels %}
+                                                                <option value="{{perso.id}}">{{perso}}</option>
+                                                                {% endfor %}
+                                                            </datalist> -->
+                                                            <select class="form-control">
+                                                                {% for perso in personnels %}
+                                                                <option value="{{perso.id}}">{{perso}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </td>
+                                                        {% for rol in actual_institution.structures_split %}
+                                                        <td>
+                                                            <input type="checkbox"  name="">
+                                                        </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </center>
+                                </div>
+                            </div>
+
+                            <!--
+                            <div class="text-center px-3">
+                                <input type="checkbox" name="">
+                                <label> Dupliquer pour chaque sous-periode</label>
+                            </div> -->
+
+                            <div class="d-flex justify-content-center row mb-3">
+                                <div class="px-3 col-6 col-md-8">
+                                    <label> Découpage : Delai</label>
+                                    <div>
+
+                                        <select id='decoup_select' name="sub_period" class="form-control">
+                                            {% for sub in base_val.plannification.m_periode.sub_periods %}
+                                            {% if sub.id == actual_institution.default_subperiod.id %}
+                                            <option class="plannif_selector" data-index="{{forloop.counter}}" value="{{sub.id}}">{{sub}}</option>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {% for sub_periode in base_val.plannification.m_periode.sub_periods %}
+                            {% if actual_institution.default_subperiod == sub_periode %}
+                            <div id='period_decoup{{sub_periode.id}}' class="period_decoups row justify-content-around">
+                                {% for label in sub_periode.decoup_desc_slip %}
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class=" acheck checkbox custom-control-input clock_sem"  id="calend{{label}}"    />
+                                    <label class="custom-control-label"  for="calend{{label}}">{{label}}</label>
+                                    <div><small class="modal_calco_date text-primary"></small></div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+
+                            <input type="hidden" id="chronogr" name="chronogr">
+                            <div class="my-2 d-flex flex-wrap justify-content-center">
+                                <div class="col-6 col-sm-4">
+                                    <div class="form-group">
+                                        Priorité
+                                        <select name="priorite" class="form-control">
+                                            <option value="Basse">Basse</option>
+                                            <option value="Normale" selected="">Normale</option>
+                                            <option value="Haute">Haute</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-sm-4">
+                                    <div class="form-group">
+                                        Montant
+                                        <input type="number" class="form-control" name="montant" value=0 id="nomAct">
+                                    </div>
+                                </div> 
+                            </div>
+
+                            <div class="my-2 d-flex justify-content-center row">
+                                <div class="col-sm-8 col-6">
+                                    <div class="form-group">
+                                        Mode de Notification
+                                        <select name="notification" class="form-control">
+                                            <option value="1">Adresse Mail</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center my-3"> <button type="submit" class="col-md-4 col-6 btn btn-success">Enregistrer
+                            </button> </div>
+
+                            <input type="hidden" name="edit_or_create" id="edit_or_create" value="c">
+                            <input type="hidden" name="edit_id" id="edit_id">
+                            <input type='hidden' name='generator' value='o'>
+                            <input type="hidden" name="tache" value='{{base_val.id}}'>
+                            <input type="hidden" name="who_assign" id='who_assign' value=0>
+
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+
+
+        {% block script_operation %}
+        <script>
+            $.ajax({
+                url: '/ajax_RACI_user/manage/',
+                data: {
+                    'menu':'o',
+                    'entity':{{base_val.id}},
+                },
+                dataType: 'json',
+                success:function(data){
+                    responsable_selector = document.getElementsByClassName("responsable_selector");
+                    accounted_selector = document.getElementsByClassName("accounted_selector");
+                    consulted_selector = document.getElementsByClassName("consulted_selector");
+                    informed_selector = document.getElementsByClassName("informed_selector");
+                    for (var i=0;i<responsable_selector.length;i++){
+                        if (data.responsable != "")responsable_selector[i].value = data.responsable;
+                        if (data.accounted != "") accounted_selector[i].value = data.accounted;
+                        if (data.consulted != "") consulted_selector[i].value = data.consulted;
+                        if (data.informed != "") informed_selector[i].value = data.informed;    
+                    }                   
+                },
+                error:function(){
+                    alert("EACI Error")
+                }
+
+            });
+        </script>
+        <script type="text/javascript">
+            assiLAUNCH = document.getElementsByClassName("assiLAUNCH");
+            assiDIV = document.getElementsByClassName("assiDIV");
+            for (var i=0;i<assiLAUNCH.length;i++){
+                assiLAUNCH[i].onclick = function(){
+                    index = this.getAttribute('data-launch');
+                    $(assiDIV[parseInt(1-index)]).hide('slow',function(){
+                        $(assiDIV[parseInt(index)]).show('slow');
+                    });
+                }
+            }
+        </script>
+        <script type="text/javascript">
+            var period_decoups = document.getElementsByClassName("period_decoups");
+            for (var i=1; i<period_decoups.length; i++){
+                period_decoups[i].style.display = "none";
+            }
+            var decoup_select = document.getElementById("decoup_select");
+    //var plannif_selector = document.getElementsByClassName("plannif_selector");
+    select_value = parseInt(decoup_select.value);
+    //alert(select_value)
+    decoup_select.onchange = function(){
+        select_value = (parseInt(this.value));
+        $(".period_decoups").hide('slow',function(){
+            $("#period_decoup"+select_value).show('slow');
+        });
+        clock_sem = document.getElementsByClassName("clock_sem");
+        clock_sem[0].checked = true;
+    }
+    clock_sem = document.getElementsByClassName("clock_sem");
+    clock_sem[0].checked = true;
+    agg1 = document.getElementsByClassName("agg1");
+    agg1_length = (agg1.length);
+    //alert(agg1_length)
+
+    $("#addFormAction").submit(function(){
+        //alert("Ok")
+        {% if actual_institution.default_options != True %}
+        operation_aggregates = document.getElementById("operation_aggregates");
+        agg1 = document.getElementsByClassName("agg1");
+        RACI_hidden = document.getElementById("RACI_hidden")
+        tmp = ""
+        for (var i=0;i<agg1_length;i++){
+            tmp += agg1[i].value + "|";
+        }
+        operation_aggregates.value = tmp;
+        {% endif %}
+
+        chronogr = document.getElementById("chronogr");
+        subperiod_id = decoup_select.value;
+        checkbox = document.getElementById("period_decoup"+select_value).getElementsByClassName("clock_sem");       
+        for (var i=0; i<checkbox.length; i++){
+            if (checkbox[i].checked == true){
+                chronogr.value += "0" + "_"
+            }
+            else{
+                chronogr.value += "9" + "_"
+            }
+        }
+
+        RACI_options = document.getElementById("table_RACI_lines").getElementsByTagName("input");
+        RACI_roles = document.getElementById("table_RACI_lines").getElementsByTagName("select");
+        tmp_RACI_2 = ""
+        for (var i=0; i<RACI_roles.length;i++){
+            tmp_RACI_2 += RACI_roles[i].value+"#";
+        }
+        RACI_hidden_roles = document.getElementById("RACI_hidden_roles")
+        RACI_hidden_roles.value = tmp_RACI_2;
+        tmp_RACI = ""
+        for (var i=0; i<RACI_options.length;i++){
+            if (i%4==0 && i>0){
+                tmp_RACI +="#"
+            }
+            if (RACI_options[i].checked == true){
+                tmp_RACI += "1"
+            }
+            else{
+                tmp_RACI += "0"
+            }
+            tmp_RACI += "|";
+        }
+        RACI_hidden.value = tmp_RACI;
+
+        console.log(RACI_hidden.value)
+        console.log(operation_aggregates.value)
+    });
+
+
+    $(".acheck[type='checkbox']").on('change',function(){
+        $(".acheck[type='checkbox']").not(this).prop('checked',false);
+    });
+</script>
+<script type="text/javascript">
+    var barColors = ["green","orange"];
+    structures = ["Effectuées","Non Effectuées"];
+    yValues= [{{base_val.operations_done_count}},{{base_val.operations_not_done_count}}];
+    new Chart("myChartSub", {
+        type: "doughnut",
+        data: {
+            labels: structures,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "Evolution des Opérations",
+                beginAtZero: true
+            }
+        }
+    }); 
+
+    function addRaciLine(){
+        table_RACI_lines = document.getElementById("table_RACI_lines");
+        trs = table_RACI_lines.getElementsByTagName("tr");
+        table_RACI_lines.innerHTML += trs[0].innerHTML;
+    }
+
+    function removeRaciLine(){
+        table_RACI_lines = document.getElementById("table_RACI_lines");
+        trs = table_RACI_lines.getElementsByTagName("tr");
+        table_RACI_lines.innerHTML = "";
+        if (trs.length > 0){
+            for (var i=0; i<trs.length; i++){
+                table_RACI_lines.innerHTML += trs[0].innerHTML
+            }
+        }
+    }
+
+    var dpR = 0;
+    function displayRACI(){
+        if (dpR == 1){
+            $("#RACI_DIV").hide('slow');
+            $("#prinRESP").show('slow');
+        }
+        else{
+            $("#RACI_DIV").show('slow');
+            $("#prinRESP").hide("slow");
+        }
+        dpR = 1 - dpR;
+    }
+
+    modal_per_select = document.getElementById("modal_per_select");
+
+    function ajCD(text,divs="#"){
+        {% if actual_institution.default_period.m_logic_type == 3 %}
+        $.ajax({
+            url: '/ajax_calcul_date/',
+            data: {
+                'plannify':text,
+                'periode':{{actual_institution.default_period.id}}
+            },
+            dataType: 'json',
+            success:function(data){
+                if (divs == "#"){
+                    period_decoups = document.getElementsByClassName("period_decoups")[0]
+                    modal_calco_date = document.getElementsByClassName("modal_calco_date");
+                        //period_decoups.innerHTML = ""
+                        for (var j=0; j<data.test_dates.length; j++){
+                            modal_calco_date[j].innerHTML = data.test_dates[j]; 
+                        }
+                    }
+                },
+                error:function(){
+                }
+            });
+        {% endif %}     
+    }
+    ajCD(modal_per_select.getElementsByTagName("option")[0].value)
+    modal_per_select.onchange = function(){
+        ajCD(this.value);
+    }
+
+    function updateRACI(elt){
+        RACI_operation = document.getElementById("RACI_operation");
+        RACI_details_div = document.getElementById("RACI_details_div");
+        RACI_operation.textContent = elt.getAttribute("data-op");
+        data_racis = elt.getAttribute("data-racis").split("|");
+        topm = "";
+        for (var j=0;j<data_racis.length;j++){
+            az = data_racis[j].split("#")
+            topm += "<tr>"
+            for (var k=0; k<az.length; k++){
+                topm += "<td> "+az[k]+"</td>"
+            }
+            topm += "</tr>"
+        }
+        topm = "<table class='table'><thead><tr><td> Rôle </td><td> Personnel </td></tr></thead><tbody>"+topm+"</tbody></table>";
+        RACI_details_div.innerHTML = topm;
+    }
+
+    function saveOperation(elt){
+        //alert(elt)
+        who_assign = document.getElementById("who_assign");
+        if (dpR == 1){
+            who_assign.value = "2";
+        }
+    }
+
+    function showRACI_dup(elt){
+        raci_block_dup = document.getElementById("raci_block_dup")
+        if (elt.checked == true){
+            $("#raci_block_dup").show("slow")
+        }
+        else{
+            $("#raci_block_dup").hide("slow")
+        }
+    }
+
+    rename_dup = document.getElementById("rename_dup")
+    rename_dup.onchange = function(){
+        data_show = this.getAttribute('data-show');
+        show = 1 - parseInt(data_show);
+        this.setAttribute('data-show',show);
+        this.setAttribute('value',show);
+
+        rename_div = document.getElementById("rename_div");
+        if (show  == 1){
+            $(rename_div).show('slow')
+        }
+        else{
+            $(rename_div).hide('slow')
+        }
+    }
+
+
+</script>
+{% endblock %}

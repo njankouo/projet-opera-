@@ -1,0 +1,7 @@
+{% extends './entities.html' %}
+{% load static %}
+
+
+{% block table %}
+
+{% endblock %}

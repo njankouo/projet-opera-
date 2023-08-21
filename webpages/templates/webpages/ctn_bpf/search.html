@@ -1,0 +1,83 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block add_title %} 
+{% if msg_view == None %} Résultat de la Recherche {% else %} Messages {% endif %}
+{% endblock %}
+
+{% block content %}
+<div>
+	<div class="h2 text-center text-secondary"> {% if msg_view == None %} Résultat de la Recherche {% else %} <i class="h2 fas fa-envelope"></i> Messages {% endif %}</div>
+	<div class="container">
+		{% for s in searches %}
+		<div style="border-bottom:2px solid #f0f0f0;"  class="mb-2 row">
+			{% if s.nature == 'e' %}
+			<a class="d-block text-dark" {% if s.label.m_entity_type.is_tache == True %} href="/taches/{{s.value.id}}" {% else %} href="/gestionnaire/{{s.hierachie}}/{{s.value.id}}/ {% endif %}">
+				<div class="">
+					<div class="badge" style="background:{{s.color}}; color: white;">{{s.label}}</div>
+					<div class="btn">{{s.value.get_name}}</div>
+				</div>
+			</a>
+			{% elif s.nature == 's' %}
+			<a class="d-block text-dark" href="/structures/{{s.value.id}}/">
+				<div class="">
+					<div class="badge" style="background:{{s.color}}; color: white;">{{s.label}}</div>
+					<div class="btn">{{s.value}}</div>
+				</div>
+			</a>
+			{% elif s.nature == 'p' %}
+			<a class="d-block text-dark" href="/personnels/">
+				<div class="">
+					<div class="badge" style="background:{{s.color}}; color: white;">{{s.label}}</div>
+					<div class="btn">{{s.value}}</div>
+				</div>
+			</a>
+			{% endif %}
+		</div>
+		{% endfor %}
+
+		{% if msgs == True %}
+		{% for m in pages_o %}
+		<div style="border-bottom:2px solid #f0f0f0;" class="mb-3 row">
+			<div class="col-lg-12 d-flex flex-wrap">
+				<div class="col-lg-9">
+					<div><small> {{m.value.rapported.date_creation}} </small></div>
+					{% if m.nature == 'r' %}
+					<a href="/decision/{{m.link}}/{{m.value.id}}/" class="text-danger h3 d-block"><i class="fas  fa-envelope "></i>&nbsp;<span class="">Rapport à  Valider : {{m.value}} {{m.rapported}} </span></a>
+					{% else %}
+					<!-- <a onclick='launchAttributes(this)' data-toggle='modal' href="#RapportModal2" data-attributes-type="{{m.value.m_type_entity.m_type_fields_rapp}}" data-attributes="{{m.value.m_type_entity.m_fields_rapported}}" data-line='{{m.value.id}}' class="text-success h3 d-block">--><a class="text-success h3 d-block" href="/decision/b/{{m.value.id}}/"><i class="fas  fa-envelope "></i>&nbsp;<span class=""><b>{{m.value}} a été éffectuée </b>- Aviez vous des Observations à Faire ? </span></a>
+					{% endif %}
+				</div>
+				<div class="col-lg-3">
+					<div><small>&nbsp;</small></div>
+					<div><span class="badge bg-info text-white">{{m.name}}</span></div>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+		{% endif %}
+	</div>
+</div>
+{% if num_pages > 1 %}
+<nav>
+	<ul class="pagination">
+		<li>
+			{% if pages.number > 1 %}
+			<a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+			</a>
+			{% endif %}
+		</li>
+		{% for num in page_range %}
+		<li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+		{% endfor %}
+		<li>
+			{% if pages.number < num_pages %}
+			<a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+				<span aria-hidden="true">&raquo;</span>
+			</a>
+			{% endif %}
+		</li>
+	</ul>
+</nav>
+{% endif %}
+{% endblock %}

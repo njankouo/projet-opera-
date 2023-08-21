@@ -1,0 +1,52 @@
+{% extends './taches.html' %}
+{% load static %}
+
+{% block entity_head_title %}
+<div class="mt-2 mb-5">
+  <h2> <span class='h2 text-success'>Structure : </span> <span class="h2">{{base_val.designation}}</span> </h2>
+</div>
+{% endblock %}
+
+{% block chartsub %}
+<div class="mt-3 mb-1">
+  <div id="myChartpro_block" class="flex-wrap d-flex">
+      <!-- <div class="col-12 col-lg-8">
+        <canvas style="width:100%;min-height:250px;max-height:320px;" id='myChartSub'></canvas>
+      </div> -->
+      <div class="col-lg-12 flex-wrap d-flex">
+		      <div class="col-lg-6">
+            <label style="width:100%;" class="text-center"> <a class="text-secondary" href="/gestionnaire/{{nature}}/{{p.id}}/"> Evolution Globale </a></label> 
+            <canvas style="width:100%;" data-progression="{{structure.progression}}" class="mt-2 barometer"> </canvas>
+          </div>
+          <div class="col-lg-6">
+          	<canvas id='Chartrepar'></canvas>
+          </div>       
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script_structures %}
+<script type="text/javascript">
+  var barColors3 = ["green","#34b398","red","orange"];
+  structures3 = ["Terminées","En Bonne voie","Faible Progression"];
+  yValues3= [{{structure.top_entities_full}},{{structure.top_entities_half}},{{structure.top_entities_lower}}];
+  new Chart("Chartrepar", {
+    type: "doughnut",
+    data: {
+      labels: structures3,
+      datasets: [{
+        backgroundColor: barColors3,
+        data: yValues3
+      }]
+    },
+    options: {
+      title: {
+        display: true,
+        text: "Evaluation des {{entity}}",
+        beginAtZero: true
+      }
+    }
+  });
+</script>
+{% endblock %}

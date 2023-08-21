@@ -1,0 +1,1553 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block miniBigLeft %}
+<div style="width: 100%;" class="mb-3 d-flex justify-content-between border-bottom border-primary">
+	<div class="btn text-primary">Tableau de Bord</div>
+	<div><i class="fas text-primary fa-angle-down"></i></div>
+</div>
+
+<div class="px-2 mb-2" style="cursor:pointer;"> <a class="p-2 text-center text-white card bg-primary btn-rounded rounded d-block mainBTN" onclick="showMainInte(this,0)"> Proccess </a> <!--<span class="btn btn-primary mainBTN" onclick="showMainInte(this,0)">Process</span> --></div>
+<div class="px-2 mb-2" style="cursor:pointer;"> <a class="p-2 text-center text-white card bg-warning btn-rounded rounded d-block mainBTN" onclick="showMainInte(this,1)"> Technical </a> <!--<span class="btn btn-primary mainBTN" onclick="showMainInte(this,0)">Process</span> --></div>
+{% if finan_options != None %}
+<div class="px-2 mb-2" style="cursor:pointer;"> <a class="p-2 text-center text-white card bg-success btn-rounded rounded d-block mainBTN" onclick="showMainInte(this,2)"> Financial </a> <!--<span class="btn btn-primary mainBTN" onclick="showMainInte(this,0)">Process</span> --></div>
+{% endif %}
+{% endblock %}
+
+{% block extra_header %}
+<link href="{% static 'webpages/ctn_bpf/barometer.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block content %}
+<div class="d-flex">
+<div class="text-center">
+	<b style="color:#aaa;" class="btn actu_date"></b> 
+</div>
+<div style="color:#aaa;" class="btn">
+	<span id = "clock" class="badge badge-primary" onload="currentTime()"></span>
+</div>
+</div>
+
+<div class="d-flex text-align h2"> Tableau de Bord <span id="tbprd_menu" class="text-primary h2"> &nbsp; Proccess </span>
+</div>
+
+
+<div id='main_content' {% if permissions == 0 %} class='d-flex' style="flex-direction: column-reverse;" {% endif %}>
+	{% if permissions > 0 %}
+	<div class="d-none">
+		<input type="checkbox" id="cumul_periodes" name="">
+		<label for="#cumul_periodes"></label>
+	</div>
+	<div class="proccess_section all_section">
+		<div class=" col-12 d-md-flex flex-wrap mb-4">
+			<div class="d-flex flex-wrap col-lg-6 col-12">
+				<div class="col-8 col-lg-8">
+					<label> De la Période du : </label>
+					<div class="d-flex justify-content-center">
+						<select id='period_select' class="col-lg-12 form-control">
+							<option value="0"> Toutes les Périodes </option>
+							{% for per in default_period.decoup_slip %}
+							<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}" class='week_plus'>{{per}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="col-4 col-lg-4">
+					<label for="typeperiode">Année</label>
+					<input type="number" id="year_plan" value=2022 class="form-control">
+
+				</div>	
+			</div>
+			<div class="d-md-none my-3"></div>
+
+			<div class="d-md-flex flex-wrap flex-column col-lg-6 col-12">
+				<div><input id="cumul1" type="checkbox" name="">&nbsp;<label for="cumul1"> Obtenir la Progression cumulee</label></div>
+				<div><input id="cumul2" type="checkbox" name="">&nbsp;<label for="cumul2"> Globalite des {{operations_name}}</label></div>
+			</div>
+
+		</div>
+	</div>
+	<div class="pl-2 mb-3">
+		<div class="h5 title_div" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;">Informations Générales - {{actual_institution}} </div>
+		<!-- <div class="h2">
+		 Performance Globale 
+		</div>-->
+	</div>
+	<div style="display:none;"  class="mt-4 mb-5">
+		<div class="h4">
+			Evolution - {{type_entity}}
+		</div>
+		<div id="myChartpro_block" style="min-height:300px;" class="flex-wrap d-flex">
+		</div>
+	</div>
+
+	<div  class="justify-content-center mt-4 row mb-5 pr-4">
+		<div style="" class="py-5 d-flex flex-wrap col-lg-5 col-md-6 col-12">
+			<div class='section_canver pt-1 col-12 col-lg-12'>
+				<label style="width:100%;" class="text-center"> <a class="text-secondary" href="#">Evolution Globale</a></label> 
+				<canvas style="width:100%;" data-progression="{{actual_progression}}" class="barometer"> </canvas>
+				
+				<div class="d-flex w-100 justify-content-around flex-wrap">
+					<div class="d-flex mb-2"> 
+						<div class='' style="width:10px;height:10px;background:red"></div><div style="font-size:12px;">&nbsp;Critique</div>
+					</div>
+					<div class="d-flex mb-2">
+						<div style="width:10px;height:10px;background:orange"></div><div style="font-size:12px;"> &nbsp; Faible </div> 
+					</div>
+					<div class="d-flex mb-2">
+						<div style="width:10px;height:10px;background:#d06910;"></div><div style="font-size:12px;"> &nbsp;Moyen </div> 
+					</div>
+					<div class="d-flex mb-2"> 
+						<div style="width:10px;height:10px;background:#a0a345"></div><div style="font-size:12px;"> &nbsp;Bon </div> 
+					</div>
+					<div class="d-flex"> 
+						<div style="width:10px;height:10px;background:green"></div><div style="font-size:12px;">&nbsp;Excellent</div> 
+					</div>
+				</div>
+			</div>
+
+			<div style="display:nonse;" class='section_canver pt-1 col-12 col-lg-12'>	
+				<label style="width:100%;" class="text-center"> <a class="text-secondary" href="#">Couverture des Indicateurs</a></label>
+				<canvas style="width:100%;" class="barometer_indic"></canvas>
+				<div>
+					<div class="d-flex w-100 justify-content-around flex-wrap">
+						<div class="d-flex mb-2"> 
+							<div class='' style="width:10px;height:10px;background:red"></div><div style="font-size:12px;">&nbsp;Critique</div>
+						</div>
+						<div class="d-flex mb-2">
+							<div style="width:10px;height:10px;background:orange"></div><div style="font-size:12px;"> &nbsp; Faible </div> 
+						</div>
+						<div class="d-flex mb-2">
+							<div style="width:10px;height:10px;background:#d06910;"></div><div style="font-size:12px;"> &nbsp;Moyen </div> 
+						</div>
+						<div class="d-flex mb-2"> 
+							<div style="width:10px;height:10px;background:#a0a345"></div><div style="font-size:12px;"> &nbsp;Bon </div> 
+						</div>
+						<div class="d-flex"> 
+							<div style="width:10px;height:10px;background:green"></div><div style="font-size:12px;">&nbsp;Excellent</div> 
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="display:nonse;" class='section_canver pt-1 col-12 col-lg-12'>
+				<label style="width:100%;" class="text-center"> <a class="text-secondary" href="#">Gestion du Budget</a></label>
+				<div></div>
+				<canvas style="width:100%;" class="barometer_budget"></canvas>
+				<div>
+					<div>
+						<small>Budget consomme : </small>
+						<small id="budget_consum_val"> </small>
+					</div>
+					<div class="d-flex w-100 justify-content-around flex-wrap">
+						<div class="d-flex mb-2"> 
+							<div class='' style="width:10px;height:10px;background:red"></div><div style="font-size:12px;">&nbsp;Critique</div>
+						</div>
+						<div class="d-flex mb-2">
+							<div style="width:10px;height:10px;background:orange"></div><div style="font-size:12px;"> &nbsp; Faible </div> 
+						</div>
+						<div class="d-flex mb-2">
+							<div style="width:10px;height:10px;background:#d06910;"></div><div style="font-size:12px;"> &nbsp;Moyen </div> 
+						</div>
+						<div class="d-flex mb-2"> 
+							<div style="width:10px;height:10px;background:#a0a345"></div><div style="font-size:12px;"> &nbsp;Bon </div> 
+						</div>
+						<div class="d-flex"> 
+							<div style="width:10px;height:10px;background:green"></div><div style="font-size:12px;">&nbsp;Excellent</div> 
+						</div>
+					</div>					
+				</div>			
+			</div>
+		</div>
+
+
+
+		<div style="border:none;" class="card col-lg-5 d-flex flex-column justify-content-center">
+			<div class="p-4">
+				<div class="pl-2 h3"><img src="{{actual_institution.img.url}}" style="width:40px;height:40px;border-radius:100%;">&nbsp;{{actual_institution}}</div>
+				<div class="pl-2 h5 my-2"> {{actual_institution.nom}}</div>
+				<div class="section_div">
+					<div class="d-flex justify-content-between pt-3 flex-wrap">
+						<div>
+							<div class="">
+								<small id="last_semaine"> XXX</small> 
+							</div>
+							<div class="">
+								<label> Progression : </label> <label class="progr_btn {% if actual_progression < 25 %} text-danger {% elif actual_progression < 75 %} text-warning {% else %} text-success {% endif %}"> {{actual_progression}}% </label>
+							</div>
+							
+						</div>
+						<div>
+							<div class="">
+								<small> Général</small>
+							</div>
+							<div class="">
+								<label> Progression : </label> <label class="{% if actual_progression < 25 %} text-danger {% elif actual_progression < 75 %} text-warning {% else %} text-success {% endif %}"> {{actual_progression}}% </label>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="section_div" style="display:none;">
+					<div><small>Atteinte des Objectifs</small></div>
+					<div class="col-12 d-flex flex-wrap justify-content-between">
+						<div class="col-lg-12">
+							<div class="flex-wrap col-md-12 d-flex ">
+								<div class=" col-md-12">
+									<div class="d-flex col-12">
+										<div><i class="fas fa-square text-danger"></i>&nbsp;<label><small>Objectifs en faible progression</small>&nbsp;<span class="text-danger indi_faibles"></span>&nbsp;%</label></div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div  class="d-flex col-12">
+										<div><i class="fas fa-square text-success"></i>&nbsp;<label><small>Objectifs en bonne realisation</small>&nbsp;<span class="indi_forts text-success"></span>&nbsp;%</label></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="section_div" style="display:none">
+					<div> <small> Gestion Budgetaire </small> </div>
+					<div class="d-flex justify-content-between">
+						<div>
+							<div class="">
+								<small> </small> 
+							</div>
+							<div class="">
+								<label> Budget Prevu : </label> <label class="text-success"> {{finances}} {{finan_options}} </label>
+							</div>
+						</div>
+						<div>
+							<div class="">
+								<small> </small> 
+							</div>
+							<div class="">
+								<label> Depenses effectives : </label> <label class=" {% if depenses_eff <= finances %} text-success {% else %} text-danger {% endif %}"> {{depenses_eff}} {{finan_options}} </label>
+							</div>
+						</div>
+					</div>
+				</div>				
+			</div>
+			<div class="p-4 d-flex flex-wrap justify-content-between">
+				<div class="col-md-3 col-6 p-2">
+					<a href="/evaluer/0/" class="text-center text-primary">
+						<div><i class="fas fa-flag fa-3x"></i></div>
+						<div><small>Objectifs et Indicateurs</small></div>
+					</a>
+				</div>
+				<div class="col-md-3 col-6 p-2">
+					<a href="/chaine_indicateurs/" class="d-block text-center text-primary">
+						<div><i class="fas fa-globe fa-3x"></i></div>
+						<div><small>Chaine de Resultats</small></div>
+					</a>
+				</div>
+				<div class="col-md-3 col-6 p-2">
+					<a href="/gestionnaire/0/" class="d-block text-center text-primary">
+						<div><i class="fas fa-table fa-3x"></i></div>
+						<div><small>Gestionnaire {{type_entity}}</small></div>
+					</a>
+				</div>
+				<div class="col-md-3 col-6 p-2">
+					<a href="/personnels/" class="text-center text-primary">
+						<div><i class="fas fa-users fa-3x"></i></div>
+						<div><small>Ressources Humaines</small></div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="proccess_section all_section">
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;">Progression par Période</div>
+		<div  class="mt-4 row mb-5 px-2 d-flex pr-2">
+			<div id='chart6DIV' class="col-lg-9 col-12 col-md-8">
+				<canvas id='myChart6' class="text-center" style="width:100%;min-height:270px;"> </canvas> 
+				<canvas id='myChart62' class="text-center" style="display:none;width:100%;min-height:270px;max-height:300px;"> </canvas> 
+			</div>
+			<div class="card col-md-4 col-lg-3" style="border:none;max-height:100%;overflow-y:auto;">
+				<div class="text-center pt-4">
+					<label> Légende des Périodes</label>
+				</div>
+
+				<div class="py-1 d-flex justify-content-center">
+					<div class="px-2"> <input type="radio" class="default_prPre" value="0" checked name="default_prPe">&nbsp;<label><small>{{actual_institution.default_period}}</small></label> </div>
+					{% if actual_institution.default_period.m_logic_type == 3 %}
+					<div class="px-2"> <input type="radio" class="default_prPre" value="1" name="default_prPe">&nbsp;<label><small>{{actual_institution.default_subperiod.m_sub_value}}</small></label></div>
+					{% endif %}
+				</div>
+
+				<div class="mt-2 d-flex justify-content-between flex-wrap d-md-block" style="max-height:250px;overflow:auto;">
+					{% for periode in default_period.decoup_slip %}
+					<div><small>T{{forloop.counter}} :</small>  <small class="week_detail2">{{periode}}</small></div>
+					{% endfor %}
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+	{% endif %}
+
+	{% if permissions > 0 or entity_manage != None %}
+	<div class="technic_section all_section">
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Performance Technique</div>
+		<div style="width:100%;" class=" py-3 col-lg-12 d-flex flex-wrap justify-content-between">
+			<div class="col-lg-5 col-12">
+				<canvas style="width:100%;" id="indi_chart"> </canvas>
+			</div>
+			<div class="col-lg-7 col-12">
+				<canvas style="width:100%;min-height:270px;" id="indi_chart2"></canvas>
+			</div>		
+		</div>
+	</div>
+	{% endif %}
+
+</div>
+
+{% if finan_options != None %}
+{% if permissions > 0 or entity_manage != None %}
+<div class="budget_section all_section">
+	<div class="h5 title_div" id="title2" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;"> Execution Budget </div>
+	<div style="width:100%;" class=" py-3 col-lg-12 d-flex flex-wrap">
+		<div class="col-lg-6">
+			<canvas style="width:100%;max-height:270px;" id="budget_chart"> </canvas> 	
+		</div>
+		<div class="col-lg-6">
+			<canvas style="width:100%;max-height:270px;" id="budget_chart2"> </canvas> 	
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endif %}
+
+<div class="h5 title_div"  id="title2" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;"> Gestionnaire {{type_entity}}</div>
+<div  style="width:100%;" class=" py-3 col-lg-12 d-flex flex-wrap">
+	<div id="myChartpro_block2" style="display:none;" class="col-lg-12 flex-wrap d-none"></div> 
+	<div style="width:100%;"  class="col-lg-12 d-flex flex-wrap">
+		{% for entity in pages_o %}
+		<div class=" mb-3 d-flex flex-wrap justify-content-center col-lg-12" style="">
+			<a class="d-block col-lg-4 col-md-6 col-sm-12" href="/gestionnaire/0/{{entity.entity.id}}">
+
+				<div class="col-12">
+					<center><img style="max-width:250px;height:220px;" src="{% if entity.entity.m_type_entity.is_pic_represented %} {% if entity.entity.m_pic_represented.url != None %}{{entity.entity.m_pic_represented.url}} {% else %} {{actual_institution.img.url}} {% endif %}{% else %} {{actual_institution.img.url}} {% endif  %}" class="card-img-top" alt="..."></center>
+					<div class="card-body">
+						<p class="col-lg-12 card-text p-0 m-0">
+							<div class="pt-2 text-center h4">{{entity.entity.get_name}}
+							</div>
+
+							<div class="d-flex justify-content-center">
+								<div class="progress_launcher" data-id="{{entity.entity.id}}"></div>
+									<!--
+									<div class="technic_launcher" data-id="{{entity.entity.id}}"><span class="badge badge-warning">T:</span></div>
+									<div class="financial_launcher" data-id="{{entity.entity.id}}"><span class="badge badge-success">F:</span></div> -->
+								</div>							
+							</p>
+						</div>
+					</div>
+				</a>
+				{% block programm_content %}
+
+				<div class="col-lg-8 col-md-6 col-sm-12 mb-3 card py-3" style="max-height:365px;overflow:auto;background:#fff;border:none;">
+					<div class="entityDIV" style="border:none;">
+						{% if type_entity.is_tache %}
+						{% for tache in entity.values %}
+						<div>
+							<div style="border-bottom:2px dotted #777;" class=" pt-4"> 
+								<div> <b>{{tache}}</b> </div>
+								<div class="progress_launcher" data-id="{{entity.entity.id}}">
+
+								</div>
+								<div class="d-flex justify-content-around">
+									<div class="progress_launcher" data-id="{{sub.id}}"></div>
+									
+								</div>
+							</div>
+
+							<div><small> Mis à Jour le {{tache.m_date_modif}}</small></div>
+							<div class=" json_ope">
+								{% for operation in tache.sub_entities %}
+								{% if request.user.personnel in operation.get_personnel or permissions > 4 %}
+
+								{% if operation.etat == '2' %}
+								<a href="/operations/{{operation.id}}/" class="text-success d-flex flex-wrap mt-3 justify-content-between">
+									<div class=""> <i class="fas fa-check"></i> {{operation}}</div>
+									<div class="progress_launcher" data-id="{{operation.id}}"></div>
+								</a>
+								{% elif operation.etat == '0' %}
+								<a href="/operations/{{operation.id}}/" class="text-danger d-flex flex-wrap mt-3 justify-content-between">
+									<div class=""> <i class="fas fa-exclamation-triangle"></i> {{operation}}</div>
+									<div class="d-flex justify-content-around">
+										<div class="progress_launcher" data-id="{{operation.id}}"></div>
+									</div>
+								</a>
+								{% else %}
+								<a href="/operations/{{operation.id}}/" class="text-info d-flex flex-wrap mt-3 justify-content-between">
+									<div class=""> <i class="fas fa-clock"></i> {{operation}}</div>
+									<div class="progress_launcher" data-id="{{operation.id}}"></div>
+
+									<div class="d-flex justify-content-around">
+										<div class="progress_launcher" data-id="{{sub.id}}"></div>
+
+									</div>
+								</a>
+								{% endif %}
+								{% else %}
+								<a href="/operations/{{operation.id}}"  class="d-flex flex-wrap mt-3 justify-content-between">
+									<div class=""> <i class="fas fa-circlek"></i> {{operation}}</div>
+									<div class="progress_launcher" data-id="{{operation.id}}"></div>
+									<div> 
+										<a href="/decision/o/{{operation.id}}/" class="text-secondary"><span>Cette Opération ne vous etes pas attribuée</span></a>
+									</div>
+								</a>
+								{% endif %}
+								{% endfor %}
+								{% for operation in tache.operations_not_done %}
+								{% if operation.personnel != request.user.personnel and permissions < 4 %}
+								<div>
+									<div class="mt-3">
+										<div><small>{{operation}}</small></div>
+										<div><small>Cettte Opération ne vous est pas attribuée</small></div>
+									</div>
+								</div>
+								{% endif %}
+								{% endfor %}
+							</div>
+							{% for operation in tache.operations %}
+							{% if operation.progression == 100 %}
+							<div>
+								<div class="text-success mt-3">
+									<div><small>{{operation}}</small></div>
+									<div><small>Opération terminée : R. Technique disponible</small></div>
+								</div>
+							</div>
+							{% endif %}
+							{% endfor %}
+						</div>
+						{% endfor %}
+						{% else %}
+						{% for tache in entity.values %}
+						<div>
+							<div style="border-bottom:2px dotted #777;" class="justify-content-between pt-4"> 
+								<div> <a href="/gestionnaire/{{nature}}/{{tache.id}}">{{tache}} </a> </div>
+
+							</div>
+							{% if tache.progression == 100 and permissions > 1 %} {% if tache.is_rapported == False %}
+							<div class='mb-3' style="cursor:pointer;" onclick="loadTaches('a1',this);" data-tache="{{tache.id}}" data-toggle='modal' data-target="#valid_SupLogic"><b class="btn btn-light text-success"> Valider {{entity.entity.get_name}}</b></div>
+							{% else %}
+							<div class='mb-3' style="cursor:pointer;"><b class="btn"> {{entity}} Validée</b> <a href="/gestionnaire/a1/{{tache.id}}/">Voir le Rapport</a></div>
+							{% endif %}{% endif %} 
+							<div><small> Mis à Jour le {{tache.m_date_modif}}</small></div>
+							<div class="json_ope ">
+								{% for sub in tache.sub_entities %}
+
+								<div class="mt-3 d-flex flex-wrap justify-content-between">
+									<div>
+										<a href="/gestionnaire/{{next_nature}}/{{sub.id}}" class="">{{sub}}</a>
+
+
+									</div>
+									<!-- <div class="progress_launcher" data-id="{{sub.id}}"></div> -->
+									<div class="d-flex justify-content-around">
+										<div class="progress_launcher" data-id="{{sub.id}}"></div>
+									<!-- <div class="technic_launcher" data-id="{{sub.id}}"><span class="badge badge-warning"></span></div>
+										<div class="financial_launcher" data-id="{{sub.id}}"><span class="badge badge-success"></span></div> -->
+									</div> 
+								</div>
+								{% empty %}
+								<div>{{type_entity}} non assigné</div>
+								{% endfor %}
+							</div>
+						</div>
+						{% endfor %}
+						{% endif %}
+					</div>
+				</div>
+				{% endblock %}
+			</div>
+			{% endfor %}
+			{% if nb_top_entity == 0 %}
+			{% if permissions > 4 %}
+			<div class="">
+				<h3 class="card-title text-center"> Vous n'avez encore rien plannifié</h3>
+				<div class="card-body">
+					<div class="text-centers"><a href="/gestionnaire/p/" class="btn btn-primary">Créer un {{top_entity}}</a></div>
+				</div>
+			</div>
+			{% else %}
+			<div class="">
+				<h3 class="card-title text-center"> Vous n'etes impliqué actuellement dans aucun {{top_entity}}</h3>
+				<div class="card-body d-flex">
+					<div class="text-centers"><a href="/gestionnaire/p/" class="btn btn-success">Contacter la Hierachie</a></div>
+					<div>&nbsp;&nbsp;</div>
+					<div class="text-centers"><a href="/gestionnaire/p/" class="btn btn-warning">Contacter Opera +</a></div>
+				</div>
+			</div>
+			{% endif %}
+			{% endif %}
+		</div>
+
+	</div>
+
+
+
+	{% if num_pages > 0 %}
+	<nav>
+		<ul class="pagination">
+			<li>
+				{% if pages.number > 1 %}
+				<a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+				</a>
+				{% endif %}
+			</li>
+			{% for num in page_range %}
+			<li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+			{% endfor %}
+			<li>
+				{% if pages.number < num_pages %}
+				<a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+				{% endif %}
+			</li>
+		</ul>
+	</nav>
+
+	{% if permissions == 0 %}
+	<div class="row">
+		<div class="col-lg-12">
+			<div style="background-image:url({% static 'webpages/datas_background.jpg' %});background-size:cover;width:100%;height:200px;">
+				<div style="background:rgba(0,25,150,0.6);width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
+					<div>
+						<h2 class="text-center text-white"> Renseignement des Donnees </h2>
+						<div class="text-center"><a href="data_form/-1/0/" class="btn btn-light">Cliquer ici</a></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+	<div class="h5 d-none" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;">Participation par {{default_struc_name}}</div>
+	<div class="mt-4 row mb-5 px-2 d-none pr-2">
+		<div id='chart4DIV' class="col-lg-5 col-12 col-md-6">
+			<canvas id='myChart4' style="background:#fff; width:100%;max-width:700px;min-height:50px;"></canvas> 
+		</div>
+		<div class="card col-lg-7 py-2" style="border:none;max-height:100%;overflow-y:auto;">
+			<div class="text-center pt-4">
+				<label> Repartition des {{last_entity}} par {{default_struc_name}}</label>
+			</div>
+			<div id='structach_repart'>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="row mb-5" style="display:none;">
+		<div id='chart5DIV' class="col-lg-8 col-12 col-md-6">
+			<canvas id='myChart5' style="min-height:250px;width:100%;max-width:900px;"></canvas> 
+		</div>
+		<div class="col-lg-4 card py-2" style="border:none;max-height:100%;overflow-y:auto;">
+			<div class="text-center pt-4">
+				<label> Exécution - {{last_entity}} par {{default_struc_name}}</label>
+			</div>
+			<div id='structach_evo'>
+
+			</div>
+		</div>
+	</div>
+
+
+	<div style="width:100px;height:40px;" class="">
+
+	</div>
+	{% endif %}
+</div>
+</div>
+
+
+
+
+
+</div>
+
+</div>
+</div>
+
+
+<div class="modal fade "id="valid_SupLogic" tabindex="-1" role="dialog" aria-hidden="true" >
+	<div class="modal-dialog" style="justify-content:flex-start;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+				<h4 class="modal-title">Rapport - <span class="h4 text-info attendu-modal"></span></h4>
+				<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<form method="POST" id='save_valid_rapport' action="/save_valid_rapport/">
+				{% csrf_token %}
+				<div class="modal-body d-flex justify-content-between">
+					<div style="padding-right:10px;">
+						<!-- border-right:2px solid #aaa; -->
+						<label class="text-center h5"> Objectifs {{type_entity}} </label>
+						{% block expected_divs %}
+						<div class='attendu-modal'>                     
+						</div>
+						{% endblock %}
+					</div>
+					<div style="padding-left:10px;">
+						<label class="text-center h5"> Informations à Rapporter </label>
+
+						<div class='attendu-modal'>
+
+						</div>
+					</div>
+				</div>
+				<input type="hidden" id="resultat_realise" name="resultat_realise" value="">
+				<input type="hidden" name="value" id="tache_realisee">        
+				<input type="hidden" name="nature" value="{{nature}}">  
+				<input type="hidden" name="institution" value="{{actual_institution.id}}"> 
+				<div class="modal-footer">
+					<input type="submit" class="btn btn-success" value="Enregistrer le Rapport" name="">
+				</div>
+			</form> 
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+
+	function launchMainInterface(block){
+		blocks = [$("#main_content"),$("#navigation_section")];
+		blocks[1-block].slideUp('slow',function(){
+			blocks[block].slideDown('slow');
+		})
+	}
+
+	var year = new Date().getFullYear();
+	var month = new Date().getMonth()+1<10?"0"+(new Date().getMonth()+1):new Date().getMonth()+1;
+	var day = new Date().getDate()<10?"0"+new Date().getDate():new Date().getDate();
+	var date = day +" - "+month+" - "+year;
+	function loadActuDate(){
+		jours = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
+		mois = ["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"]
+		var tmp = new Date();
+		var tmp_year = tmp.getFullYear();
+		var tmp_month = tmp.getMonth();
+		var tmp_date = tmp.getDate();
+		var tmp_day = tmp.getDay();
+		var result = jours[tmp_day]+" "+tmp_date+" "+mois[tmp_month]+" "+tmp_year
+		$(".actu_date").text(result);
+	}//.getDate()
+
+function currentTime() {
+  let date = new Date(); 
+  let hh = date.getHours();
+  let mm = date.getMinutes();
+  let ss = date.getSeconds();
+  let session = "AM";
+loadActuDate()
+    
+  if(hh > 12){
+      session = "PM";
+   }
+
+   hh = (hh < 10) ? "0" + hh : hh;
+   mm = (mm < 10) ? "0" + mm : mm;
+   ss = (ss < 10) ? "0" + ss : ss;
+    
+   let time = hh + " H " + mm; //+ ":" + ss + " ";
+
+  document.getElementById("clock").innerText = time; 
+  let t = setTimeout(function(){ currentTime() }, 1000); 
+
+}
+
+currentTime();
+
+
+		$(".action").click(function(){
+			data_id = $(this).attr('data-id')+"actions";
+			$("#"+data_id).show('slow');
+		});
+		function loadTaches(nature='{% if nature != None %} {{nature}} {% else %} 0 {% endif %}',element){
+			//alert("ddd")
+			data_tache = element.getAttribute('data-tache');
+			tache_realisee = document.getElementById("tache_realisee");
+			tache_realisee.value = data_tache;
+			$.ajax({
+				url: '/get_elements/',
+				data: {
+					'nature':{% if nature != None %} {{nature}} {% else %} 0 {% endif %},
+					'value':data_tache,
+					'institution':{{actual_institution.id}}
+				},
+				dataType: 'json',
+				success: function (data) {
+					attendu = document.getElementsByClassName("attendu-modal");
+					attendu[0].textContent = data.entity;
+					attendu[1].innerHTML = "";
+					attendu[2].innerHTML = "";
+					for (var i=0;i<data.default_fields.length;i++){
+						attendu[1].innerHTML += "<div class='col-sm-12 mt-3'><div class='form-group'>"+data.default_fields[i];
+						if (data.default_fields_type[i] == 'text'){
+							attendu[1].innerHTML += "<textarea class='form-control' readonly rows='3'>"+data.default_fields_values[i]+"</textarea>";
+						}
+						else{
+							attendu[1].innerHTML += "<input class='form-control' readonly type='text' value='"+data.default_fields_values[i]+"''>";
+						}
+						attendu[1].innerHTML += "</div></div>";
+					}
+					for (var i=0;i<data.expected_fields.length;i++){
+						attendu[2].innerHTML += "<div class='col-sm-12 mt-3'><div class='form-group'>"+data.expected_fields[i];
+						if (data.expected_types_type[i] == 'text'){
+							attendu[2].innerHTML += "<textarea class='form-control expected_value' rows='3'>"+"</textarea>";
+						}
+						else{
+							attendu[2].innerHTML += "<input class='form-control expected_value' type='text' value=''>";
+						}
+						attendu[2].innerHTML += "</div></div>";
+					}
+				},
+				error: function(data){
+
+				}
+			});       
+		}
+
+		entityDIV = document.getElementsByClassName('entityDIV');
+		for (var i=0; i<entityDIV.length; i++){
+			json_ope = entityDIV[i].getElementsByClassName('json_ope');
+	//alert(json_ope.length);
+	if (json_ope.length < 1){
+		entityDIV[i].innerHTML += "<div class='pl-2 mt-3 text-secondary'> 0 {{type_entity}} à Réaliser </div>"
+	}
+}
+/*
+top_img = document.getElementsByClassName("top_img");
+
+{% if type_entity.is_pic_represented %}
+for(var i=0; i<top_img.length; i++){
+	top_img[i].setAttribute('src',top_img[i].getAttribute('data-img_name'))  
+}
+{% else %} 
+topimgs = ["{% static 'webpages/cool_imgs/img1.webp' %}","{% static 'webpages/cool_imgs/img4.jpg' %}","{% static 'webpages/cool_imgs/img3.webp' %}","{% static 'webpages/cool_imgs/img4.jpg' %}","{% static 'webpages/cool_imgs/img5.jpg' %}","{% static 'webpages/cool_imgs/img6.jpg' %}"];
+for(var i=0; i<top_img.length; i++){
+	top_img[i].setAttribute('src',topimgs[(i%6)])  
+}
+{% endif %}
+*/
+
+
+
+save_valid_rapport  = document.getElementById('save_valid_rapport');
+if (save_valid_rapport != null){
+	save_valid_rapport.onsubmit = function(){
+		expected_value = document.getElementsByClassName("expected_value");
+		resultat_realise = document.getElementById("resultat_realise");
+		for (var i=0; i<expected_value.length; i++){
+			resultat_realise.value += resultat_realise.value + "|"
+		}
+	}	
+}
+/*
+var opts2 = {
+		angle: 0.1,
+		lineWidth: 0.44,
+		radiusScale: 1,
+		pointer:{
+			length:0.6,
+			strokeWidth: 0.035,
+			color:"#000000",
+		},
+		limitMax: false,
+		limitMin: false,
+		colorStart: '#00e380',
+		colorStop:'#a214d2',
+		strokeColor: "#1234a2",
+		generateGradient: true,
+		highDpiSupport:true,
+		staticZones: [
+		{strokeStyle: "#ff0030",min:0, max:20},
+		{strokeStyle: "#d06910",min:20, max:40},
+		{strokeStyle: "orange",min:40, max:60},
+		{strokeStyle: "#a0a345",min:60, max:80},
+		{strokeStyle: "green",min:80, max:100}
+		],
+		staticLabels: {
+	font: "14px Ubuntu",  // Specifies font
+	labels: [0,20,40,65,80,100],  // Print labels at these values
+},
+}
+*/
+
+var targets2 = document.getElementsByClassName("barometer_indic");
+var targets3 = document.getElementsByClassName("barometer_budget")
+gauges2 = new Array();
+gauges3 = new Array();
+for (var i=0; i<targets2.length; i++){
+	var gauge2 = new Gauge(targets2[i]).setOptions(opts);
+	gauge2.maxValue = 100;
+	gauge2.setMinValue(0)
+	gauge2.animationSpeed = 12;
+	gauge2.set(0);
+	gauges2.push(gauge2)
+}
+for (var i=0; i<targets3.length; i++){
+	var gauge3 = new Gauge(targets3[i]).setOptions(opts);
+	gauge3.maxValue = 100;
+	gauge3.setMinValue(0)
+	gauge3.animationSpeed = 12;
+	gauge3.set(parseInt(0));
+	gauges3.push(gauge3)
+}
+showMainInte(null,0)
+</script>
+
+<script type="text/javascript">
+	arg_cumul1 = 0;
+	arg_cumul2 = 0;
+
+	$("#cumul1").change(function(){
+		arg_cumul1=0;
+		if (this.checked == true){
+			arg_cumul1 = 1;
+		}
+		actual_periode_last(period_select,arg_cumul1,arg_cumul2)
+	});
+	$("#cumul2").change(function(){
+		arg_cumul2=0;
+		if (this.checked == true){
+			arg_cumul2 = 1;
+		}
+		actual_periode_last(period_select,arg_cumul1,arg_cumul2)
+	});	
+
+	var xValues = ["x1","x2","x3"];
+	var barColors = ["green", "#14b593","blue","#759845","#2365a3","#875Sdf","purple","pink","yellow","#a45467","#a2b514"];
+	var yValues = [55, 49, 44];
+	myChartpro_block = document.getElementById("myChartpro_block");
+
+	{% if True %} // type_entity.is_tache == False
+	{% for entity in pages_o %}
+	myChartpro_block.innerHTML += "<div class='{% if lvl == -1 %} col-lg-12 {% else %} col-lg-12 {% endif %}canver' style='min-height:320px;'><canvas id='myChartpro{{forloop.counter}}' style='width:100%;'></canvas> </div>";
+	{% endfor %}
+
+	{% for entity in pages_o %}
+	tasks_names = [{% for v in entity.values %}"{{v}}",{% endfor %}""];
+	xValues =[{% for v in entity.values %}
+	"{{forloop.counter}}",
+	{% endfor %}""];
+	yValues = [{% for v in entity.values %}{{v.progression}},{% endfor %}0];
+		//alert(xValues)
+		new Chart("myChartpro{{forloop.counter}}", {
+			type: {% if lvl != -1 %}"bar",{% else %}"bar",{% endif %} //horizontalBar
+			data: {
+				labels: [""],
+				datasets: [{% for v in entity.values %} {
+					label: '{{v.get_name}}'.replace('&#x27;',"'"),
+					fill:'origin',
+					backgroundColor: barColors[({{forloop.counter}}-1)],
+					data: [ yValues[({{forloop.counter}}-1)] ]
+				},{% endfor %}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					datalabels: {
+						color: 'black',
+						anchor: "end",
+						align: "right",
+						offset: 20,
+						display: function (context) {
+							return context.dataset.data[context.dataIndex];
+						},
+						font: function(context) {
+							var width = 100;
+							var size = Math.round(width / 32);
+
+							return {
+								weight: 'bold',
+								size: size
+							};
+						},
+						formatter: Math.round
+					},
+					legend: {
+						display: true,
+						labels: {
+							color: 'rgb(255, 99, 132)'
+						}
+					}
+				},
+				indexAxis: 'y',
+				title: {
+					display: true,
+					text: "{{entity.entity.get_name}}".replace('&#x27;',"'")
+				},
+				tooltips: {
+					 /*callbacks: {
+							title: function(t, d) {
+								 return tasks_names[t[0].index];
+							}
+						}*/
+					},
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true,
+								suggestedMax: 100
+							}
+						}],
+						xAxes: [{
+							ticks: {
+								beginAtZero: true,
+								suggestedMax: 100
+							},
+							callback: function(t) {
+								var maxLabelLength = 3;
+								if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+								else return t;
+							}
+						}],
+						x: {
+							beginAtZero: true
+						}
+					}
+				}
+			});
+		{% endfor %}
+		{% endif %}
+	//myChartpro_block.innerHTML += "<div class='card col-lg-3'> SSSD</div>"
+	 //alert(myChartpro_block.innerHTML)
+	 canver = document.getElementsByClassName("canver");
+	 if (canver.length == 0){
+	 	myChartpro_block.innerHTML += "<div class='h4 text-info'> Désolé, pour l'Instant il y'a 0 {{type_entity}} <a href='/gestionnaire/{{nature}}/' class='btn btn-info'> Nouveau </a></div>"
+	 }
+
+	 var xValues = ["Validés","En Attente","Rejetés"];
+	 var barColors1 = ["green","orange","red"];
+	 var yValues = [10, 4, 5];
+	/*new Chart("myChart3", {
+		type: "pie",
+		data: {
+			labels: xValues,
+			datasets: [{
+				backgroundColor: barColors1,
+				data: yValues
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: "Gestion des Rapports "
+			}
+		}
+	});
+	*/
+
+
+/*
+if (nb_taches == 0){
+	rapport_block = document.getElementById("rapport_block");
+	rapport_block.setAttribute('style','display:none;');
+}
+*/
+data_period={{actual_institution.default_period.m_logic_type}};
+year_plan = document.getElementById("year_plan");
+year_plan.value = new Date().getFullYear();
+
+	/*
+	year_plan2 = document.getElementById("year_plan2");
+	year_plan2.value = new Date().getFullYear();
+	*/
+
+	function launch_dataPeriod(week_fix="week_plus"){
+		actual_year = parseInt(year_plan.value);
+		week_detail = document.getElementsByClassName('week_detail');
+		if (data_period == 2){
+			the_weeks = new Array()
+			first_day = new Date(actual_year,0,1);
+			tmp_shit = first_day.getUTCDay();
+			if ( tmp_shit != 0){
+				first_day  = new Date((actual_year-1),11,(32-tmp_shit));
+				last_day = new Date((actual_year-1),11,6+first_day.getDate());
+			}
+			else{
+				last_day = new Date((actual_year),0,7);
+			}
+			tmp_i = 0;
+			for (var k=0;k<53;k++){
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks.push("Semaine du "+tmp_first+" au "+tmp_last)
+				actual_month = last_day.getMonth()
+				first_day = new Date(actual_year,actual_month,1+last_day.getDate());
+				actual_month = first_day.getMonth()
+				last_day = new Date(actual_year,actual_month,6+first_day.getDate());
+				tmp_i += 7;
+			}
+			tmp = "";
+
+			week_card = document.getElementsByClassName("week_card");
+			for (var k=0;k<week_card.length;k++){
+				//alert(the_weeks[k])	
+				week_card[k].textContent = the_weeks[k];
+			}
+			week_plus = document.getElementsByClassName(week_fix);
+			for (var k=0;k<week_plus.length;k++){
+				//alert(the_weeks[k])	
+				week_plus[k].textContent = the_weeks[k];
+			}
+		}
+		else if (data_period == 3){
+
+			for (var k=0;k<12;k++){
+				first_day = new Date(actual_year,k,0);
+				first_day = new Date(actual_year,k,1);
+				last_day = new Date(actual_year,(k+1),0);
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+			}
+			for (var k=0;k<week_detail.length;k++){
+				week_detail[k].innerHTML = the_weeks[k%12]
+			}
+			week_card = document.getElementsByClassName("week_card");
+			for (var k=0;k<week_card.length;k++){
+				//alert(the_weeks[k])	
+				week_card[k].textContent = the_weeks[k];
+			}
+			week_plus = document.getElementsByClassName(week_fix);
+			for (var k=0;k<week_plus.length;k++){
+				//alert(the_weeks[k])	
+				week_plus[k].textContent = the_weeks[k];
+			}
+
+		}
+		else if (data_period == 6){
+			for (var k=0;k<2;k++){
+				first_day = new Date(actual_year,k*6,1);
+				last_day = new Date(actual_year,6*(k+1),0);
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+			}
+			for (var k=0;k<week_detail.length;k++){
+				week_detail[k].innerHTML = the_weeks[k%4]
+			}
+		}
+		else if (data_period == 9){
+			for (var k=0;k<4;k++){
+				first_day = new Date(actual_year,k*3,1);
+				last_day = new Date(actual_year,3*(k+1),0);
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+			}
+			for (var k=0;k<week_detail.length;k++){
+
+				week_detail[k].innerHTML = the_weeks[k%4]
+			}
+		}
+	}
+	
+	launch_dataPeriod();
+	launch_dataPeriod("week_detail2");
+	launch_dataPeriod('week_plus3')
+	last_semaine = document.getElementById("last_semaine")
+	year_plan.onchange = function(){
+		launch_dataPeriod();
+		actual_periode_last(document.getElementById("period_select"));
+		
+		launch_dataPeriod("week_detail2"); 
+	}
+
+	period_select = document.getElementById("period_select");
+	last_semaine.textContent = period_select.getElementsByTagName("option")[(period_select.value)].textContent;
+
+	function actual_periode_last(div="#",cumul1=arg_cumul1,cumul2=arg_cumul2){//cumul 1 for the cumulation, cumul 2 for the actual periods
+		year = year_plan.value;
+		if (div == "#"){
+			d_value = this.value;
+		}
+		else{
+			d_value = div.value;			
+		}
+		if (d_value != 0 ){
+			tmp = new Date(year,0,1);
+			f_t =  - tmp.getUTCDay();
+			f_day = tmp.getUTCDay();
+			if (data_period == 2){
+				tmp2_1 = ""+new Date(year,0,tmp.getDate()-f_day+ (7*(d_value-1)) );
+				tmp2_2 = ""+new Date(year,0,tmp.getDate()-f_day+6+ (7*(d_value-1)) );
+				tmp_word = "Semaine du "
+			}
+			else if(data_period == 3){
+				tmp_year = d_value
+				tmp2_1 = ""+new Date(year,(d_value-1),1);
+				tmp2_2 = ""+new Date(year,(d_value),0);
+				tmp_word = "Du "
+			}
+			else if(data_period == 6){
+
+			}
+
+			m1 = tmp2_1.split(" ");
+			m2 = tmp2_2.split(" ");
+			msg = tmp_word+m1[2] +" "+m1[1] +" "+m1[3]+" au "+m2[2]+" "+ m2[1]+" " + m2[3]
+			last_semaine.textContent = msg;
+			$.ajax({
+				url: '/ajax_progress/',
+				data:{
+					'periode':{{actual_institution.default_period.id}},
+					'plannify': msg,
+					'institution':{{actual_institution.id}},
+					'year': year,
+					'cumul1':cumul1,
+					'cumul2':cumul2 
+				},
+				dataType: 'json',
+				success: function(data){
+					var targets = document.getElementsByClassName("barometer");
+					for (var i=0; i<targets.length; i++){
+						gauges[i].set(parseInt(data.progression));
+					}
+					$(".progr_btn").text(data.progression+" %")
+				}
+			});	
+		}
+		else{
+			var targets = document.getElementsByClassName("barometer");
+			for (var i=0; i<targets.length; i++){
+				gauges[i].set(parseInt({{actual_progression}}));
+			}
+			$(".progr_btn").text("Toutes les Periodes")	
+		}
+	}
+
+	$.ajax({
+		url: '/count_indic/',
+		data:{
+			'institution':{{actual_institution.id}},
+			'actual_year':new Date().getFullYear()
+		},
+		dataType: 'json',
+		success: function(data){
+			ind_faibles = 0;
+			ind_forts = 0;
+			for (var i=0;i<data.cibles.length;i++){
+				console.log(data.cibles[i] + " - val "+data.indicateurs_values[i] )
+				if (data.indicateurs_values[i]<data.cibles[i]){
+					ind_faibles += 1;
+				}
+				else{
+					ind_forts +=1
+				}	
+			}
+			new Chart("indi_chart", {
+				type:"pie",
+				data: {
+					labels: ["Indicateurs non acheves", "Indicateurs dont la cible a ete atteinte"],
+					datasets: [{
+						label: 'Atteinte des Objectifs',
+						data: [ind_faibles,ind_forts],
+						backgroundColor:["red","green"]
+					}]
+				},
+				options: {
+					plugins: {
+						legend: {
+							display: false
+						}
+					}
+				}
+			})
+			if (data.nb_renseignes == 0){
+				$(".indi_renseignes").text(0)
+				$(".indi_faibles").text(0) 
+				$(".indi_forts").text(0)
+			}
+			else{
+				if (data.all > 0){
+				$(".indi_renseignes").text((data.nb_renseignes/data.all)*100)
+				}
+				if (data.nb_renseignes > 0){
+					$(".indi_faibles").text((ind_faibles/data.nb_renseignes)*100) 
+					gauge2.set(parseInt((ind_forts/data.nb_renseignes)*100));
+					$(".indi_forts").text((ind_forts/data.nb_renseignes)*100)
+				}
+				else{
+				$(".indi_faibles").text(0) 
+				gauge2.set(0);
+				$(".indi_forts").text(0)					
+				}		
+			}
+		}
+	});
+	$.ajax({
+		url: '/count_indic/',
+		data:{
+			'institution':{{actual_institution.id}},
+			'actual_year':new Date().getFullYear(),
+			{% if actual_institution.top_entity != None %}
+			'entity_type':{{actual_institution.top_entity.id}},
+			'entity_id':0,
+			'type_indic':'T'
+			{% endif %}
+		},
+		dataType: 'json',
+		success: function(data){
+			barColors = ["green","red"]
+			x_labels = ["indicateurs - cibles atteintes","indicateurs - non acheves"]
+			x_axes = new Array()
+			data_tmps = [data.list_ens_good,data.list_ens_bad]
+			//alert(data_tmps)
+			for (var x=0; x<2; x++){
+				the_tmp = new Array()
+				for (var y=0; y<data.entities.length; y++){
+					the_tmp.push(parseInt(data_tmps[x][y])) 
+				}
+				x_axes[x]={
+					label: x_labels[x],
+					backgroundColor: barColors[x],
+					data: the_tmp
+				}
+			}
+			new Chart("indi_chart2", {
+				type: "bar",
+				data: {
+					 // labels:data.entities, //["Damn","Desdsd","DWWWWW"], //Sous-entité
+					 labels:data.entities,
+					 datasets: x_axes
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						barValueSpacing : 20,
+						plugins: {
+							legend: {
+								display: true,
+								labels: {
+									color: 'rgb(255, 99, 132)'
+								}
+							}
+						},
+						indexAxis: 'y',
+						scales: {
+							yAxes: [{
+								ticks: {
+									beginAtZero: true
+								}
+							}],
+							xAxes: [{
+								ticks: {
+									beginAtZero: true,
+									display: false
+								},
+								callback: function(t) {
+									var maxLabelLength = 3;
+									if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+									else return t;
+								}
+							}],
+							x: {
+								beginAtZero: true
+							}
+						},
+						tooltips: {
+						 /*callbacks: {
+							title: function(t, d) {
+							   return tasks_names[t[0].index];
+							}
+						}*/
+					}
+				},				
+			});
+		}
+	});
+
+	period_select.onchange = function(){
+		$(".progr_btn").text("Calcul de la Progression en cours...")
+		{% if actual_institution.default_period.default_period.m_logic_type == 3 %}
+		actual_periode_last(this);
+		{% endif %}
+	}
+	{% if actual_institution.default_period.default_period.m_logic_type == 3 %}
+	actual_periode_last(period_select);
+	{% endif %}
+
+	//period_select.change()
+	new Chart("budget_chart", {
+		type:"horizontalBar",
+		data: {
+			labels: ["Budget Alloue", "Budget Execute"],
+			datasets: [{
+				label: 'Gestion Bugetaire',
+				data: [parseInt({{finances}}), parseInt({{depenses_eff}})],
+				backgroundColor:["blue","orange"],
+				borderColor: 'pink'
+			}]
+		},
+		options: {
+			plugins: {
+				legend: {
+					display: false
+				}
+			}
+		}
+	});
+
+	$.ajax({
+		url: '/count_indic/',
+		data:{
+			'institution':{{actual_institution.id}},
+			'actual_year':new Date().getFullYear(),
+			{% if actual_institution.top_entity != None %}
+			'entity_type':{{actual_institution.top_entity.id}},
+			'entity_id':0,
+			'type_indic':'F'
+			{% endif %}
+		},
+		dataType: 'json',
+		success: function(data){
+			{% if finances != None %}
+			finan = {{finances}}
+			depens = {{depenses_eff}}
+			acthjjh = 100*depens/finan
+			gauge3.set(acthjjh)
+			$("#budget_consum_val").text(acthjjh+" %")
+			{% else %}
+			$("#budget_consum_val").text("0 %")
+			{% endif %}
+			if (data.list_montant2 > 0){
+				tmp = ((data.list_montant1/data.list_montant2)*100)
+				alert(tmp)
+				
+			}
+			x_axes = new Array()
+			x_labels = ["Budget Alloue", "Budget Execute"]
+			barColors = ["blue","orange"]
+			data_tmps = [data.list_montant1,data.list_montant2]
+			for (var x=0; x<2; x++){
+				the_tmp = new Array()
+				for (var y=0; y<data.entities.length; y++){
+					the_tmp.push(parseInt(data_tmps[x][y])) 
+				}
+				x_axes[x]={
+					label: x_labels[x],
+					backgroundColor: barColors[x],
+					data: the_tmp
+				}
+			}
+			new Chart("budget_chart2", {
+				type:"bar",
+				data: {
+					labels:data.entities, 
+					datasets: x_axes
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					barValueSpacing : 20,
+					plugins: {
+						legend: {
+							labels: {
+								color: 'rgb(255, 99, 132)'
+							}
+						}
+					},
+					indexAxis: 'y',
+					scales: {
+						yAxes: [{
+							ticks: {
+								beginAtZero: true
+							}
+						}],
+						xAxes: [{
+							ticks: {
+								beginAtZero: true,
+								display: false
+							},
+							callback: function(t) {
+								var maxLabelLength = 3;
+								if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+								else return t;
+							}
+						}],
+						x: {
+							beginAtZero: true
+						}
+					},
+					tooltips: {
+						 /*callbacks: {
+							title: function(t, d) {
+							   return tasks_names[t[0].index];
+							}
+						}*/
+					}
+				},				
+			})
+		}
+	})
+	function chartie_6(periodes,mods=0,mod_ops="#"){
+
+		var barColors2 = ["green", "#14b593","blue","#759845","#2365a3","#875Sdf","purple","pink","yellow","#a45467","#a2b514","orange","magenta"];
+		nb_barColors2 = barColors2.length;
+		//Labels
+		mods_labels = [[{% for periode in default_period.decoup_slip %}"T{{forloop.counter}}",{% endfor %}""],[{% for periode in default_period.decoup_slip %}"T{{forloop.counter}} - S1","T{{forloop.counter}} - S2","T{{forloop.counter}} - S3","T{{forloop.counter}} - S4","T{{forloop.counter}} - S5",{% endfor %}""]]
+		mods_labels_1 =  [{% for v in elements %} {
+			label: '{{v.entity}}'.replace('&#x27;',"'"),
+			fill:'origin',
+			backgroundColor: barColors2[({{forloop.counter}}-1) % nb_barColors2],
+			data: periodes[({{forloop.counter}} - 1)]
+		},{% endfor %}]
+		if (mods == 10){
+			mods_labels_1 = new Array()
+			for (var j=0; j<mod_ops.lenght;j++){
+				tmp = {
+					label:mod_ops[j],
+					fill:'origin',
+					backgroundColor: barColors2[j % nb_barColors2],
+					data: periodes[j]
+				}
+				mods_labels_1.push(tmp)
+			}
+		}
+
+		if (mods==0){
+			thc_t = "myChart6";
+			$("#myChart62").hide("slow",function(){
+				$("#myChart6").show("slow")
+			});
+		}
+		else{
+			thc_t = "myChart62";
+			$("#myChart6").hide("slow",function(){
+				$("#myChart62").show("slow")
+			});			
+		}
+
+		new Chart(thc_t, {
+			type: "line",
+			data: {
+				labels: mods_labels[mods],
+				datasets: mods_labels_1
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: true,
+						labels: {
+							color: 'rgb(255, 99, 132)'
+						}
+					}
+				},
+				indexAxis: 'y',
+				title: {
+					display: true,
+					text: "Progression par Période ( en % )".replace('&#x27;',"'")
+				},
+				tooltips: {
+				 /*callbacks: {
+						title: function(t, d) {
+							 return tasks_names[t[0].index];
+						}
+					}*/
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true,
+							suggestedMax: 100
+						}
+					}],
+					xAxes: [{
+						ticks: {
+							beginAtZero: true,
+							suggestedMax: 100
+						},
+						callback: function(t) {
+							var maxLabelLength = 3;
+							if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+							else return t;
+						}
+					}],
+					x: {
+						beginAtZero: true
+					}
+				}
+			}
+		});
+
+	}
+
+
+	function loadCH6(mods="0"){
+		options_select = period_select.getElementsByTagName("option");
+		//alert(options_select)
+		datas = "";
+		for (var i=0;i<options_select.length;i++){
+			d_value = options_select[i].value;
+			if (d_value != 0){
+				tmp = new Date(year,0,1);
+				f_t =  - tmp.getUTCDay();
+				f_day = tmp.getUTCDay();
+				tmp2_1 = ""+new Date(year,0,tmp.getDate()-f_day+ (7*(d_value-1)) );
+				tmp2_2 = ""+new Date(year,0,tmp.getDate()-f_day+6+ (7*(d_value-1)) );
+				m1 = tmp2_1.split(" ");
+				m2 = tmp2_2.split(" ");
+				msg = "Semaine du "+m1[2] +" "+m1[1] +" "+m1[3]+" au "+m2[2]+" "+ m2[1]+" " + m2[3];
+				datas += msg+"#"
+			}
+		}
+		$("#myChart6").html("")
+		$("#myChart62").html("")
+		$.ajax({
+			url: '/ajax_progress/',
+			data:{
+				'periode':{{actual_institution.default_period.id}},
+				'plannify': "#",
+				'plannify_all':datas,
+				'institution':{{actual_institution.id}},
+				'year': year,
+				"mods":mods
+			},
+			dataType: 'json',
+			success: function(data){
+				prds = new Array();
+				for (var i=0; i<data.progressions.length; i++){
+					prds.push(data.progressions[i].split("#"))
+				}
+				console.log(prds)
+				chartie_6(prds,parseInt(mods))
+			},
+			error: function(data){
+				console.log("Problem")
+			}
+
+		});	
+
+	}
+	loadCH6();
+	$(".default_prPre").change(function(){
+		loadCH6(""+this.value)
+		//alert(this.value)
+	});
+</script>
+
+{% block script_rapport %}
+
+{% endblock %}
+
+{% endblock %}

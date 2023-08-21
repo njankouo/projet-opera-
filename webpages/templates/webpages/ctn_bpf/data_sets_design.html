@@ -1,0 +1,80 @@
+{% extends './data_sets.html' %}
+
+{% block style %}
+<style type="text/css">
+	.myeditablediv{
+		height:400px;
+		border: none;
+	}
+</style>
+{% endblock %}
+
+{% block search_filters %}
+
+<div id="sdsd" class="d-none">
+	{{dataset.m_formulaire}}
+</div>
+<h3> Formulaire de Donnee
+   : <span class="h3 text-success"> Design du Formulaire {% if dataset != None %} {{dataset}} {% else %}  {% endif %} </span> </h3>
+
+<div class="mb-3 text-success">	
+	{% if dataset != None %}
+	<a href="/data_sets/{{dataset.id}}/"><small class="badge"> Etape 1/2 : Creation des Elements du Formulaire</small></a>
+	{% endif %}
+<small class="badge badge-success">	 Etape 2/2 : Edition du Formulaire</small>
+</div>
+<div id="editableDIV" class="d-none">
+	<div class="myeditablediv p-2" style="border:1px solid #aaa;" id="myeditablediv"></div>
+</div>
+{% endblock %}
+
+{% block table %}
+<form method="POST" action="/save_gestion/" onsubmit="getTinyContent()">
+{% csrf_token %}
+<input type="hidden" name="form_design" id="form_design">
+<input type="hidden" name="generator" value="d_s_1">
+<input type="hidden" name="edit_or_create" value="e">
+<input type="hidden" id="edit_id" name="edit_id" value="{{dataset.id}}">
+
+	<div>
+	</div>
+	<div class="col-lg-12 d-flex justify-content-between">
+		<div class="col-lg-12 d-flex flex-wrap">
+			<div style="padding:0px;" class="col-lg-12">
+				<div> Zone d'Edition</div>
+				<input type="hidden" id="ephoxVariables_input" name="ephoxVariables_input" value="#">
+				<div class="card col-12">	
+					<div style='width:100%;height:100vh;max-height:500px;border:none;overflow:auto;'name="text" id="textPlan">
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-5 d-none flex-wrap">
+			<div style="padding:0px;" class="col-lg-12">
+				<div> Apercu du Resultat</div>
+				<div class="card col-12">	
+					<div style='width:100%;height:100vh;max-height:500px;border:none;overflow:auto;' name="text" class="v" id="textPlan_result">
+						{{dataset.m_formulaire}}
+					</div>
+				</div>
+			</div>
+		</div>		
+	</div>
+	<div class="mt-2">
+		<input type="submit" class="btn btn-success" value="Valider la Creation" name="">
+	</div>
+</form>
+{% endblock %}
+
+
+{% block add_script %}
+<script type="text/javascript">
+	insertText(document.getElementById("textPlan"),true)
+	function getTinyContent(){
+		form_design = document.getElementById("form_design");
+		myeditablediv = document.getElementsByClassName("myeditablediv")[1];
+		form_design.value = myeditablediv.innerHTML;
+	}
+</script>
+{% endblock %}

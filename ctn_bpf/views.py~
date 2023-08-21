@@ -1,0 +1,974 @@
+from django.http import FileResponse, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render,redirect,get_object_or_404
+from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, login, logout
+from .models import *
+from django.core.mail import send_mail
+from django.conf import settings
+import os
+
+def admin_institution(request):
+	template = "webpages/ctn_bpf/institution_admin.html"
+	context = {
+
+	}
+	return render(request,template,context)
+
+def edit_institution(request,institution_id):
+	template = "webpages/ctn_bpf/institution_admin.html"
+	context = {
+		'edit':1,
+		'institution':Institution.objects.get(id=int(institution_id))
+	}
+	return render(request,template,context)	
+
+def save_institution(request):
+	code = request.POST["code"]
+	nom = request.POST["nom"]
+	image = request.FILES["file"]
+	app_code = request.POST['app_code']
+	owner = Owner.objects.filter(m_code=app_code).first()
+
+	if owner != None:
+		institution = Institution(sigle=code,nom=nom,img=image)
+		institution.owner = owner
+		institution.save()
+		owner.m_user.personnel.actual_institution = institution
+		owner.m_user.personnel.save()
+		#owner.save()
+		if request.user.is_authenticated == False:
+			r_password = 'user1234'
+			r_username = owner.m_user.username
+			user = owner.m_user
+			login(request,user)
+	return redirect("/")
+
+def set_default_period(request,period=0,sub_period="#"):
+	#r_institution = request.COOKIES['institution']
+	r_institution = request.user.personnel.actual_institution
+	if int(period) != 0:
+		r_periode = Periode.objects.get(id=int(period))
+		r_institution.default_period = r_periode
+		r_institution.default_subperiod = r_periode.sub_periods().last()
+	if sub_period != "#":
+		r_sub_period = SubPeriode.objects.get(id=int(sub_period))
+		r_institution.default_subperiod = r_sub_period
+	r_institution.save()
+	return redirect('/configurations/')
+
+def authorized_institutions(request):
+	if request.user.is_staff:
+		institutions = Institution.objects.filter()
+	else :
+		institutions = [request.user.personnel.get_institution]
+	return institutions
+
+def define_session(request,arg_institution="#",arg_periode="#",arg_subperiode="#"):
+	if arg_institution != "#":
+		institution = Institution.objects.get(id=int(arg_institution))
+		response.set_cookie('institution',institution)
+	if arg_periode != "#":
+		periode = Periode.objects.get(id=int(arg_periode))
+		response.set_cookie("periode",periode)
+	if arg_subperiode != "#":
+		periode = SubPeriode.objects.get(id=int(arg_periode))
+		response.set_cookie("subperiode",subperiode)
+
+def basis(request):
+	permissions = list()
+	actual_institution = None
+	animate = None
+	animate2 = None
+	context = dict()
+	try:
+		if request.session['logged'] == 1:
+			request.session['logged'] = 0
+			animate = 0
+	except:
+		pass
+	try:
+		if request.session['new_rapport'] == 1:
+			request.session['new_rapport'] = 0
+			animate2 = 0
+	except:
+		pass
+	if request.user.is_authenticated:
+		actual_institution = request.user.personnel.actual_institution
+
+		programmes = list() #request.user.personnel.get_programmes()
+		nb_programmes = len(programmes)
+
+		prenom = request.user.personnel.prenom
+		nom =request.user.personnel.nom
+		role = request.user.personnel.get_function()
+		picture = request.user.personnel.photo
+		if request.user.personnel.get_function() == None:
+			permissions = 10
+		else:
+			permissions = request.user.personnel.get_function().m_role.permissions
+			print(permissions)
+		context = {
+			'actual_institution':actual_institution,
+			'animate':animate,
+			'animate2':animate2,
+			'prenom':prenom,
+			'role':role,
+			'nom':nom,
+			'picture':picture,
+			'permissions':permissions,
+			'programmes':programmes,
+			'nb_programmes':nb_programmes
+		}
+	else:
+		actual_institution = None
+	return context
+
+def index(request,nature=-1):
+	template = "webpages/ctn_bpf/operations_home.html"
+	if request.user.is_authenticated :
+		context = basis(request)
+		if context['permissions'] > 4:
+			#lines = Tache.objects.filter(activite__action__programme__institution=context['actual_institution'])
+			lines = Tache.objects.filter()
+		else:
+			ops = Operation.objects.filter(personnel__id=request.user.personnel.id)
+			lines = set()
+			for o in ops:
+				lines.add(o.tache)
+		context['lines'] = lines
+		context['menu'] = 'i'
+		elements = list()
+		tops = context['actual_institution'].top_entity().lines()
+		if nature == -1:
+			nature = InsitutionEntities.objects.filter(m_institution=context['actual_institution']).last().m_hierachie
+		for t in tops:
+			elements.append({'entity':t,'values':t.levels(nature,context['actual_institution'])})
+		context['nature'] = nature
+		context['elements'] = elements
+		context['type_entity'] = InsitutionEntities.objects.filter(m_hierachie=nature,m_institution=context['actual_institution']).first().m_entity_type
+		context['top_entity'] = context['actual_institution'].top_entity()
+	else:
+		context = dict()
+	return render(request,template,context)
+
+def bad_auth(request):
+	template = "webpages/ctn_bpf/index.html"
+	context = {
+		'error':"Erreur au niveau de l'Adresse/Mot de Passe"
+	}
+	return render(request,template,context)
+
+def main(request):
+	template = "webpages/ctn_bpf/main.html"
+	context = {
+	
+	}
+	return render(request,template,context)
+
+def gestionnaire(request,gest_val,gest_id=0):
+	tmp_gest_val = gest_val
+	context = basis(request)
+	entity = InsitutionEntities.objects.filter(m_hierachie=gest_val,m_institution=context['actual_institution']).first().m_entity_type
+	is_tache = False
+	if gest_id != 0:
+		#gest_val = str(int(gest_val) + 1)
+		#entity = InsitutionEntities.objects.filter(m_hierachie=gest_val,m_institution=context['actual_institution']).first().m_entity_type
+		sup_entity = Entity.objects.filter(id=gest_id,m_type_entity=entity).first()
+		lines = sup_entity.sub_entities()
+		tmp_gest_val = str(int(gest_val)+1)
+		sub_type = InsitutionEntities.objects.filter(m_hierachie=tmp_gest_val,m_institution=context['actual_institution']).first().m_entity_type
+		fields = sub_type.fields()
+		print('lalala' + str(fields) )
+		is_tache = sub_type.is_tache
+		context['sub_entity'] = sub_type
+		context['base_val'] = sup_entity
+		context['objects_field'] = sub_type.objects_field()
+	else:
+		lines = entity.lines()
+		is_tache = entity.is_tache
+		fields = entity.fields()
+		context['objects_field'] = entity.objects_field()
+	if is_tache:
+		template = "webpages/ctn_bpf/taches.html"
+		context['structures'] = Structure.objects.filter(institution=context['actual_institution'])
+	else:
+		template = "webpages/ctn_bpf/entities.html"
+	#searches = sub_entities
+	#lines = entity_type.entities
+	#entity
+	#entities
+	#g_v : p='p'
+	#g_vs : p='a'
+	#context['personnel'] = Personnel.objects.filter(actual_institution=context['actual_institution'])
+	context['is_tache'] = is_tache
+	context['hierachy'] = tmp_gest_val
+	context['entity'] = entity
+	context['fields'] = fields	
+	context['lines'] = lines
+	context['searches'] = InsitutionEntities.objects.filter(m_hierachie=(int(tmp_gest_val)-1))
+
+	context['menu'] = 'g'
+	return render(request,template,context)
+
+def ges_taches(request,tache_id):
+	template = "webpages/ctn_bpf/operations.html"
+	base_val = Tache.objects.get(id=tache_id)
+	lines = Operation.objects.filter(tache=base_val)
+	context = basis(request)
+	context['base_val'] = base_val
+	context['sub_entity'] = "Opération"#base_val.m_type_entity
+	context['personnels'] = Personnel.objects.filter(actual_institution=context['actual_institution'])
+	context['roles'] = Role.objects.filter(actual_institution=context['actual_institution'])
+	context['lines'] = lines
+	return render(request,template,context)
+
+def structures(request):
+	template = "webpages/ctn_bpf/structure.html"
+	context = basis(request)
+	context['entity'] = 'Structure'
+	context['lines'] = Structure.objects.filter(institution=context['actual_institution'])
+	context['fields'] = ['Nom','Désignation','Responsable','Institution']
+	context['menu'] = 'g'
+	return render(request,template,context)
+
+def personnels(request):
+	template = "webpages/ctn_bpf/roles.html"
+	context = basis(request)
+	context['entity'] = 'Personnel'
+	context['fields'] = ['','Nom','Prenom','Adresse Mail','Fonction','Structure']
+	context['lines'] = Personnel.objects.filter(actual_institution=context['actual_institution'])
+	context['menu'] = 'g'
+	context['g_vs'] = 'p2'
+	context['searches'] = [{'label':'Structure','values':Structure.objects.filter(institution=context['actual_institution'])}]
+	context['searches'].append({'label':'Fonction','values':Role.objects.filter(actual_institution=context['actual_institution'])})
+	return render(request,template,context)
+
+"""
+def roles(request):
+	template = "webpages/ctn_bpf/personnel_roles.html"
+	context = basis(request)
+	context['lines'] = Role.objects.filter(institution=context['actual_institution'])
+	context['menu'] = 'g'
+	return render(request,template,context)
+"""
+
+def gestionnaire_id(request,gest_val,gest_id):
+	context = basis(request)
+	template = {
+		"p":"webpages/ctn_bpf/actions.html",
+		"a":"webpages/ctn_bpf/activites.html",
+		"a1":"webpages/ctn_bpf/taches.html",
+		"t":"webpages/ctn_bpf/operations.html",
+		"i":"webpages/ctn_bpf/institution.html"
+	}
+	if gest_val == "p":
+		base_val = {
+			"p":Programme.objects.get(id=gest_id)
+		}
+		lines = {
+			'p':Action.objects.filter(programme=base_val[gest_val].id)
+		}
+		desc = {
+			'p':[{'label':'Date de Création','value':base_val[gest_val].date_creation},{'label':'Derniere Modification','value':base_val[gest_val].date_modif},{'label':'impact','value':base_val[gest_val].impact},{'label':'objectifs','value':base_val[gest_val].objectifs}],
+		}
+	elif gest_val == "a":
+		base_val = {
+			"a":Action.objects.get(id=gest_id)
+		}
+		lines = {
+			'a':Activite.objects.filter(action=base_val[gest_val].id)
+		}
+		desc = {
+			'a':[],
+		}
+	elif gest_val == "a1":
+		base_val = {
+			"a1":Activite.objects.get(id=gest_id)
+		}
+		lines = {
+			'a1':Tache.objects.filter(activite=base_val[gest_val].id)
+		}
+		desc = {
+			'a1':[],
+		}
+
+	elif gest_val == "t":
+		base_val = {
+			"t":Tache.objects.get(id=gest_id)
+		}
+		lines = {
+			't':Operation.objects.filter(tache=base_val[gest_val].id)
+		}
+		desc = {
+			't':[],
+		}
+	entity = {
+		'p':'Programme',
+		'a':'Action',
+		'a1':'Activite',	
+		't':'Tache'
+	}
+	entities = {
+		'p':'Programmes',
+		'a':'Actions',
+		'a1':'Activites',
+		't':'Taches'
+	}
+	sub_entity = {
+		'p':'Action',
+		'a':'Activite',
+		'a1':'Tache',
+		't':'Opération'
+	}
+	sub_entities = {
+		'p':'Actions',
+		'a':'Activites',
+		'a1':'Taches',
+		't':'Opérations'
+	}
+	sup_entities = {
+		'p':'',
+		'a':'Programmes',
+		'a1':'Actions',
+		't':'Activite'
+	}
+	fields = {
+		'p':['Code','Nom','Objectifs','Indicateur','Programme'],
+		'a':['Code','Nom','Objectifs','Cumul Extrants','Cumul Indicateurs','Action'],
+		'a1':['Code','Nom','Budget','Ind processus','Valeur attendue','Résultat attendue','Activite'],
+		't':['Code',"Nom","Personnel","Montant","Valeur attendue"]
+	}
+	g_vs ={
+		'p':'a',
+		'a':'a1',
+		'a1':'t',
+		't':'o'
+	}
+
+	context['detail_g_v']=True
+	context['subperiode_actual']=request.user.personnel.actual_institution.default_subperiod
+	context['g_v']=gest_val
+	context['g_vs']=g_vs[gest_val]
+	context['lines']=lines[gest_val]
+	context['fields']=fields[gest_val]
+	context['desc']=desc[gest_val]
+	context['sub_entity']=sub_entity[gest_val]
+	context['sub_entities']=sub_entities[gest_val]
+	context['searches']=[{'label':entity[gest_val],'values':[base_val[gest_val]]}]
+	if gest_val == "a1":
+		context['searches']=[{'label':entity[gest_val],'values':[base_val[gest_val]]},{'label':'Structure','values':Structure.objects.filter()}]
+	context['base_val'] =  base_val[gest_val]
+	context['entity'] = entity[gest_val]
+	context['entities'] = entities[gest_val]
+	context['personnels'] = Personnel.objects.filter(actual_institution=context['actual_institution'])
+	context['roles'] = Role.objects.filter(actual_institution=context['actual_institution'])
+	return render(request,template[gest_val],context)
+
+def log(request,out=False):
+	if out == False:
+		result = False
+		response = "/bad_auth/"
+		r_email = request.POST['email']
+		r_password = request.POST['password']
+		r_username = User.objects.filter(email=r_email).first()
+		if r_username != None:
+			r_username = r_username.username
+			user = authenticate(username=r_username,password=r_password)
+			if user:
+				login(request,user)
+				result = True
+				response = "/"
+			request.session['logged'] = 1
+	else:
+		logout(request)
+		response = "/"
+	return redirect(response)
+
+def save_entity(request):
+	institution =Institution.objects.get(id=int(request.POST['institution']))
+	entity_nom = request.POST['entity_nom']
+	entity_hierachy = request.POST['entity_hierachy']
+	fields_name = request.POST['fields_name']
+	fields_type = request.POST['fields_type']
+
+	entity = EntityType(m_nom=entity_nom,m_fields=fields_name,m_type_fields=fields_type)
+	entity.save()
+
+	# tache hierachy modifier
+	hierachie = int(entity_hierachy) + 1
+	institutionEntity = InsitutionEntities(m_hierachie=hierachie,m_entity_type=entity,m_institution=institution)
+	institutionEntity.save()
+	return redirect('/configurations/')
+
+def save_entity_value(request):
+	institution = int(request.POST['institution'])
+	hierachie = request.POST['hierachie'] 	
+	type_entity = InsitutionEntities.objects.filter(m_hierachie=hierachie,m_institution__id=institution).first()
+	type_entity = type_entity.m_entity_type
+	fields_value = request.POST['fields']
+
+	print("Weerrkkkeee"+str(fields_value))
+	is_tache = request.POST['is_tache']
+	print(is_tache)
+	if is_tache == 'True':
+		entity = Tache(m_value_fields=fields_value,m_type_entity=type_entity)
+		entity.save()
+		calendar = request.POST['calendar_selected']
+		periode = Periode.objects.get(id=int(request.POST['calendar_periode']))
+		plani_tche = TachePlannify(m_tache=entity,m_planify=calendar,m_periode=periode)
+		plani_tche.save()
+	else:
+		entity = Entity(m_value_fields=fields_value,m_type_entity=type_entity)
+		entity.save()
+
+	sup_entity = request.POST['sup_entity']
+	print("sup_entity "+str(request.POST['sup_entity']))
+	#relations_entities
+	if sup_entity != None:
+		sup_entity = Entity.objects.get(id=int(sup_entity))
+		print(sup_entity)
+		entity_hierachie = EntityHierachie(m_sub_entity=entity,m_sup_entity=sup_entity)
+		entity_hierachie.save()
+
+	return redirect('/gestionnaire/'+str(hierachie)+'/')
+
+def save_gestion(request):
+	context = basis(request)
+	generator = request.POST['generator']
+	edit_or_create = request.POST['edit_or_create']
+	try:	
+		r_redirect = request.POST['redirect']
+	except:
+		pass
+	if generator == 'i':
+		r_sigle = request.POST['sigle']
+		r_nom = request.POST['nom']
+		r_image = request.FILES['image']
+		institution = Institution(sigle=r_sigle,nom=r_nom,img=r_image)
+		institution.save()
+		response = "/gestionnaire/i/"
+	elif generator == 'a':
+		r_code = request.POST['code']
+		r_nom = request.POST['nom']
+		r_indicateur = request.POST['indicateur']
+		r_objectifs = request.POST['objectifs']
+		r_programme = Programme.objects.get(id=request.POST['Programme'])
+		action = Action(nom=r_nom,code=r_code,indicateur=r_indicateur,objectifs=r_objectifs,programme=r_programme)
+		action.save()
+		if r_redirect != '-1':
+			response = "/gestionnaire/p/"+r_redirect+"/"
+		else:
+			response = "/gestionnaire/a/"
+	elif generator == 'a1':
+		r_code = request.POST['code']
+		r_nom = request.POST['nom']
+		r_cumuls_extrants = request.POST['cumuls_extrants']
+		r_cumuls_indicateurs = request.POST['cumuls_indicateurs']
+		r_objectifs = request.POST['objectif']
+		r_action = Action.objects.get(id=request.POST['Action'])
+		activite = Activite(nom=r_nom,code=r_code,cumuls_extrants=r_cumuls_extrants,cumuls_indicateurs=r_cumuls_indicateurs,objectifs=r_objectifs,action=r_action)
+		activite.save()
+		if r_redirect != '-1':
+			response = "/gestionnaire/a/"+r_redirect+"/"
+		else:
+			response = "/gestionnaire/a1/"
+	elif generator == "p":
+		try:
+			r_couverture = request.FILES['couverture']
+		except:
+			r_couverture = None
+		r_code = request.POST["code"]
+		r_nom = request.POST["nom"]
+		r_impact = request.POST["impact"]
+		r_ind_impact = request.POST["ind_impact"]
+		r_institution = context['actual_institution']
+		programme = Programme(code=r_code,nom=r_nom,impact=r_impact,ind_impact=r_ind_impact,institution=r_institution)
+		if edit_or_create == 'e':
+			edit_id = int(request.POST['edit_id'])
+			programme2 = Programme.objects.get(id=edit_id)
+			programme.id = programme2.id
+			programme.date_creation = programme2.date_creation
+			programme.date_modif = programme2.date_modif
+		programme.image = r_couverture
+		programme.save()
+		response = "/gestionnaire/p/"
+	elif generator == "p2":
+		r_nom = request.POST['nom']
+		r_prenom = request.POST['prenom']
+		r_mail = request.POST['mail']
+		r_img = request.FILES['photo']
+		r_structure = request.POST['Structure']
+		if r_structure != '0':
+			r_structure = Structure.objects.get(id=int(r_structure))
+		else:
+			r_structure = None
+		r_role = request.POST['Fonction']
+		r_role = Role.objects.get(id=int(r_role))
+		r_bd_user = User(username=r_nom+" "+r_prenom,email=r_mail)
+		import random
+		password = ""
+		for i in range(0,8):
+			password += str(random.randint(0,9))
+		#print(password)
+		#r_bd_user.set_password('User'+password)
+		r_bd_user.set_password('user1234')
+		r_bd_user.save()
+		personnel = Personnel(nom=r_nom,prenom=r_prenom,mail=r_mail,photo=r_img,actual_institution=context['actual_institution'])
+		personnel.bd_user = r_bd_user
+		personnel.save()
+		ps = Personnel_Structure(m_personnel=personnel,m_structure=r_structure)
+		ps.save()
+		pf = Personnel_Function(m_personnel=personnel,m_role=r_role)
+		pf.save()
+		response = "/personnels/"
+	elif generator == "r":#Role
+		r_nom = request.POST['nom']
+		r_description = request.POST['description']
+		r_permission = request.POST['permission']
+		role = Role(nom=r_nom,description=r_description,permissions=r_permission)
+		role.save()
+		response = "/roles/"
+	elif generator == "s":
+		r_nom = request.POST['nom']
+		r_designation = request.POST['designation']
+		r_institution = request.POST['Institution']
+		r_institution = Institution.objects.filter(id=int(r_institution)).first()
+		try:
+			r_responsable = Personnel.objects.filter(id=int(request.POST['Responsable'])).first()
+		except:
+			r_responsable = None
+		structure = Structure(nom=r_nom,designation=r_designation,institution=r_institution)#,responsable=r_responsable
+		structure.save()
+		response = "/structures/"
+	elif generator == "t":
+		r_code = request.POST['code']
+		r_nom = request.POST['nom']
+		r_result_process = request.POST['result_process']
+		r_total_montant_aloue = request.POST['total_montant_aloue']
+		r_indicateurresult = request.POST['indicateurresult']
+		r_valeur_attendue = request.POST['valeur_attendue']
+		r_activite = Activite.objects.get(id=request.POST['Activite'])
+		r_structure = None
+		try:
+			r_structure = Structure.objects.get(id=request.POST['Structure'])
+		except:
+			pass
+		tache = Tache(structure=r_structure,code=r_code,nom=r_nom,result_process=r_result_process,total_montant_aloue=r_total_montant_aloue,indicateurresult=r_indicateurresult,valeur_attendue=r_valeur_attendue,activite=r_activite)
+		tache.save()
+		calendar = request.POST['calendar_selected']
+		periode = Periode.objects.get(id=int(request.POST['calendar_periode']))
+		plani_tche = TachePlannify(m_tache=tache,m_planify=calendar,m_periode=periode)
+		plani_tche.save()
+		response = "/gestionnaire/t/"+str(tache.id)+"/"
+	elif generator == 'o':
+		r_tache = request.POST['tache']
+		response = "/taches/"+r_tache+"/"
+		r_tache = Tache.objects.get(id=int(r_tache))
+		r_code = request.POST['code']
+		r_nom = request.POST['nom']
+		r_perso = request.POST['perso']
+		r_role = request.POST['role']
+		r_perso = Personnel.objects.get(id=int(r_perso))
+		r_montant = request.POST['montant']
+		r_chronogr = request.POST['chronogr']
+		r_who_assign = int(request.POST['who_assign'])
+		#print(r_chronogr)
+		r_sub_period = request.POST['sub_period']
+		r_notification = request.POST['notification']
+		operation = Operation(tache=r_tache,code=r_code,nom=r_nom,montant=r_montant,notification=r_notification)
+		list_operations = list()
+		if r_who_assign == 0:
+			operation.personnel=r_perso
+			list_operations.append(operation)
+		elif r_who_assign == 1:
+			role = Role.objects.get(id=int(r_role))
+			for perso in role.persos():
+				operation.personnel=perso.m_personnel
+				list_operations.append(operation)
+		for o in list_operations:
+			o.save()
+			op = OperationPeriode(m_operation=o,m_chronogramme=SubPeriode.objects.get(id=int(r_sub_period)),m_desc_realisation=r_chronogr)
+			op.save()
+		subject = "Attribution d'une Operation"
+		message = " Vous avez une Tache qui vous a ete attribué" 
+		email = r_perso.mail
+		email_from = settings.EMAIL_HOST_USER
+		recipient_list = [email,]
+		#send_mail( subject, message, email_from, recipient_list, fail_silently=False)	
+		
+	return redirect(response)
+
+def planifier2(request,period_id=0):
+	template = "webpages/ctn_bpf/plannifier.html"
+	annees = set()
+	context = basis(request)
+	tasks = Tache.objects.filter(activite__action__programme__institution=context['actual_institution'])
+	searches = {
+		'p':[{'label':'Institution','values':authorized_institutions(request),'code':'i'}],
+		'i':[],
+		'p2':[{'label':'Structure','values':Structure.objects.filter(),'code':'s'}],
+		's':[{'label':'Institution','values':authorized_institutions(request),'code':'i'},{'label':'Responsable','values':Personnel.objects.filter(),'code':'p2'}],
+	}
+	searches['a'] = [{'label':'Programme','values':Programme.objects.filter(),'code':'p'}]
+	searches['a1'] = searches['a']+[{'label':'Action','values':Action.objects.filter(),'code':'a'}]
+	searches['t'] = searches['a1']+[{'label':'Activite','values':Activite.objects.filter(),'code':'a1'}]
+	#actual_period =
+	
+	context['searches'] = searches['a1']
+	context['g_v'] = '1'
+	context['institution'] = Institution.objects.last()
+	if period_id != 0:
+		context['actual_period'] = Institution_Periodes.objects.get(id=int(period_id))
+	else:
+		period = request.user.personnel.actual_institution.default_period
+		institutionPe = Institution_Periodes.objects.filter(m_institution=request.user.personnel.actual_institution,m_periode=period).first()
+		context['actual_period'] = institutionPe
+	context['taches'] = tasks
+	context['ranges'] = ['0','1','2','3','4','5','6','7','8','9','10','11']
+	return render(request,template,context)
+
+def roles(request):
+	template = "webpages/ctn_bpf/roles.html"
+	fields_personnel = ['','Nom','Prenom','Adresse Mail','Structure','Fonction','']
+	fields_roles = ['Role','Description','Permissions']
+	personnel = Personnel.objects.filter()
+	roles = Role.objects.filter()
+	context = basis(request)
+	context['entity'] = 'Rôle'
+	context['fields1'] = fields_personnel
+	context['personnel'] = personnel
+	context['fields'] = fields_roles
+	context['lines'] = roles
+	context['g_v'] = '2'
+	return render(request,template,context)
+
+def repartir_tache(request):
+	r_tache = request.POST['tache']
+	r_roles_tache = request.POST['roles_tache']
+	r_personnel_tache = request.POST['personnel_tache']
+	roles = r_roles_tache.split("_")
+	personnels = r_personnel_tache.split("_")
+	r_roles = list()
+	r_persos = list()
+	#print(r_tache)
+	for r in roles:
+		if r != '':
+			r_roles.append(Role.objects.get(id=int(r)))
+	for p in personnels:
+		if p != '':
+			r_persos.append(Personnel.objects.get(id=int(p)))
+	tache = Tache.objects.get(id=int(r_tache))
+	subject = "Attribution de la Tache"
+	message = " Vous avez une Tache qui vouis a ete attribué" 
+	email = r_persos[0].mail
+	email_from = settings.EMAIL_HOST_USER
+	recipient_list = [email,]
+	#send_mail( subject, message, email_from, recipient_list, fail_silently=False)	
+
+	repartition = TacheRepartition(m_tache=tache)
+	repartition.save()
+	repartition.m_personnels.set(r_persos)
+	repartition.m_roles.set(r_roles)
+	repartition.save()
+	return redirect("/gestionnaire/t/")
+
+def modify(request,arg_val=""):
+	r_personnel_id = request.POST['personnel']
+	r_role_id = request.POST['role']
+	personnel = Personnel.objects.get(id=int(r_personnel_id))
+	role = Role.objects.get(id=int(r_role_id))
+	p_f = Personnel_Function(m_personnel=personnel,m_role=role)
+	p_f.save()
+	return redirect('/personnels/')
+
+def save_plannify(request):
+	tache_id = request.POST['calendar_tache']
+	calendar = request.POST['calendar_selected']
+	#print(calendar)
+	periode = Periode.objects.get(id=int(request.POST['calendar_periode']))
+	tache = Tache.objects.get(id=int(tache_id))
+	try:
+		plani_tche = TachePlannify.objects.filter(m_tache__id = int(tache_id)).first()
+		plani_tche.m_planify = calendar	
+		plani_tche.m_periode = periode
+	except:
+		plani_tche = TachePlannify(m_tache=tache,m_planify=calendar,m_periode=periode)
+	plani_tche.save()
+	institutionPe = Institution_Periodes.objects.filter(m_institution=request.user.personnel.actual_institution,m_periode=periode)
+	return redirect("/planifier/"+str(institutionPe.first().id)+"/")
+
+def operations_home(request):
+	template = "webpages/ctn_bpf/index.html"
+	context = basis(request)
+	if request.user.is_staff:
+		lines = Tache.objects.filter()#activite__action__programme__institution=context['actual_institution']
+	else:
+		lines = request.user.personnel.get_taches()
+	context['lines'] = lines
+	context['operation'] = 1
+	context['personnel'] = Personnel.objects.filter()
+	context['menu'] = 'o'
+	return render(request,template,context)
+
+def save_rapport(request):
+	r_nom = request.POST['operation_nom']
+	r_fichier = request.FILES['operation_fichier']
+	r_operation = Operation.objects.get(id=int(request.POST['operation_id']))
+	#print(r_operation)
+	rapport = OperationRapport(piece_jointe=r_fichier,nom_piece_jointe=r_nom,operation=r_operation)
+	rapport_input = request.POST['rapport_input']
+	if rapport_input != 'c':
+		rapport.type_rapport = rapport_input
+	rapport.save()
+	r_operation.etat = '1'
+	r_operation.save()
+	response = redirect('/operations/')
+	request.session['new_rapport'] = 1
+	return response
+
+def assign_supervisor(request):
+	tache = Tache.objects.get(id=int(request.POST["assign"]))
+	supervisor = Personnel.objects.get(id=int(request.POST['perso']))
+	tache.superviseur = supervisor
+	tache.save()
+	return redirect('/gestionnaire/t/')
+
+def valid_rapport(request):
+	opera_valider_id = request.POST['opera_valider_id']
+	operation = Operation.objects.get(id=int(opera_valider_id))
+	operation.etat = '2'
+	operation.save()
+	return redirect('/operations/')
+
+def in_valid_rapport(request):
+	opera_invalider_id = request.POST['opera_invalider_id']
+	operation = Operation.objects.get(id=int(opera_invalider_id))
+	operation.etat = '0'
+	operation.save()
+	return redirect('/operations/')
+
+def delete(request):
+	id_entity = request.POST['id_entity']
+	generator = request.POST['generator']
+	#print(generator)
+	if generator == 'p':
+		entity = Programme.objects.get(id=int(id_entity))
+	elif generator == 'a':
+		entity = Action.objects.get(id=int(id_entity))
+	elif generator == 'a1':
+		entity = Activite.objects.get(id=int(id_entity))
+	elif generator == 't':
+		entity = Tache.objects.get(id=int(id_entity))
+	elif generator == 'o':
+		entity = Operation.objects.get(id=int(id_entity))
+	elif generator == 'p2':
+		entity = Personnel.objects.get(id=int(id_entity))
+	entity.delete()
+	if generator == 'o':
+		response = redirect('/gestionnaire/'+'t'+'/'+entity.tache.id+'/')
+	else:
+		response = redirect('/gestionnaire/'+generator+'/')
+	return response
+
+def ajax_lines(request):
+	type_search = request.GET.get('type_search')
+	value_search= request.GET.get('value_search')
+	sub_search = request.GET.get('sub_search')
+	results = list()
+	lines = list()
+	progressions = list()
+	lines_count = 0
+	objets = {
+	'p':Programme,
+	'a':Action,
+	'a1':Activite,
+	't':Tache,
+	'o':Operation
+	}
+	subs = {
+	'p':Institution,
+	'a':Programme,
+	'a1':Action,
+	't':Activite,
+	'o':Tache	
+	}
+	if value_search != "|": # La Recherche se fait à partir de la Valeur de la ZOne de Texte
+		results = objets[type_search].objects.filter(nom__contains=value_search) 		
+	else : # La Recherche se fait à partir d'un Filtre
+		sub = subs[type_search].objects.get(id=int(sub_search))
+		if type_search == 'p':
+			results = objets[type_search].objects.filter(institution=sub)
+		elif type_search == "a":
+			results = objets[type_search].objects.filter(programme=sub)
+		elif type_search == "a1":
+			results = objets[type_search].objects.filter(action=sub)
+		elif type_search == "a1":
+			results = objets[type_search].objects.filter(activite=sub)
+	# Allez, on recupere les résultats
+	if type_search == 'p':
+		for r in results:
+			progressions.append(r.progression())
+			if r.image not in [None,'']:
+				image_tmp="<img style='width:50px;height:50px;' src="+str(r.image.url)+">"
+			else:
+				image_tmp = "<i class ='fas fa-3x fa-image text-success'></i>"
+			lines.append(image_tmp+"|"+r.code +"|"+r.nom+"|"+r.impact+"|"+r.ind_impact+"|"+str(r.institution)+"")
+	elif type_search == 'a':
+		for r in results:
+			progressions.append(r.progression())
+			lines.append(r.code +"|"+r.nom+"|"+r.objectifs+"|"+r.indicateur+"|"+str(r.programme)+"")
+	elif type_search == 'a1':
+		for r in results:
+			progressions.append(r.progression())
+			lines.append(r.code +"|"+r.nom+"|"+r.cumuls_extrants+"|"+r.cumuls_indicateurs+"|"+str(r.action)+"")	
+	elif type_search == 't':
+		for r in results:
+			progressions.append(r.progression())
+			lines.append(r.code +"|"+r.nom+"|"+str(r.total_montant_aloue)+"|"+r.indicateurresult+"|"+r.result_process+"|"+str(r.valeur_attendue)+"|"+str(r.activite)+"|"+str(r.structure))	
+	elif type_search == 'o':
+		for r in results:
+			progressions.append(r.progression())
+			lines.append(r.nom+"|"+str(r.personnel)+"|"+str(r.montant)+"|"+r.semaines+"|")	
+
+	lines_count = results.count()
+	data = {
+		'progressions':progressions,
+		'lines':lines,
+		'lines_count':lines_count
+	}
+	return JsonResponse(data,safe=False)
+
+def configurations(request):
+	template = "webpages/ctn_bpf/configurations.html"
+	context = basis(request)
+	context['institution'] = request.user.personnel.actual_institution
+	context['menu'] = 'c'
+	return render(request,template,context)
+
+def profile(request):
+	template = "webpages/ctn_bpf/profile.html"
+	context = basis(request)
+	context['institution'] = Institution.objects.last()
+	return render(request,template,context)
+
+def filter_op(request):
+	structure = request.POST['structure']
+	periode = request.POST['periode']
+	niveau = request.POST['niveau']
+	lines = Tache.objects.filter(date_creation__month = (int(periode)-1))
+	context = basis(request)
+
+	template = "webpages/ctn_bpf/index.html"
+	context['lines'] = lines
+	return render(request,template,context)
+
+def notifs(request):
+	user_id = request.GET.get('value')
+	#print(user_id)
+	perso = Personnel.objects.get(bd_user__id=int(user_id))
+	taches = Operation.objects.filter(personnel__id=perso.id,etat ='0').count()
+	data = {
+		'result':taches
+	}
+	return JsonResponse(data)
+
+def institutions(request):
+	template = "webpages/ctn_bpf/institution.html"
+	context = basis(request)
+	institutions1 = set()
+	structures = Personnel_Structure.objects.filter(m_personnel=request.user.personnel)
+	#print(request.user)
+	for s in structures :
+		institutions1.add(s.m_structure.institution)
+	for i in Institution.objects.filter(owner__m_user__id=request.user.id):
+		institutions1.add(i)
+	context['institutions1'] = institutions1
+	return render(request,template,context)
+
+
+def set_institution(request,institution_id):
+	institution = Institution.objects.get(id=institution_id)
+	request.user.personnel.actual_institution = institution
+	request.user.personnel.save()
+	return redirect("/")
+
+def operations_details(request,operation_id):
+	template = "webpages/ctn_bpf/operations_details.html"
+	context = basis(request)
+	operation = Operation.objects.get(id=operation_id)
+	tache = operation.tache
+	context['operation'] = operation
+	context['tache'] = tache
+	context['institutions'] = Institution.objects.filter()
+	context['menu'] = 'o'
+	return render(request,template,context)
+
+def history(request):
+	template = "webpages/ctn_bpf/history.html"
+	context = basis(request)
+	operation = Operation.objects.first()#Operation.objects.get(id=operation_id)
+	tache = operation.tache
+	context['operation'] = operation
+	context['tache'] = tache
+	context['fields'] = ['Programme','Action','Activite','Tache','Operation','Personnel','Date']
+	if context['permissions'] > 4:
+		unsorted_results = Operation.objects.filter(tache__activite__action__programme__institution=context['actual_institution'])
+	else:
+		ops = Operation.objects.filter(personnel__id=request.user.personnel.id)
+		ops_taches = set()
+		unsorted_results = list()
+		for o in ops:
+			ops_taches.add(o.tache)
+			unsorted_results.append(o)
+		for t in ops_taches:
+			for a in t.operations():
+				unsorted_results.append(a)
+	sorted_result = sorted(unsorted_results, key= lambda t: t.derniere_modif())
+	context['lines'] = sorted_result
+	context['nb_lines'] = len(sorted_result)
+	context['institutions'] = Institution.objects.filter()
+	context['menu'] = 'h'
+	return render(request,template,context)
+
+def calendar(request):
+	template = "webpages/ctn_bpf/agenda_week.html"
+	context = basis(request)
+	return render(request,template,context)
+
+def save_period(request):
+	institution = request.POST['institution']
+	periode = request.POST['periode']
+	decoupage = request.POST['decoupage']
+	try:
+		big_period = request.POST["big_periode"]
+		sub_period = 0
+	except:
+		sub_period = None
+	if sub_period != None:
+		r_big_period = Periode.objects.get(id=int(big_period))
+		sub_period = request.POST["sub_period"]
+		details = request.POST["details"]
+		r_sub_period = SubPeriode(m_periode=r_big_period,m_sub_value=periode,m_decoupage=decoupage,m_decoupage_description=details)
+		r_sub_period.save()
+	else:
+		r_period = Periode(m_value=periode,m_decoupage=decoupage)
+		r_period.save()
+		institution = Institution.objects.get(id=int(institution))
+		i_periode = Institution_Periodes(m_institution=institution,m_periode=r_period)
+		i_periode.save()
+	return redirect("/configurations/")
+
+def ajax_graphiques(request):
+	id_tache = request.GET.get('id_tache')
+	tache = Tache.objects.get(id=int(id_tache))
+	type_graph = request.GET.get('type_graph')
+	#print(type_graph)
+	y_abcisses = list()
+	if type_graph == '0':
+		tmp = tache.evolution_period()
+		for t in tmp:
+			y_abcisses.append(t)
+	data = {
+		'results':y_abcisses
+	}
+	return JsonResponse(data,safe=False)

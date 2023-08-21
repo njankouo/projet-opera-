@@ -1,0 +1,540 @@
+{% extends "./agenda.html" %}
+{% load static %}
+{% block script %}
+<script src="{% static 'webpages/ctn_bpf/agenda/js/jquery-3.3.1.js' %}"></script>
+<script src="{% static 'webpages/ctn_bpf/agenda/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'webpages/ctn_bpf/agenda/js/clock.js' %}"></script>
+<script>
+// Menu Toggle Script
+ $("#menu-toggle").click(function(e)
+ {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+  });
+</script>
+<script>
+function datas(name,view='#')
+{
+	var func_data;
+	switch(name)
+	{
+	 case 0:
+		 func_data = document.getElementById("mainAgenda");
+		 break;
+	 case 1:
+		 func_data = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
+		 break;
+	 case 2:
+		 func_data = ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"];
+		 break;
+	 case 3:
+		 func_data = ["Decembre","Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"];
+	 	 break;
+	 case 4:
+	 	 func_data = new Date()
+		 break;
+	 case 20:
+	 	func_data = new Date().getFullYear();
+	 	break;
+	 case 5:
+	 	 func_data = new Date(Date());
+	 	 break;
+	 case 6://START_DAY
+		 func_data = 7
+		 break;
+	 case 7://END DAY
+		 func_data =  24
+	 	 break;
+	 case 8://LECTURE
+		 func_data = '1';
+		 break;
+	 case 9://TD
+		 func_data = '2';
+		 break;
+	 case 10://TP
+		 func_data = '3';
+		 break;
+	 case 11://EXAM
+		 func_data = '4';
+		 break;
+	 case 12://SOUTENANCE
+	 	 func_data = '5';
+		 break;
+         case 'v':
+		switch(view){
+		 case 'd':
+			func_data = 1;
+ 			break;
+	 	 case 'w':
+			func_data = 2;
+ 			break;	
+	 	 case 'm':
+			func_data = 3;
+ 			break;	
+	 	 case 'w':
+			func_data = 4;
+ 			break;	
+		break;
+		}
+	 default:
+		 func_data ='#';
+	}
+	return func_data;
+}
+</script>
+<script>
+function Calendar(div,height='',year=0,month=-1,type=0)
+{
+
+		var filter = "";
+	var num_jour = 1;
+	var k=1;
+	var m_month = (month==-1?(datas(5).getMonth()):month);
+	var m_year = year;
+	var first_of_month = new Date(m_year,m_month,1).getDay();
+  var first_of_next_month = new Date(m_year,m_month+1,1).getDay();
+
+  const NWEEK = 5;
+  const NDAY = 7;
+
+  var calendar = document.createElement("table");
+	if (type != 2)
+	{
+		calendar.setAttribute("class","h-"+height+" table table-hovered");
+	}
+	var calendarBody = document.createElement("tbody");
+
+	if (type == 1)
+	{
+		header = document.createElement("caption");
+		header.setAttribute("class","div_semester");
+		header.setAttribute("style","width:100%;text-align:center;font-size:10px;margin-bottom:5px;margin-top:5px;overflow-x:hidden;");
+		headerNode = document.createTextNode(datas(3)[(month+1)]);
+		header.appendChild(headerNode);
+		calendarBody.appendChild(header);
+	}
+
+	var row = document.createElement("tr");
+	for ( j=0; j<7; j++)
+	{
+    AgendaCell_typeIIa(row,datas(1)[j],"days_month days_month"+j)
+	}
+	calendarBody.appendChild(row);
+
+  var row = document.createElement("tr");
+
+	for ( j=first_of_month;j>0;j--)
+	{
+		AgendaCell_typeIIb(row,(new Date(m_year,m_month,1-j).getDate()),"table_tasks month_finished days_month");
+	}
+	var bref=1;
+	for ( j=first_of_month; j<NDAY; j++)
+	{
+		d_date =  new Date(m_year,m_month,j+1);
+		date =d_date.getDate();
+		a_year = d_date.getFullYear();
+		a_month = d_date.getMonth();
+		value = a_year+""+((a_month+1)<10?"0"+(a_month+1):(a_month+1))+""+(date<10?"0"+date:date);
+		if ( d_date.getFullYear() == datas(5).getFullYear() && d_date.getMonth() == datas(5).getMonth() && d_date.getDate() == datas(5).getDate())
+		{
+			className = "table_tasks date_todayM";
+		}
+		else
+		{
+			className ="table_tasks days_month";
+		}
+		if (d_date.getDay() == 0)
+				{
+	className ="table_tasks days_month month_gray";
+				}
+    AgendaCell_typeIIb(row,bref++,className,"/webpages/ctn_bpf/agenda/webpages/ctn_bpf/agenda/w/"+value+"/"+filter);
+	}
+		calendarBody.appendChild(row);
+	var mois_termine = false;
+	for (i=1; i<NWEEK; i++)
+	{
+		var row = document.createElement("tr");
+		for (j=0; j<NDAY; j++)
+		{
+			d_date =  new Date(m_year,m_month,bref++)
+			if ( d_date.getFullYear() == datas(5).getFullYear() && d_date.getMonth() == datas(5).getMonth() && d_date.getDate() == datas(5).getDate())
+			{
+				className = "table_tasks date_todayM";
+				today = true;
+			}
+			else
+			{
+				className ="table_tasks days_month";
+				today = false
+			}
+			date =d_date.getDate();
+			a_year = d_date.getFullYear();
+			a_month = d_date.getMonth();
+
+			value = a_year+""+((a_month+1)<10?"0"+(a_month+1):(a_month+1))+""+(date<10?"0"+date:date);
+			if ( date == 1)
+      {
+        mois_termine = true;
+      }
+      if (mois_termine)
+      {
+        className+=" month_finished table_tasks";
+      }
+      if (j == 0)
+      {
+				if (today == false)
+				{
+					className +=" month_gray";
+				}
+      }
+      AgendaCell_typeIIb(row,date,className,"/webpages/ctn_bpf/agenda/webpages/ctn_bpf/agenda/w/"+value+"/"+filter);
+		}
+		calendarBody.appendChild(row);
+	}
+	calendar.appendChild(calendarBody);
+	div.appendChild(calendar);
+}
+</script>
+
+<script>
+//Clock
+function initLocalClocks()
+{
+  // Get the local time using JS
+  var date = new Date;
+  var seconds = date.getSeconds();
+  var minutes = date.getMinutes();
+  var hours = date.getHours();
+
+  // Create an object with each hand and it's angle in degrees
+  var hands = [
+    {
+      hand: 'hours',
+      angle: (hours * 30) + (minutes / 2)
+    },
+    {
+      hand: 'minutes',
+      angle: (minutes * 6)
+    },
+    {
+      hand: 'seconds',
+      angle: (seconds * 6)
+    }
+  ];
+  // Loop through each of these hands to set their angle
+  for (var j = 0; j < hands.length; j++) {
+    var elements = document.querySelectorAll('.' + hands[j].hand);
+    for (var k = 0; k < elements.length; k++) {
+        elements[k].style.webkitTransform = 'rotateZ('+ hands[j].angle +'deg)';
+        elements[k].style.transform = 'rotateZ('+ hands[j].angle +'deg)';
+        // If this is a minute hand, note the seconds position (to calculate minute position later)
+        if (hands[j].hand === 'minutes') {
+          elements[k].parentNode.setAttribute('data-second-angle', hands[j + 1].angle);
+        }
+    }
+  }
+}
+
+function giveTime()
+{
+  var date = new Date;
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var clock_hour = document.getElementById("clock_hour");
+	if (hours<10)
+	{
+		hours = "0"+hours;
+	}
+  clock_hour.textContent = hours;
+  var clock_minutes = document.getElementById("clock_minutes");
+	if (minutes<10)
+	{
+		minutes = "0"+minutes;
+	}
+  clock_minutes.textContent = minutes;
+}
+
+
+//---------------------------
+</script>
+<script>
+//Generic Functions
+function ActualInfo(day,view,id="when")
+{
+	var when = document.getElementById(id);
+	var when_infos = when.getElementsByTagName("h6");
+	//-------------
+	var date = day.getDate() + " " + datas(3)[day.getMonth()] + " " + day.getFullYear()
+	//-----------
+	switch (view)
+	{
+		case 'd':
+			when_infos[0].textContent = "Journee du";
+			break;
+		case 'w':
+			when_infos[0].textContent = "Semaine du";
+			break;
+		case 'm':
+			when_infos[0].textContent = "Mois:";
+			break;
+		case 's':
+			var annee_acd = day.getFullYear();
+			if (day.getMonth()<8)
+			{
+				annee_acd -=1
+			}
+			when_infos[0].textContent = "Année Academique : "+annee_acd+"-"+(annee_acd+1);
+			break;
+	}
+	if (view == 's')
+	{
+		semester = "semester";
+		when_infos[1].innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;Semestre: "+semester;
+	}
+	else if (view == 'm')
+	{
+		when_infos[1].textContent = datas(3)[day.getMonth()] + " " + day.getFullYear()
+	}
+	else
+	{
+		when_infos[1].textContent = date;
+	}
+}
+
+
+function ActualNavBar(view)
+{
+  switch (view)
+  {
+    case 'd':
+      document.getElementById("navbarDropdown").textContent = "Jour";
+      break;
+    case 'w':
+      document.getElementById("navbarDropdown").textContent = "Semaine";
+      break;
+		case 'm':
+			document.getElementById("navbarDropdown").textContent = "Mois";
+			break;
+		case 's':
+			document.getElementById("navbarDropdown").textContent = "Semestre";
+			break;
+  }
+}
+
+function modalCalendar(month=-1,year=0)
+{
+
+if (month == -1)
+{
+		modal_month = datas(5).getMonth();
+		modal_year =  datas(5).getFullYear();
+}
+else
+{
+	modal_month = month;
+	modal_year = year
+}
+
+if (month == 0)
+{
+	pre_month = 11;
+	pre_year = modal_year-1
+}
+else
+{
+	pre_month = modal_month-1
+	pre_year = modal_year
+}
+
+if (month == 11)
+{
+	nxt_month = 0;
+	nxt_year = modal_year+1
+}
+else
+{
+	nxt_month = modal_month+1
+	nxt_year = modal_year
+}
+		/* Static*/
+	div_title = document.createElement('div');
+	div_title.setAttribute("style","width:100%; margin-bottom:10px; display:flex;justify-content:space-between;");
+	div_title.innerHTML = "<a href='#' style='margin-right:10px;margin-top:5px; font-size: 15px;'class='fa fa-chevron-left' onclick='modalCalendar("+pre_month+","+pre_year+")'></a>"+"<div style='display:flex;'>"+"<h4 style='margin-right:8px;'>"+datas(3)[modal_month+1]+"</h4>"+"<h4>"+modal_year+"</h4>"+"</div>"+"<a href='#' style='margin-left:10px;margin-top:5px;font-size: 15px;'class='fa fa-chevron-right' onclick='modalCalendar("+nxt_month+","+nxt_year+")'></a>";
+	modal_button = "<button type='button' class=' pb-3 close' data-dismiss='modal' aria-label='Close'>	<span aria-hidden='true'>&times;</span></button>"
+	div_title.innerHTML += modal_button;
+
+	div_calendar = document.createElement('div');
+	Calendar(div_calendar,"",modal_year,modal_month,3);
+	document.getElementById("modalContent").innerHTML = "";
+	document.getElementById("modalContent").setAttribute("style","padding:10px;");
+	document.getElementById("modalContent").appendChild(div_title);
+	document.getElementById("modalContent").appendChild(div_calendar);
+}
+
+document.getElementById('btn-today').onclick = function()
+{
+	document.getElementById('today_link').click();
+}
+</script>    
+
+<script>
+
+</script>
+<script>
+ initLocalClocks();
+ giveTime();
+ setInterval(giveTime,1000);
+
+</script>
+<script>
+var start_cell;
+var end_cell;
+function AgendaCell_typeIa(arg_row,arg_title,arg_value,arg_css=" ",arg_color= " ")//Week & Day Names
+{
+ var cell = document.createElement('td');
+ var strong = document.createElement('strong');
+ var strong_node = document.createTextNode(arg_title);
+ strong.appendChild(strong_node);
+
+ var tr = document.createElement("tr");
+
+ var span = document.createElement('span');
+ var span_node = document.createTextNode(arg_value);
+ span.appendChild(span_node);
+
+ var center = document.createElement('center');
+ center.appendChild(strong);
+ center.appendChild(tr);
+ center.appendChild(span);
+
+ cell.appendChild(center);
+ span.setAttribute("class",arg_css+" "+arg_color);
+ cell.setAttribute("class",arg_color);
+ arg_row.appendChild(cell);
+}
+
+function AgendaCell_typeIb(arg_row,arg_value,arg_css,arg_size="10px")//Week & Day Hours
+{
+  var cell = document.createElement('td');
+  cell.style.width = "1%";
+  cell.style.fontSize = arg_size;
+  cell.setAttribute("class",arg_css);
+  cell_node = document.createTextNode(arg_value);
+  cell.appendChild(cell_node);
+  arg_row.appendChild(cell);
+}
+
+function AgendaCell_typeIc(arg_row,arg_values,arg_css,arg_id,arg_size="10px")//Week & Day Values
+{
+  var date =datas(2)[arg_values[0].getDay()]+" "+ arg_values[0].getDate()+" "+datas(3)[arg_values[0].getMonth()+1]+" "+arg_values[0].getFullYear();
+  var heure = arg_values[1];
+  var cell = document.createElement('td');
+  var plan = arg_values[0].getFullYear()*10000 + (arg_values[0].getMonth())*100 + arg_values[0].getDate()
+
+  cell.setAttribute("class",arg_css);
+  //cell.setAttribute("style","padding-top:0px;padding-left:0px;padding-right:0px;");
+  cell.setAttribute("id",(arg_id+"h"+heure));
+  cell.setAttribute("data-hour",heure+"");
+  cell.setAttribute("data-event","#");
+  cell.setAttribute("data-toggle","modal");
+  cell.setAttribute("data-target","#agendaModal");
+  cell.setAttribute("data-date",date);
+  cell.setAttribute("data-day",(arg_values[0].getDay()!=0?arg_values[0].getDay():7));
+  cell.setAttribute("data-plan",plan);
+  cell.onmousedown = function()
+  {
+    start_cell = this;
+  }
+  cell.onmouseup = function()
+  {
+    end_cell = this;
+  }
+  cell.onclick = function()
+  {
+    viewEvent(document.getElementById("modalContent"),this.getAttribute("data-event"),date,heure,arg_id,plan);
+  }
+  //tableCell(cell);
+  arg_row.appendChild(cell);
+}
+
+function AgendaCell_typeIIa(arg_row,arg_value,arg_css)//Calendar Title
+{
+  var cell = document.createElement('td');
+  var cell_node = document.createTextNode(arg_value);
+  cell.setAttribute("class",arg_css);
+  cell.appendChild(cell_node);
+  arg_row.appendChild(cell);
+}
+
+function AgendaCell_typeIIb(arg_row,arg_value,arg_css,arg_link)//Calendar Day
+{
+  var cell = document.createElement('td');
+  cell.innerHTML ="<a href='"+arg_link+"'>"+arg_value+"</a>"
+  cell.setAttribute("class",arg_css);
+  cell.onclick = function()
+  {
+    this.getElementsByTagName('a')[0].click();
+  }
+  arg_row.appendChild(cell);
+}
+</script>
+
+
+<script>
+	AgendaWeek(datas(0),datas(4))
+	function AgendaWeek(div,week)
+	{
+		// Agenda Display
+		var agenda_week = document.createElement("table");
+	  agenda_week.setAttribute("id","agenda");
+	  agenda_week.setAttribute("class","table");
+	  var agenda_weekBody = document.createElement("tbody");
+		agenda_weekBody.setAttribute("id","agendaBody");
+		var row = document.createElement("tr");
+	  row.appendChild((document.createElement("td")));
+	  for (i=0; i<7; i++)
+	  {
+		var date = new Date(datas(20),week.getMonth()-1,week.getDate()+i);//Python and JS have differents month values
+		if ( date.getDate() != datas(5).getDate()|| date.getMonth() != datas(5).getMonth() || date.getFullYear() != datas(5).getFullYear())
+		  {
+		  AgendaCell_typeIa(row,datas(1)[i],date.getDate(),"jours_valeurs");
+		  }
+		  else
+		  {
+		  AgendaCell_typeIa(row,datas(1)[i],date.getDate(),"jours_valeurs","colorC");
+		  }
+	  }
+	  agenda_week.appendChild(row);
+	
+		for (var i=datas(6); i<=datas(7); i++)
+		{
+			minutes = ["00"];
+			for (var m=0; m<1; m+=1)
+			{
+			var row = document.createElement("tr");
+				to_show = (i*60)+"";
+				cell_id = i+":00"
+				cell_class = "table_hours";
+				//row.setAttribute("id",to_show);
+				size = "11px";
+	
+			AgendaCell_typeIb(row,cell_id,cell_class,size);
+			for (var d=0; d<7; d++)
+			{
+					var hour = i*60+parseInt(minutes[m]);
+					var test_date = new Date(datas(20),week.getMonth()-1,week.getDate()+d);//Python and JS have differents month values
+				
+	id = test_date.getFullYear()+""+((test_date.getMonth())<10?"0"+(test_date.getMonth()):(test_date.getMonth()))+""+((test_date.getDate())<10?"0"+(test_date.getDate()):(test_date.getDate()));
+					classN = id+" "+" table_tasks ";
+					AgendaCell_typeIc(row,[test_date,hour],classN,id,"12px");
+			}
+			agenda_weekBody.appendChild(row);
+			}
+	  }
+	
+		agenda_week.appendChild(agenda_weekBody);
+		mainAgenda.appendChild(agenda_week);
+	}
+	</script>
+
+{% endblock %}

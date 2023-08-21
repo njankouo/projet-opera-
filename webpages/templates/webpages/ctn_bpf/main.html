@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Online Plateforme for M&E of the Work Plan" name="description">
+    <meta content="Ngaba Franck" name="author">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+    <title>OPERA+ Suivi et Evaluation des Plans d'Actions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Licorice&family=Ubuntu:wght@300&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="{% static 'webpages/dist/css/style.css' %}">
+   <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/bootstrap/bootstrap.min.css' %}">
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+<script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
+<script>
+    Weglot.initialize({
+        api_key: 'wg_f6a0c424370f0ca8eb338c2f00a778c36'
+    });
+</script>
+<style>
+        body *{
+            font-family: Ubuntu,Corbel,sans-serif;
+        }
+.hero-paragraph b{
+color:orange;
+}
+</style>
+{% block style %}
+
+{% endblock %}
+</head>
+<body class="is-boxed has-animations">
+    <div class="body-wrap boxed-container">
+        <header class="site-header">
+            <div class="container">
+                <div class="site-header-inner">
+                    <div class="brand header-brand">
+                        <h1 class="m-0">
+                            <a href="#">
+								<img class="header-logo-image asset-light" src="{% static 'webpages/dist/images/logo-light.svg' %}" alt="Logo">
+								<img class="header-logo-image asset-dark" src="{% static 'webpages/dist/images/logo-dark.svg' %}" alt="Logo">
+                            </a>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        {% block content %}
+        <main>
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-inner">
+						<div class="hero-copy">
+													<h1 style='color:orange;'> OPERA + </h1>
+	                        <h3 class="hero-title mt-0">Plateforme de Suivi et Evaluation des Plans d'Actions</h3>
+	                        <p class="hero-paragraph">Obtenir une meilleur gestion de Plans d'Action. Savoir au détail près <b>Quand</b> et <b> Comment</b>, <b> Qui </b> a fait <b>Quoi</b> </p>
+	                        <div class="hero-cta">
+								<a class="button button-warning" style='background:orange;' href="/"><span style='color:white;'>Commencer à Travailler</span></a>
+
+								<div class="lights-toggle">
+									<a style="text-decoration:none;" href="/admin_institution/"><label for="lights-toggle" style="color:#333display:inline-flex;font-family:'IBM Plex Sans', sans-serif;font-size:14px;letter-spacing:0px;font-weight:600;line-height:16px;text-decoration:none !important;text-transform:uppercase;background-color:#E9EDF3;color:#333 !important;border:none;border-radius:2px;cursor:pointer;justify-content:center;padding:16px 32px;height:48px;text-align:center;white-space:nowrap;" class="text-xs"><span>Institution</span></label></a>
+								</div> 
+							</div>
+						</div>
+						<div class="hero-media">
+							<div class="header-illustration">
+								<img class="header-illustration-image asset-light" src="{% static 'webpages/dist/images/header-illustration-light.svg' %}" alt="Header illustration">
+								<img class="header-illustration-image asset-dark" src="{% static 'webpages/dist/images/header-illustration-dark.svg' %}" alt="Header illustration">
+							</div>
+							<div class="hero-media-illustration">
+								<img class="hero-media-illustration-image asset-light" src="{% static 'webpages/dist/images/hero-media-illustration-light.svg' %}" alt="Hero media illustration">
+								<img class="hero-media-illustration-image asset-dark" src="{% static 'webpages/dist/images/hero-media-illustration-dark.svg' %}" alt="Hero media illustration">
+							</div>
+							<div class="hero-media-container">
+								<img class="hero-media-image asset-light" src="{% static 'webpages/dist/images/hero-media-light.svg' %}" alt="Hero media">
+								<img class="hero-media-image asset-dark" src="{% static 'webpages/dist/images/hero-media-dark.svg' %}" alt="Hero media">
+							</div>
+						</div>
+                    </div>
+                </div>
+            </section>
+
+
+        </main>
+        {% endblock %}
+ 
+    </div>
+
+    <script src="{% static 'webpages/dist/js/main.min.js' %}"></script>
+</body>
+</html>

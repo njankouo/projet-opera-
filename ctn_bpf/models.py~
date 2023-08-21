@@ -1,0 +1,533 @@
+from django.db import models
+from django.contrib.auth.models import User
+
+# Create your models here.
+
+# ============ SUPER CLASS ============
+"""
+class Utilisateur(models.Model):
+CREATE TABLE public.utilisateur (
+    id_utilisateur bigint NOT NULL,
+    nom character varying(1024),
+    prenom character varying(1024),
+    date_naissance date,
+    cni character varying(1024),
+    sexe character varying(50),
+    photo character varying(1024),
+    photo_relatif character varying(1024),
+    idarrondissement bigint,
+    id_adresse bigint,
+    id_statut_matrimonial bigint,
+    id_pays bigint,
+    etat character varying(50) DEFAULT 'Actif'::character varying,
+    date_enregistre date DEFAULT '2014-01-08'::date,
+    derniere_modif date DEFAULT '2014-01-08'::date
+);
+"""
+
+class Owner(models.Model):
+	m_user = models.OneToOneField(User,blank=True,on_delete=models.CASCADE)
+	m_code = models.CharField(max_length=128,blank=True,null=True)
+
+class Periode(models.Model):
+	m_value = models.CharField(max_length=128,blank=True,null=True)
+	m_decoupage = models.TextField(blank=True,null=True)
+	m_decoupage_description	 = models.TextField(blank=True,null=True)
+	def __str__(self):
+		return str(self.m_value)
+	def sub_periods(self):
+		return SubPeriode.objects.filter(m_periode__id=self.id)
+	def decoup_slip(self):
+		return self.m_decoupage.split("|")
+
+class SubPeriode(models.Model):
+	m_periode = models.ForeignKey(Periode,blank=True,null=True,on_delete=models.CASCADE)
+	m_sub_value = models.CharField(max_length=128,blank=True,null=True)
+	m_decoupage = models.TextField(blank=True,null=True)
+	m_decoupage_description	 = models.TextField(blank=True,null=True)
+	def __str__(self):
+		return str(self.m_sub_value)
+	def decoup_desc_slip(self):
+		return self.m_decoupage_description.split("|")		
+# ============ SUPER CLASS ============
+
+class Institution(models.Model):
+	sigle = models.CharField(max_length=32,blank=True,null=True)
+	nom = models.CharField(max_length=128)
+	date_creation = models.DateTimeField(auto_now_add=True)
+	img = models.FileField(blank=True,null=True)
+	purpose  = models.TextField(blank=True,null=True)
+	owner = models.ForeignKey(Owner,on_delete = models.CASCADE,blank=True,null=True)
+	default_period = models.ForeignKey(Periode,on_delete = models.CASCADE,blank=True,null=True)
+	default_subperiod = models.ForeignKey(SubPeriode,on_delete = models.CASCADE,blank=True,null=True)
+	def __str__(self):
+		return self.sigle
+	def structures(self):
+		return Structure.objects.filter(institution__id=self.id)
+	def programmes(self):
+		return Programme.objects.filter(institution__id=self.id)
+	def periodes(self):
+		return Institution_Periodes.objects.filter(m_institution__id=self.id)
+	def get_entities(self):
+		return InsitutionEntities.objects.filter(m_institution__id = self.id)
+	def top_entity(self):
+		return self.get_entities().first().m_entity_type
+
+class Institution_Periodes(models.Model):
+	m_institution = models.ForeignKey(Institution,on_delete = models.CASCADE,blank=True,null=True)
+	m_periode = models.ForeignKey(Periode,on_delete = models.CASCADE,blank=True,null=True)
+	m_default = models.BooleanField(default=False,blank=True,null=True)
+	def __str__(self):
+		return str(self.m_periode)
+
+class Structure(models.Model):
+	nom	= models.CharField(max_length=128)
+	designation = models.CharField(max_length=128)
+	date_creation = models.DateTimeField(auto_now_add=True)
+	institution = models.ForeignKey(Institution,on_delete=models.CASCADE,blank=True,null=True)
+	def __str__(self):
+		return self.nom
+
+class Role(models.Model):
+	nom = models.CharField(max_length=64,blank=True,null=True)
+	description = models.TextField(blank=True,null=True)
+	actual_institution = models.ForeignKey(Institution,on_delete = models.CASCADE,blank=True,null=True)
+	permissions = models.IntegerField(default=0,blank=True,null=True)
+	def __str__(self):
+		return self.nom
+	def permission(self):
+		if self.permissions == 0:
+			result = "Opérant : Execute et Fait un Rapport sur l'Evolution d'une Tâche'"
+		elif self.permissions == 1:
+			result = "Chargé des Taches : Supervise l'Evolution d'une Tâche"
+		else:
+			result = "Manager : Administre la Plateforme"
+		return result
+	def persos(self):
+		return Personnel_Function.objects.filter(m_role__id=self.id)
+
+class Personnel(models.Model):
+	nom	= models.CharField(max_length=128,blank=True,null=True)
+	prenom = models.CharField(max_length=128,blank=True,null=True)
+	mail = models.CharField(max_length=128,blank=True,null=True)
+	tel = models.CharField(max_length=128,blank=True,null=True)
+	photo = models.FileField(blank=True,null=True)
+	bd_user = models.OneToOneField(User,blank=True,null=True,on_delete=models.CASCADE)
+	actual_institution = models.ForeignKey(Institution,blank=True,null=True,on_delete=models.CASCADE)
+	def get_taches(self):
+		if self.bd_user.is_staff :
+			taches = Operation.objects.filter()
+		else:
+			taches = Operation.objects.filter(personnel__id=self.id)
+		result = set()
+		for t in taches:
+			result.add(t.tache)
+		return result
+
+	def __str__(self):
+		return self.prenom +" "+self.nom
+	def get_function(self,institution=None):
+		if institution == None:
+			result = Personnel_Function.objects.filter(m_personnel__id=self.id).first()
+		else:
+			result = Personnel_Function.objects.filter(m_personnel__id=self.id,m_institution__id=institution).first()
+		return result
+	def get_structure(self):
+		return Personnel_Structure.objects.filter(m_personnel__id=self.id).first()
+	def get_institution(self):
+		return self.get_structure().m_structure.institution
+
+	def get_programmes(self):
+		result = set()
+		permissions = self.get_function(self.actual_institution.id).m_role.permissions
+		if permissions > 4:
+			taches = Operation.objects.filter(tache__activite__action__programme__institution=self.actual_institution)
+		else:
+			taches = Operation.objects.filter(personnel__id=self.id,tache__activite__action__programme__institution=self.actual_institution)
+		for t in taches:
+			result.add(t.tache.activite.action.programme)
+		return result
+	class Meta:
+		ordering=('nom',)
+
+class Personnel_Function(models.Model):
+	m_personnel = models.ForeignKey(Personnel,blank=True,null=True,on_delete=models.CASCADE)
+	m_role = models.ForeignKey(Role,blank=True,null=True,on_delete=models.CASCADE)
+	m_start_date = models.DateTimeField(auto_now_add=True)
+	m_institution = models.ForeignKey(Institution,blank=True,null=True,on_delete=models.CASCADE)
+	def __str__(self):
+		return str(self.m_role)
+	class Meta:
+		ordering=('-m_start_date',)
+
+class Personnel_Structure(models.Model):
+	m_personnel = models.ForeignKey(Personnel,blank=True,null=True,on_delete=models.CASCADE)
+	m_structure = models.ForeignKey(Structure,blank=True,null=True,on_delete=models.CASCADE)
+	m_start_date = models.DateTimeField(auto_now_add=True)
+	m_responsable = models.BooleanField(default=False,blank=True,null=True)	
+	def __str__(self):
+		return str(self.m_personnel) + " : " +str(self.m_structure)
+	class Meta:
+		ordering=('-m_start_date',)
+
+class EntityType(models.Model):
+	m_nom = models.CharField(max_length=128,blank=True,null=True)
+	m_date_creation = models.DateTimeField(auto_now_add=True)
+	m_date_modif = models.DateTimeField(auto_now=True)
+	# Expected Fields
+	m_fields = models.TextField(blank=True,null=True)
+	m_type_fields = models.TextField(blank=True,null=True)
+	# Fields for Rapport
+	m_fields_rapported = models.TextField(blank=True,null=True)
+	m_type_fields_rapp = models.TextField(blank=True,null=True)
+	# Entity for Taches
+	is_tache = models.BooleanField(default=False,blank=True,null=True)
+	def __str__(self):
+		return str(self.m_nom)
+
+	def fields(self):
+		fields = self.m_fields.split("|")[:-1]
+		return fields
+
+	def type_fields(self):
+		fields = self.m_type_fields.split("|")[:-1]
+		return fields
+
+	def lines(self):
+		if self.is_tache:
+			results = Tache.objects.filter(m_type_entity__id=self.id)
+		else:
+			results = Entity.objects.filter(m_type_entity__id=self.id)
+		return results
+
+	def objects_field(self):
+		results = list()
+		index = 0
+		for f in self.fields():
+			results.append({'label':f})
+		for f in self.type_fields():
+			results[index]['type'] = f
+			index += 1
+		return results
+
+class Entity(models.Model):
+	m_nom = models.CharField(max_length=256,blank=True,null=True)
+	m_date_creation = models.DateTimeField(auto_now_add=True)
+	m_date_modif = models.DateTimeField(auto_now=True)
+	m_type_entity = models.ForeignKey(EntityType,blank=True,null=True,on_delete=models.CASCADE)
+	m_value_fields = models.TextField(blank=True,null=True)
+	is_rapported = models.BooleanField(blank=True,null=True)
+	#sup_entity =  models.ForeignKey(Entity,related_name='sup_entity',on_delete=models.CASCADE,blank=True,null=True)
+	def levels(self,lvl,institution):
+		if lvl != -1:
+			hierachie = InsitutionEntities.objects.filter(m_institution=institution,m_entity_type=self.m_type_entity).first().m_hierachie
+			diff_hierachie = lvl - hierachie
+			res = [Entity.objects.get(id=self.id)]
+			for i in range(diff_hierachie):
+				tmp = list()
+				for r in res:
+					tmp+=r.sub_entities()
+				res = tmp
+		else:
+			res = [self.taches()]
+		return res
+
+	def taches(self):
+		results = list()
+		if self.m_type_entity.is_tache == False:
+			sub = self.sub_entities()	
+			for su in sub:
+				if su.m_type_entity.is_tache == True:
+					results += sub
+					break
+				elif su.m_type_entity.is_tache == False:
+					results += su.taches()
+					break
+			"""
+			if sub.first() != None and sub.first().m_type_entity.is_tache == True:
+				results += sub
+			elif sub.first().m_type_entity.is_tache == False:
+				for s in sub:
+					results += s.taches()
+			"""
+		return results
+	
+	def __str__(self):
+		result = list()
+		if self.values() != list():
+			result = self.values()[0]
+		return str(self.m_type_entity) + ' : '+str(result)
+
+	def values(self):
+		return self.m_value_fields.split("|")[:-1]
+
+	def tache(self):
+		return Tache.objects.filter(id=self.id).first()
+
+	def progression(self):
+		pass
+
+	def sub_entities(self):
+		result = list()
+		relations = EntityHierachie.objects.filter(m_sup_entity__id = self.id)
+		for r in relations:# r.m_sub_entity.m_type_entity.is_tache == True
+			result.append(r.m_sub_entity)
+			"""
+			if r.m_sub_entity.m_type_entity.is_tache == True:
+				result.append(r.sub_tache())
+			else:
+				result.append(r.m_sub_entity)
+			"""
+		return result
+
+	def sup_entity(self):
+		return EntityHierachie.objects.filter(m_sub_entity__id=self.id).first().m_sup_entity
+
+	def rapport(self):
+		pass
+
+	class Meta:
+		ordering=('-m_date_modif',)
+
+class EntityFile(models.Model):
+	m_entity = models.ForeignKey(Entity,on_delete=models.CASCADE,blank=True,null=True)
+	m_field = models.CharField(max_length=32,blank=True,null=True)
+	m_file = models.FileField(blank=True,null=True)
+
+class EntityHierachie(models.Model):
+	m_sup_entity = models.ForeignKey(Entity,on_delete=models.CASCADE,blank=True,related_name='sup',null=True)
+	m_sub_entity = models.ForeignKey(Entity,on_delete=models.CASCADE,blank=True,related_name='sub_entity',null=True)
+	def sub_tache(self):
+		return Tache.objects.filter(id=self.m_sub_entity.id).first()
+
+class Tache(Entity):
+	structure = models.ForeignKey(Structure,on_delete=models.CASCADE,blank=True,null=True)
+	def fields(self):
+		fields = self.m_fields.split("|")[:-1]
+		return fields
+
+	def values(self):
+		return self.m_value_fields.split("|")[:-1]
+
+	def type_fields(self):
+		fields = self.m_type_fields.split("|")[:-1]
+		return fields
+
+	def repartition(self):
+		result = None
+		reparts = TacheRepartition.objects.filter(m_tache__id=self.id).first()
+		if reparts is not None:
+			result = reparts.m_roles.filter()
+		return result
+
+	def operations(self):
+		return Operation.objects.filter(tache=self.id)
+
+	def operations_not_done(self):
+		opes = self.operations()
+		result = list()
+
+		for o in opes:
+			tmp = True
+			periodes = o.periodes()
+			if periodes != None:
+				periodes = periodes.desc_split()
+				if '2' in periodes:
+					tmp = False
+					break
+				if tmp == True:
+					result.append(o)
+		if result == list():
+			result = None
+		return result
+
+	def plan_months(self):
+		planify = TachePlannify.objects.filter(m_tache__id=self.id).first()
+		return planify.m_planify.split('_')
+
+	def plannification(self):
+		result = TachePlannify.objects.filter(m_tache__id=self.id).first()
+		return result
+
+	def progression(self):
+		result = 0
+		operations = Operation.objects.filter(tache__id=self.id)
+		for o in operations:
+			result += o.progression()
+		if operations.count()>0:
+			result /= operations.count()
+		return int(result)
+
+	class Meta:
+		#ordering=('-date_creation','code',)
+		pass
+
+	def evolution_period(self):
+		subperiods = self.activite.action.programme.institution.default_subperiod
+		result = list()
+		for s in range(0,len(subperiods.decoup_desc_slip())):
+			tmp=0
+			nb_op= 0
+			for operation in self.operations():
+				"""
+				if operation.periodes() != None and operation.periodes().m_chronogramme == subperiods:
+					if operation.evolution_period(s) != -1:
+						tmp += operation.evolution_period(s)
+						nb_op += 1
+				"""
+				tmp += operation.evolution_period()
+				nb_op += 1
+			if nb_op != 0:
+				tmp /= nb_op
+				result.append(tmp)
+			else:
+				result.append(0)
+		return result
+
+	def rapport(self):
+		return TacheRapport.objects.filter(m_tache__id = self.id).first()
+
+class Operation(models.Model):
+	code = models.CharField(max_length=16,blank=True,null=True)
+	nom = models.CharField(max_length=128,blank=True,null=True)
+	montant = models.IntegerField(blank=True,null=True)
+	personnel = models.ForeignKey(Personnel,on_delete=models.CASCADE,blank=True,null=True)
+	resultat_attendu = models.TextField(blank=True,null=True)
+	etat = models.CharField(max_length=32,default='0')
+	tache = models.ForeignKey(Tache,on_delete=models.CASCADE,blank=True,null=True)
+	notification = models.CharField(max_length=128,blank=True,null=True)
+	semaines = models.CharField(max_length=128,blank=True,null=True)
+	date_creation = models.DateTimeField(auto_now_add=True,blank=True,null=True)
+	priorite = models.CharField(max_length=64,default='Normale',blank=True,null=True)
+	def __str__(self):
+		return self.nom
+
+	def evolution_period(self,arg_subperiod="#"):
+		actual_subperiod = self.tache.activite.action.programme.institution.default_subperiod
+		subperiods = OperationPeriode.objects.filter(m_operation__id=self.id,m_chronogramme=actual_subperiod).first()
+		result = -1
+		"""
+		if subperiods != None and subperiods.desc_split()[arg_subperiod] != '9':# Verifier si tu es different de 9
+			tmp = subperiods.desc_split()[int(arg_subperiod)]
+			result = self.progression()
+		"""
+		result = self.progression()
+		return result
+
+	def progression(self):
+		result = 0
+		rapports = self.periodes()
+		tmp_rapports = list()
+		if rapports != None:
+			tmp_rapports = rapports.desc_split()
+			tmp_rapports_size = len(tmp_rapports)
+		index = 0
+		for i in tmp_rapports:
+			if i != '9':
+				if i == '0':
+					result += 0
+				elif i == '1':
+					result += 50
+				elif i == '2':
+					result += 100
+				index += 1
+			else:
+				pass
+		if index != 0:
+			result /= index
+		"""
+		if self.etat == '1':
+			result = 50
+		elif self.etat == '2':
+			result = 100
+		"""
+		return result
+
+	def periodes(self):
+		return OperationPeriode.objects.filter(m_operation__id=self.id).first()
+
+	def rapported(self):
+		return OperationRapport.objects.filter(operation__id=self.id).first()
+
+	def derniere_modif(self):
+		rapport = OperationRapport.objects.filter(operation__id=self.id).first()
+		if rapport == None:
+			result = self.date_creation
+		else:
+			result = rapport.date_creation
+		return result
+
+	def tech_rapports(self):
+		return OperationRapport.objects.filter(operation__id=self.id,type_rapport='c')
+
+	def finan_rapports(self):
+		return OperationRapport.objects.filter(operation__id=self.id,type_rapport='f')
+
+	class Meta:
+		ordering=('-date_creation',)
+
+class OperationRapport(models.Model):
+	operation = models.ForeignKey(Operation,on_delete=models.CASCADE,blank=True,null=True)
+	piece_jointe = models.FileField(blank=True,null=True)
+	nom_piece_jointe = models.CharField(max_length=128,blank=True,null=True)
+	date_creation = models.DateTimeField(auto_now_add=True)
+	commentaire = models.TextField(blank=True,null=True)
+	type_rapport = models.CharField(default="c",max_length=2,blank=True,null=True)#c technique, f financier
+	period = models.IntegerField(blank=True,null=True)
+	def __str__(self):
+		return str(self.nom_piece_jointe)
+
+class OperationRapport_Eval(models.Model):
+	operation_rapport = models.ForeignKey(OperationRapport,on_delete=models.CASCADE,blank=True,null=True)
+	date_creation = models.DateTimeField(auto_now_add=True)
+	commentaire = models.TextField(blank=True,null=True)
+	m_status = models.IntegerField(default=0,blank=True,null=True)	
+
+class TacheRepartition(models.Model):
+	m_tache = models.ForeignKey(Tache,on_delete=models.CASCADE,blank=True,null=True)
+	m_personnels = models.ManyToManyField(Personnel,blank=True)
+	m_roles = models.ManyToManyField(Role,blank=True)
+
+class TachePlannify(models.Model):
+	m_tache = models.ForeignKey(Tache,on_delete=models.CASCADE,blank=True,null=True)
+	m_planify = models.TextField(blank=True,null=True)
+	m_periode = models.ForeignKey(Periode,on_delete=models.CASCADE,blank=True,null=True)
+
+class TachePeriode(models.Model):
+	m_tache = models.ForeignKey(Tache,on_delete=models.CASCADE,blank=True,null=True)
+	m_chronogramme = models.ForeignKey(Periode,on_delete=models.CASCADE,blank=True,null=True)
+
+class OperationPeriode(models.Model):
+	m_operation= models.ForeignKey(Operation,on_delete=models.CASCADE,blank=True,null=True)
+	m_chronogramme = models.ForeignKey(SubPeriode,on_delete=models.CASCADE,blank=True,null=True)
+	m_desc_realisation = models.TextField(blank=True,null=True)
+	def chrono_split(self):
+		return self.m_chronogramme.m_decoupage.split("|")
+	def desc_split(self):
+		result = None
+		if self.m_desc_realisation != None:
+			result = self.m_desc_realisation.split("_")[:-1]
+		return result
+
+#Hierachie Rapports
+"""
+class TacheRapport(models.Model):
+	m_activite = models.ForeignKey(Activite,on_delete=models.CASCADE,blank=True,null=True)
+	m_date_rapport = models.DateTimeField(auto_now_add=True)
+	m_resultat_realise = models.TextField(blank=True,null=True)
+"""
+
+class EntityRapport(models.Model):
+	m_entity = models.ForeignKey(Entity,on_delete=models.CASCADE,blank=True,null=True)
+	m_date_rapport = models.DateTimeField(auto_now_add=True)
+	m_resultat_realise = models.TextField(blank=True,null=True)
+
+class InsitutionEntities(models.Model):
+	m_institution = models.ForeignKey(Institution,on_delete=models.CASCADE,blank=True,null=True)
+	m_entity_type = models.ForeignKey(EntityType,on_delete=models.CASCADE,blank=True,null=True)
+	m_hierachie = models.IntegerField(blank=True,null=True)
+	class Meta:
+		ordering=('m_institution','m_hierachie',)
+	def __str__(self):
+		#str(self.m_institution) + " : "+str(self.m_entity_type) + " - " + str(self.m_hierachie)
+		return str(self.m_entity_type)

@@ -1,0 +1,98 @@
+{% extends './entities.html' %}
+{% load static %}
+{% block add_title %} 
+Archives et Historique
+{% endblock %}
+
+{% block search_filters %}
+<h2> Achivage des Travaux </h2>
+{% endblock %}
+
+
+{% block print_bar %}
+
+{% endblock %}
+
+
+{% block table %}
+{% block documenter %}
+<form method="POST" class="pb-3" action="/history/dates/">
+  {% csrf_token %}
+  <div class="row d-flex flex-wrap">
+    <div class="col-lg-3 col-md-4 col-6">
+      <label> Filtrer du : </label>
+      <input type="date" {% if start_date != None %} value="{{start_date}}" required {% endif %}  class="form-control" name="start_date">
+    </div>
+    <div class="col-lg-3 col-md-4 col-6">
+      <label> Jusqu'au : </label>
+      <input type="date" {% if end_date != None %} value="{{end_date}}" required {% endif %} class="form-control" name="end_date">
+    </div>
+    <div class="col-lg-3 col-md-4 col-6">
+      <label> &nbsp;<br> </label>
+      <div><input type="submit" class="btn btn-success" value="Filtrer"></div>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% if nb_lines > 0 %}
+<div class="my-2">
+  <button type="button" onclick="launchPDF(15)" class="btn btn-danger" >
+    <b>Archivage des Travaux</b> <i class="fas fa-file-pdf"></i>
+  </button>
+</div>
+{% endif %}
+  {% block table_content %}
+    {% if nb_lines > 0 %}
+    <table class="table table-hover display dataTable no-footer" id="tache" style="width:100%;" role="grid" aria-describedby="datatable_info">
+      <thead>
+        {% block fields %}
+        <tr role="row">
+          {% for th in fields %}
+          <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+            {{th}}
+            <span>
+              <i class="fas fa-angle-up"></i>
+              <i class="fas fa-angle-down"></i>
+            </span>
+          </th>
+          {% endfor %}
+        </tr>
+        {% endblock %}
+      </thead>
+      <tbody id='table_body'>
+        {% if actual_institution.default_options == True %}
+        {% for line in pages_o %}
+        <tr>
+         <td>{{line.operation.tache}}</td>
+         <td class='bg-light'>{{line.operation}}</td>
+         <td>{{line.operation.personnel}}</td>
+         <td><a href="{{line.piece_jointe.url}}"> <i class="fas fa-file"></i>&nbsp;{{line}}</a></td>
+         <td class=""><b>{{line.date_creation}}</b></td>
+         <!-- <td></td> -->
+       </tr>
+       {% endfor %}
+       {% else %}
+       {% for line in pages_o %}
+       <tr>
+        <td>{{line.tache}}</td>
+        <td class='bg-light'>{{line}}</td>
+        {% for val in line.values_spl2 %}
+        <td class="value_liner replace_n">{{val}}</td>
+        {% empty %}
+        <td class="value_liner replace_n"></td>
+        {% endfor %}
+        <td><span>{{line.personnel}}</span></td>
+        <td class=""><b>{{line.date_creation}}</b></td>
+        <!-- <td></td> -->
+      </tr>
+      {% endfor %}
+      {% endif %}
+    </tbody>
+    </table>
+    {% else %}
+    <div class="mt-5">
+      <div class="h3 text-center">Vous n'avez actuellement aucune Tâche à suivre l'évolution.</div>
+    </div>
+    {% endif %}
+  {% endblock %}
+{% endblock %}

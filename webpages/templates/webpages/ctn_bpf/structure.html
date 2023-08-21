@@ -1,0 +1,198 @@
+{% extends './entities.html' %}
+{% load static %}
+{% block add_title %} 
+ Gestionnaire des {{actual_institution.default_struc_name}}
+{% endblock %}
+
+									{% block div_bar %}
+
+									{% endblock %}
+
+{% block miniBigLeft %}
+<div>
+	<div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
+		<div class="btn text-primary"> Localisation </div>
+		<div><i class="fas text-primary fa-angle-down"></i></div>
+	</div>
+	<form method="POST" action="/structures_hie/">
+
+		{% csrf_token %}
+		{% for h2 in actual_institution.Structure_Hierachy %}
+		{% if h2 != None %}
+		{% for h in h2.get_levels %}
+		<div class="">
+			<div class="p-2">
+				<label>{{h.field}}</label>
+				<div class="d-flex">
+					<div>
+						<select onchange="loadselectHIERA({{forloop.counter}})" data-hierachy="{{forloop.counter}}" name="{{h.field}}" class="hieraSelec form-control">
+							{% for g in h.values %}
+							<option class="hieraSelec_option" value="{{g}}">{{g}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+			</div>
+			<div>
+
+			</div>
+		</div>
+		{% endfor %}
+		{% endif %}
+		<div class="p-2 my-2">
+			<input type="submit" class="btn btn-primary" value="Filtrer">
+		</div>
+		{% endfor %}
+	</form>
+</div>
+{% block BigLeft2 %}
+{% endblock %}
+
+{% endblock %}
+
+
+{% block fields %}
+<tr role="row">
+	{% for th in fields %}
+	<th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+		{{th}}
+		<span>
+			<i class="fas fa-angle-up"></i>
+			<i class="fas fa-angle-down"></i>
+		</span>
+	</th>
+	{% endfor %}
+	<th>Arborescence</th>
+	<th class="no_print text-success">Options</th>
+</tr>
+{% endblock %}
+
+{% block lines_table %}
+{% for line in lines %}
+<tr role="row" class="even" style="cursor:pointer;">
+	<td class="t_cell"><img style="width:30px;height:30px;" src="{% if line.photo != None and line.photo.url != None %}{{line.photo.url}} {% else %} {{actual_institution.img.url}} {% endif %}"> </td>
+	<td class="t_cell" onclick="document.location='/structures/{{line.id}}/'"> {{line.nom}}</td>
+	<td class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {{line.designation}}</td>
+	<td data-id="{% if line.responsable != None %}{{line.responsable.id}}{% else %}0{% endif %}" class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {% if line.responsable != None %}{{line.responsable}}{% else %}Par Défaut {% endif %}</td>
+	<td class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {{line.nb_taches}}</td>
+	<td>
+		<div class="d-flex flex-wrap">
+			{% for l in line.struct_hierachy %}
+			<div class="p-2"><small class="badge badge-primary">{{l}}</small> <small class="badge">&nbsp;> </small> </div>
+			{% endfor %}
+		</div>
+	</td>
+	<td class="t_cell no_print"><button  data-id="{{line.id}}"  class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+	</button> <button class="btn btn-danger delete-btn" data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"  onclick='merde(this);'><i class="fas fa-trash-alt"></i></button>
+</td>
+</tr>
+{% endfor %}
+{% endblock %}
+
+{% block add_modal %}
+<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div style='max-width:450px;' class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+				<h4 class="modal-title" id='modify_title'>Ajouter une {{actual_institution.default_struc_name}} </h4>
+				<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+
+			<div class="modal-body">
+				<form enctype="multipart/form-data"  class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post">
+					{% csrf_token %}
+					<input type='hidden' name='generator' value='s'>
+					<input type="hidden" name="edit_or_create" id="edit_or_create" value="c">
+					<input type="hidden" name="edit_id" id="edit_id">
+
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="form-group">
+								Logo
+								<input type="file" class="form-control" name="logo">
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								Nom
+								<input type="text" class="form-control" name="nom" id="codeAct" required="">
+							</div>
+						</div>
+						<input type="hidden" name="Institution" value="{{actual_institution.id}}">
+						<div class="col-sm-12">
+							<div class="form-group">
+								Désignation
+								<input type="text" class="form-control" name="designation" id="nomAct" required="">
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								Responsable - {{actual_institution.default_struc_name}}
+								<select class="form-control" name="responsable" id="nomAct" required="">
+									<option value="0">Par Défaut</option>
+									{% for perso in personnels %}
+									<option value="{{perso.id}}">{{perso}}</option>
+									{% endfor %}
+								</select>
+							</div>																				
+						</div>
+						{% for s in searches %}
+						<div class="col-sm-12">
+							<div class="form-group">
+								{{s.label}}
+								<select name="{{s.label}}" class="form-control">
+									{% for val in s.values %}
+									<option value="{{val.id}}">{{val}}</option>
+									{% endfor %}}
+								</select>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+					<button type="submit" class="btn btn-primary">Enregistrer
+					</button>
+				</form>
+				{% endblock %}
+
+{% block add_script %}
+<script type="text/javascript">
+hieraSelec = document.getElementsByClassName("hieraSelec");
+hieraSelec_option = document.getElementsByClassName("hieraSelec_option");
+for (var i=0;i<hieraSelec_option.length;i++){
+	if (hieraSelec_option[i].value.split("#").length > 1){
+			hieraSelec_option[i].textContent = hieraSelec_option[i].value.split("#")[1]
+	}
+}
+function selectHIERA(select=1){
+	select = select-1;
+	element = hieraSelec[select].value;
+	if (element.split("#").length > 1){
+		element = element.split("#")[1];
+	}
+	//alert(select)
+	for (var i=select+1;i<select+2;i++){
+		options= hieraSelec[i].getElementsByTagName("option");
+		for (var j=0; j<options.length; j++){
+			val = options[j].value.split("#");
+			if (val[0] != element){
+				options[j].style.display = "none";
+			}
+			else{
+				options[j].style.display = "block";
+				options[j].selected = true;
+			}
+		}
+	}	
+}
+
+function loadselectHIERA(value){
+	for (var i=value; i<hieraSelec.length; i++){
+		selectHIERA(i);
+	}
+}
+loadselectHIERA(1);
+</script>
+{% endblock %}

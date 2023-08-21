@@ -1,0 +1,133 @@
+{% extends './dataelts.html' %}
+
+{% block add_title %} 
+Elements de Donnée
+{% endblock %}
+
+{% block table %}
+<div class="mt-4">
+	<div> Liste des Indicateurs </div>
+	<div>
+		
+		<div class="pt-4 flex-wrap ">
+			<table class="table table-responsive">
+				<thead>
+					<th>Entité</th>
+					<th>Indicateur</th>
+					<th>Methode de Calcul</th>
+				</thead>
+				<tbody>
+					
+			{% for ind in indicateurs %}
+			<tr> 
+				<td> {{ind.m_enti}} </td>
+				<td> {{ind}}</td> 
+				<td> {% if ind.m_datalets_calcul == None %}<span data-target="#details_calculIndic" data-toggle="modal" class="btn btn-warning formula_getter" data-id="{{ind.id}}">Renseigner</span> {% else %} <b> = {{ind.m_datalets_calcul}}</b> {% endif %}</td>
+			</tr>
+			{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block modals %}
+	<div class="modal fade" id="details_calculIndic" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form enctype="multipart/form-data" class="form-horizontal bordered-row" action="/save_gestion/"  id="deleteFormAction" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="generator" value="ieD">
+					<input type="hidden" name="edit_or_create" value="c">
+					<input type="hidden" name="indicateur" id='indicateur_inp'>
+					<div class="modal-body">
+						<h5 style="text-transform:uppercase;">Methode de Calcul de l'Indicateur</h5>
+						<div>
+							<div class="py-2"> 
+								<label> Formule de Calcul </label>
+								<textarea class="form-control" id="indicateur_formule" name="formule"></textarea>
+							</div>
+
+							<div class="py-2"> 
+								<label> Formules de Calcul </label>
+								<div>
+									<div class="d-flex flex-wrap justify-content-between">
+										<div class="p-1">
+											<span data-elt="SUM" onclick="printELT('+','2')" class="btn btn-info">+</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('-','2')" class="btn btn-info">-</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('+','2')" class="btn btn-info">*</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('/','2')" class="btn btn-info">/</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('^','2')" class="btn btn-info">^</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('%','2')" class="btn btn-info">%</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('%','2')" class="btn btn-info"><</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('%','2')" class="btn btn-info">></span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('MOY','2')" class="btn btn-info">Moy</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('{{elt.id}}')" class="btn btn-info">Max</span>
+										</div>
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('{{elt.id}}')" class="btn btn-info">Min</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="py-2"> 
+								<label> Eléments de Donnée </label>
+								<div>
+									<div class="d-flex flex-wrap justify-content-between">
+										{% for elt in dataelts %}
+										<div class="p-1">
+											<span data-elt="{{elt.id}}" onclick="printELT('{{elt.id}}')" class="btn btn-light">{{elt}}</span>
+										</div>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary"> Confirmer</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block script %}
+<script>
+$(".formula_getter").click(function(){
+	tmp_value = this.getAttribute("data-id");
+	$("#indicateur_inp").val(tmp_value);
+})
+function printELT(elt,fnc='1'){
+	indicateur_inp = document.getElementById("indicateur_formule")
+	if (fnc == '1'){
+		indicateur_inp.value += "'$"+elt+"$'";
+	}
+	else{
+		indicateur_inp.value += ""+elt+"";
+	}
+}
+</script>
+{% endblock %}

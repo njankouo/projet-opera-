@@ -1,0 +1,200 @@
+{% extends './data_form.html' %}
+{% load static %}
+
+
+{% block table %}
+	<!-- Rappeller les Infos -->
+	<!-- Mettre les Structures Menu Gauche -->
+	<!-- Rattacher une Structure a une Autre ex : Rg -> District -> FOSA -->
+	<div class="py-3">
+		<div>
+			<a href="/data_form/-1/0/">
+				Liste des Formulaires
+			</a>
+		</div>
+	</div>
+	<div class="col-lg-12">
+		<div class="text-success py-2 d-flex">
+			<div class="p-2"><span data-show='1' onclick="startF(this,{{element.id}},'dF_Div2','block1','block2')" class="btn btn-success">Renseigner Valeurs</span></div>
+		</div>
+		<section id="block1" style="display:none;">
+			<div class="pl-2 d-flex mb-2">
+				<!-- <div><small>Formulaire de Donnees</small></div> -->
+				<div class="d-none"><small class="btn btn-danger">Imprimer la Fiche</small></div>
+			</div>
+			<div>	
+				<form method="POST" action="/save_gestion/" class="card" onsubmit="submitForm()">
+					{% csrf_token %}
+					<input type="hidden" name="generator" value="dSv">
+					<input type="hidden" name="dSv_id" value="{{element.id}}">
+					<input type="hidden" name="edit_or_create" value="c">
+					<input type="hidden" name="variables_value" id="variables_value" >
+					<input type="hidden" name="variables_names" id="variables_names" >
+					<input type="hidden" name="structures_value" id="structures_value" >
+					<div class="card-body" id="dF_Div2">
+
+					</div>
+					<div class="p-2">
+						<input type="submit" class="btn btn-primary" value="Enregistrer" name="">
+					</div>
+				</form>
+			</div>
+		</section>
+		<section id="block2">
+			<caption> <b>Valeurs Renseignees</b> </caption>
+			<table class="table table-responsive">
+				<thead>
+					<tr>
+						<td>Date de Saisie</td>
+						<td>Periode de Validation</td>
+						<td>Sous-Periode de Validation</td>
+						<td>Renseigne par</td>
+						<td>Structures concernees</td>
+						<td>Elements de Donnees</td>
+					</tr>
+				</thead>
+				{% for l in pages_o %}
+				<tr>
+					<td>
+						{{l.m_date_creation}}
+					</td>
+					<td>
+						{{l.m_period_value}}
+					</td>
+					<td>
+						{{l.m_sub_period_value}}
+					</td>
+					<td>
+						{{l.m_user}}
+					</td>
+					<td>
+						<div class="d-flex flex-wrap">
+						{% for elt in l.m_structures.filter %}
+							<div class="px-2"><small class="badge badge-warning">{{elt}}</small></div>
+						{% endfor %}
+						</div>
+					</td>
+					<td>
+						{% for elt in l.elt_values %}
+						{% if elt.m_value != None %}
+						<div class="d-flex flex-wrap">
+							<div class="px-2"><small class="badge badge-primary">{{elt.m_dataelement}}</small></div>
+							<div class="pl-2">
+								<small class="badge">{{elt.m_value}}</small>
+							</div>
+						</div>
+						{% endif %}
+						{% endfor %}
+					</td>
+				</tr>
+				{% empty %}
+				<tr>	
+					<td>Aucune valeur enregistree</td>
+				</tr>
+				{% endfor %}
+			</table>
+			<div>
+				<caption> <b>Taux de Completude</b> </caption>
+				<table class="table table-responsive">
+					<thead>
+					<tr>
+						<td>Periode</td>
+						<td>Sous-Periode</td>
+						<td>Structures assignees</td>
+						<td>Structures effectives</td>
+						<td class="text-success">Taux de Completude</td>
+					</tr>
+					</thead>
+				</table>
+			</div>
+		</section>
+	</div>
+{% endblock %}
+
+
+{% block add_script %}
+<script>
+LaunchFormData({{element.id}},Idiv="dF_Div")
+function initIndic(){
+
+indicSelector = document.getElementsByClassName("indicSelector")
+indic_value = ""
+for (var i=0;i<indicSelector.length;i++){
+	indic_value += indicSelector[i].getAttribute("data-id")+"#"
+}
+$.ajax({
+	url: '/get_elements/',
+	data:{
+		'dataset':{{element.id}},
+		'type_dataset':'0',
+		'other':'dI_formula',
+		'institution':{{actual_institution.id}},
+		'value':indic_value
+	},
+	success:function(data){
+		function check_selector(evalu=false){
+			for (var i=0;i<indicSelector.length;i++){
+				//alert(data.formulas[i])
+				indicSelector[i].textContent = data.formulas[i]
+				tmp_elts = data.data_elts.split("#")
+				elts = new Array()
+				for (var j=0; j<tmp_elts.length;j++){
+					tp = document.getElementsByName("D0elt"+tmp_elts[j]+"")
+					if (tp.length > 0)
+					{
+						elts.push(tp[0].value)		
+					}
+				}
+				for (var j=0; j<elts.length;j++){
+					indicSelector[i].textContent = indicSelector[i].textContent.replace("$"+tmp_elts[j]+"$",elts[j])
+					if (evalu){
+						try{
+							indicSelector[i].textContent = eval(indicSelector[i].textContent);
+						}
+						catch(error){
+						}
+					}
+				}
+			}				
+		}
+		check_selector()
+		variables_selector = document.getElementsByClassName("variableSelector");
+		for (var i=0;i<variables_selector.length;i++){
+			inputs = variables_selector[i].getElementsByTagName("input")[0]
+			inputs.onchange = function(){
+				try{
+				check_selector(true)				
+				}
+				catch{
+					check_selector()
+
+				}
+			}
+		}	
+	}
+})	
+}
+
+
+function startF(block,element_id,div,b1,b2){
+	LaunchFormData(element_id,div);
+	
+	dS = parseInt(block.getAttribute("data-show"))
+	if (dS == 1){
+		$("#"+b2).slideUp('slow',function(){
+			$("#"+b1).slideDown('slow')
+		})
+		block.textContent = "Donnees conservees"
+		initIndic()
+	}
+	else{
+		$("#"+b1).slideUp('slow',function(){
+			$("#"+b2).slideDown('slow')
+		})
+		block.textContent = "Renseigner Valeurs"	
+	}
+	block.setAttribute("data-show",(1-dS))
+}
+
+</script>
+{% endblock %}

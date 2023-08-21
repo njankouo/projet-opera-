@@ -1,0 +1,1313 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block add_title %} Configuration {% endblock %}
+{% block print_bar %}{% endblock %}
+{% block sup_header %}{% endblock %}
+
+{% block extra_header %}
+<style type="text/css">
+	.card{
+		border:none;
+	}
+</style>
+{% endblock %}
+
+{% block search_doc %}{% endblock %}
+{% block search_filters %}{% endblock %}
+
+
+{% block table %}
+<div class="page-content" style='padding:0px;margin:0px;'>
+	<div class=""  style='width:100%;padding:0px;margin:0px;'>
+		<div class="row"   style='width:100%;padding:0px;'>
+			<div class="d-flex flex-wrap justify-content-between col-12 mt-4">
+				<div class="card" style='border:none;height:100%;'>
+					<div class="card-body">
+						<div class="text-center">
+							
+							<div class="d-flex flex-wrap  justify-content-between">
+								<div class="col-12 justify-content-center d-flex flex-wrap">
+									<div>
+										<img src="{{institution.img.url}}" style="width:100px;height:100px;border-radius: 100%;">
+									</div>
+									<div class="ml-2">
+										<div class='h5'>{{institution.sigle}}</div>
+										<div style="text-transform:capitalize;" class='h3 text-dark'>{{institution.nom}}</div>
+										<!-- <div><a href="/edit_institution/{{institution.id}}/" class="btn btn-success mb-2"> Configurer l'Administration </a></div>-->
+										<div>
+											<a href="/edit_institution/{{institution.id}}/" class="btn btn-success"><i class="fas fa-pen"></i></a>
+											&nbsp;
+											<span class="btn btn-info"><i class="fas fa-table"></i></span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="d-flex flex-wrap">
+					<div class="p-2"> <span class="btn btn-success"> Ajouter une Institution </span> </div>
+					<div><br></div>
+					<div class="p-2"> <span class="btn btn-warning"> Tableau de Bord </span></div>
+				</div>
+			</div>
+			<div class="col-12 mt-2 mb-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div class="">
+							<div class="p-1">
+								<input id='default_operation' type="checkbox" {% if actual_institution.operation_defaulted %}checked{% endif %}>
+								<label for='default_operation'> Configuration des Options minimale </label>
+							</div>
+							<div class="p-1">
+								<input id='default_financial' type="checkbox" {% if actual_institution.finan_options != None %}checked{% endif %}>
+								<label for='default_financial'> Implementation Financiere ( Rapport Financier ) </label>
+							</div>
+							<div class="col-lg-4 col-md-6 col-sm-8 mb-2" id="devise_financial" {% if actual_institution.finan_options != None %}style="display:none;"{% endif %}>
+								<label><small>Devise</small></label>
+								<select id="devise_select" class="form-control">
+									<option value="Franc CFA">Franc CFA</option>
+									<option value="Euro">Euro</option>
+									<option value="Dollar">Dollar</option>
+								</select>
+							</div>
+						</div>
+						<div>
+							<label style="text-transform:uppercase;" class="title_div"> Logique des Tâches <span class="text-success">[ Quoi ? ]</span></label>
+							<div class="d-flex flex-wrap justify-content-between">
+								<div class="flex-wrap">
+									{% for entity in actual_institution.get_entities %}
+									<div class="insti_div mb-3 d-flex flex-wrap">
+										<div class="card"><b class="card-header text-success"> {{entity}} </b></div>
+										
+										<div style="" class='d-flex'>
+											<div data-target="#LogicModal" data-id="{{entity.id}}" data-hierachie="{{entity.m_hierachie}}" data-elt='{{entity}}' data-pic="{{entity.m_entity_type.is_pic_represented}}" data-fields="{{entity.m_entity_type.m_fields}}" data-typefields="{{entity.m_entity_type.m_type_fields}}" data-expected="{{entity.m_entity_type.m_fields_rapported}}" data-expected_type="{{entity.m_entity_type.m_type_fields_rapp}}" data-toggle="modal" onclick='editLogic(this,true);' style="cursor:pointer;" class="ml-2 mr-2 card bg-success"><b style="" class="card-header"><i class="text-white fas fa-pen"></i></b></div>
+											{% if entity.m_entity_type.is_tache == False %}
+											<div style="cursor:pointer;" data-target="#deleteModal" onclick='merde(this);' data-id="{{entity.id}}" data-toggle="modal" class="card bg-danger"><b style="" class="card-header"><i class="text-white fas fa-trash"></i></b></div>{% endif %}
+										</div>
+
+										<div class="p-2">
+											<span class="badge badge-success"> <i class="fas fa-paperclip"></i>&nbsp;Attacher Formulaire de Donnees </span>
+										</div>
+										
+									</div>
+									{% endfor %}
+									
+									<div {% if actual_institution.operation_defaulted == True %} style='display:none;'{% endif %} id='operation_DIV'>
+										<div class="insti_div mb-3 d-flex flex-wrap">
+											<div class="card"><b class="card-header text-success"> {{actual_institution.operations_name}} </b></div>
+											
+											<div style="" class='d-flex'>
+												<div data-target="#LogicModal2" data-toggle="modal"  style="cursor:pointer;" class="ml-2 mr-2 card bg-warning"><b style="" class="card-header"><i class="text-white fas fa-cog"></i></b></div>
+												
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div> <span class="btn btn-success" data-toggle='modal' onclick="editLogic()" data-target='#LogicModal'> Ajouter une Entité</span> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 mt-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div style="margin-bottom:70px;">
+							<div class="d-flex flex-wrap justify-content-between mb-3">
+								<label  class="title_div" style="text-transform:uppercase;">Définir la periode <span class="text-success">[ Quand ? ]</span></label>
+							</div>
+							<div class="d-flex flex-wrap justify-content-between mb-3">
+								<div> Fréquence des {{institution.last_entity}} </div>
+								<a class='d-none btn btn-success' data-toggle='modal' href="#periodeModal" onclick="restoreAdd('Période','0')"> Définir ma Période </a>
+							</div>
+							<div class=" table-responsive mb-3">
+								<table class="table mb-0" >
+									<thead>
+										<tr>
+											<th>Période</th>
+											<th>Découpage</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for periode in basis_periodes %}
+										<tr>
+											<td>{{periode.m_value }}</td>
+											{% if periode == user.personnel.actual_institution.default_period %}
+											<td> <div style='max-height:200px;overflow:auto;' class="d-flex flex-wrap justify-content-center">{% for per in periode.decoup_slip %}  <div class="p-1"> <span class="btn btn-light">{{per}}</span> </div>  {% endfor %}</div></td>
+											{% else %}
+											<td> <div style='max-height:200px;overflow:auto;' class="d-flex flex-wrap justify-content-center">{% for per in periode.decoup_slip %}  <div class="p-1"> <span class="btn btn-light">{{per}}</span> </div>  {% endfor %}</div></td>
+											{% endif %}
+											<td>{% if periode == user.personnel.actual_institution.default_period %} <i class="fas fa-star" style="color:#f78a09;font-size: 19px;"></i> {% else %} <a href="/set_period/{{periode.id}}/" style="color:#f78a09;"> Choisir Période par Défaut </a> {% endif %} 
+											</td>
+										</tr>
+										{% endfor %}													
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<div class="d-flex flex-wrap justify-content-between mb-3">
+								<div> Fréquence des Operations </div>
+							</div>
+							<div class="table-responsive">
+								<table class="table mb-0" >
+									<thead>
+										<tr>
+											<th>Periode</th>
+											<th>Sous Periode</th>
+											<th>Decoupage</th>
+											<!--<th>Description </th>-->
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for periode in actual_institution.default_period.sub_periods %}
+										<tr>
+											<td data-id="{{periode.m_periode.id}}">{{periode.m_periode}}</td>
+											<td>{{periode.m_sub_value}}</td>
+											<td style="display:flex;">{% for per in periode.decoup_desc_slip %}  <div class="p-1"> <span class="btn btn-light">{{per}}</span> </div>  {% endfor %}</td>
+											<td>{% if periode == actual_institution.default_subperiod %} <i class="fas fa-star" style="color:#f78a09;font-size: 19px;"></i> {% else %} <a href="/set_period/0/{{periode.id}}/" style="color:#f78a09;"> Choisir Période par Défaut </a> {% endif %}
+											</td>
+										</tr>
+										{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 mt-4">
+				<div class="card" style='width:100%;height:100%;'>
+
+							<div class="d-flex flex-wrap justify-content-between mb-3">
+								<label  class="title_div" style="text-transform:uppercase;">Repetion des Proccedures <span class="text-success">[ Combien ? ]</span></label>
+							</div>
+							<div>
+								<div class="py-1">
+									<input type="checkbox" checked name=""><label>&nbsp; Les {{actual_institution.operations_name}} sont effectues plusieurs fois</label>
+								</div>
+								<div class="py-1">
+									<input type="checkbox" checked name=""><label>&nbsp; Les {{actual_institution.operations_name}} reparties selon la Periode d'Execution</label>
+								</div>
+							</div>
+				</div>
+			</div>
+
+			<div class="col-12 mt-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+							<div  class="title_div"><label> FICHES D'INDICATEURS</label></div>
+							<div>
+								<table class="table"> <!--  table-responsive -->
+									<thead>
+										<tr>
+											<th>Entite</th>
+											<th>Champs d'Informations</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for e in get_entities %}
+										<tr>
+											<td>{{e}}</td>
+											<td>{% if e.m_entity_type.indicateur_fields == "" or e.m_entity_type.indicateurs == None %}Informations par Defaut {% else %} <table class="table"> {% for e2 in e.m_entity_type.indicateurs %}
+											<div class="d-flex flex-wrap">
+												<div class="px-2">
+												<span class="badge ">{{e2.label}}</span>	
+												</div>
+
+												<div class="px-2">
+												<span class="badge badge-info ">{{e2.type}}</span>	
+												</div>											</div>
+											 {% endfor %}	</table> {% endif %}</td>
+											<td class="d-flex flex-wrap">
+
+												<div class="px-2">
+													<i data-toggle="modal"
+data-target="#indiModal" data-contain="{{e.m_entity_type.indicateur_fields}}" data-ent_name="{{e}}" data-ent_id="{{e.id}}"  onclick="editIndi(this)" class="fas fa-pen btn btn-success"></i>
+												</div>
+												<div class="px-2">
+													<i data-toggle="modal" data-ent_name="{{e}}" data-ent_id="{{e.id}}" data-target="#indiModal" onclick="lauIndi(this)"
+													class="fas fa-plus btn btn-primary"></i>
+												</div>
+											</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 mt-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<div class="title_div" style="text-transform:uppercase;"> Roles et Fonctions <span class="text-success">[ Qui ? ]</span></div>
+							<div class="d-flex justify-content-between flex-wrap mb-2 ">
+								<form method="POST" action="/save_gestion/">
+									{% csrf_token %}
+									<input type="hidden" name="edit_or_create" value="c">
+									<input type="hidden" name="generator" value="str">
+									<div class="d-flex flex-wrap">	
+										<div class="py-2 px-4"><label> <b>Désignation Organe Logique : </b> </label></div>
+										<div><input type="text" value="{{actual_institution.default_struc_name}}" class="form-control" name="value"></div>
+										<div class='pl-1'><input type="submit" class="btn btn-success" value='Enregistrer' name=""></div>
+									</div>
+								</form>
+								<div class="d-flex">
+									<div class="p-2"><a class=" btn btn-success" href="/personnels/ "> Gestion des Fonctions</a></div>
+									<div class="p-2"><a class="btn btn-primary" href="/roles/"> Gestion des Rôles</a></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-12 mt-2 mb-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<div class="title_div text-danger" style="text-transform:uppercase;"> <i class="fas fa-clock"></i> Retards et Delais </div>
+							<div class="">
+								<p style="font-weight:bold;"><small> Cette Interface est prevu pour la Gestion des Taches qui ne se feront pas dans les delais/echeances prevus</small></p>
+							</div>
+							<div>
+								<!-- <input readonly checked type="checkbox" name=""> -->
+								<span class="fas fa-check text-danger"></span>
+								<label> Gestion par Defaut</label>
+								<small class="text-danger"> Il est conseille de Laisser la gestion des Delais comme prevu par le Systeme Opera, a moins d'avoir une bonne expertise en RH</small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 mt-2 mb-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<label style="text-transform:uppercase;"> Gestion {{actual_institution.default_struc_name}} </label>
+							<div class="">
+								<div> <small>Hierachie des Structures </small> </div>
+								<!--
+								<div class="text-success" style="cursor:pointer;"><small>+ Ajouter Noued</small></div>
+								--> 
+								<div class="d-flex flex-wrap">
+									{% for h2 in actual_institution.Structure_Hierachy %}
+										{% if h2 != None %}
+										{% for h in h2.get_levels %}
+										<div class="d-flex flex-wrap">
+											<div class="p-2">
+												<label>{{h.field}} &nbsp;<i class="fas fa-angle-right"></i></label>
+												<div class="d-flex">
+													<div>
+													<select onchange="loadselectHIERA({{forloop.counter}})" data-hierachy="{{forloop.counter}}" class="hieraSelec form-control">
+														{% for g in h.values %}
+														<option class="hieraSelec_option" value="{{g}}">{{g}}</option>
+														{% endfor %}
+													</select>
+													</div>
+													<!--
+													<div class="d-flex">
+														<div class="px-1"><i class="btn btn-success fas fa-pen"></i></div>
+														<div class="px-1"><i class="btn btn-danger fas fa-trash"></i></div>
+													</div>
+													-->
+												</div>
+											</div>
+											<div>
+												
+											</div>
+										</div>
+										{% endfor %}
+										{% endif %}
+									{% endfor %}
+								</div>
+							</div>
+							<div class="d-flex flex-wrap">
+								<div class="pt-2"><a class="btn btn-primary" href="/structures/">Liste des Structures</a></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			
+		</div>
+
+
+
+
+
+
+
+
+		{% endblock %}
+
+
+{% block add_modals %}
+
+	    <div class="modal fade" id="indiModal" tabindex="-1" role="dialog" aria-hidden="true">
+	        <div class="modal-dialog modal-lg"><!--  -->
+	            <div class="modal-content">
+	                <form class="form-horizontal bordered-row" action="/save_gestion/" onsubmit="save_indi_val()" id="deleteFormAction" method="post">
+	                	<input type="hidden" name="generator" value="ind_va">
+	                	<input type="hidden" name="edit_or_create" value="c" id="edit_or_create_ind_val">
+	                	<input type="hidden" name="ind_val" id="ind_val">
+	                	<input type="hidden" name="entity_ind_id" id="entity_ind_id">
+	                    {% csrf_token %}
+	                    <div class="modal-body">
+	                        <h5>Options d'Indicateur</h5>
+	                        <h6>Enregistrer des options d'Indicateurs</h6>
+	                        <div>
+		                        <div id="addIndiCamver">
+									<div class="col-12 mb-3 pt-2">
+										<div class="col-12">
+											<div class="d-flex p-2">
+												<label>Entite</label>
+												<div class="px-2" id="entity_ind_value"></div>
+											</div>
+											<div class="col-12 d-flex flex-wrap">
+												<div class="p-2 col-lg-9">
+													<label>Libelle du Champs</label>
+													<div>
+														<input type="text" class="form-control cha_value" name="">
+													</div>
+												</div>
+												<div class="p-2 col-lg-3">
+													<label>Type de Donnees</label>
+													<div>
+														<select class="form-control cha_type">
+															<option value="number">Nombre</option>
+															<option value="texte">Texte</option>
+															<option value="date">Date</option>
+														</select>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div style="cursor:pointer;" class="text-success py-2" onclick="addIndiChamps()">+ Ajouter un Champs</div>
+							</div>
+	                    </div>
+	                    <div class="modal-footer">
+	                        <button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+	                        <button type="submit" class="btn btn-primary"> Confirmer</button>
+	                    </div>
+	                </form>
+
+	            </div>
+	        </div>
+	    </div>
+
+		<div class="modal fade bd-example-modal-xl" id="waitModal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<span data-dismiss="modal" class="d-none" id="waitModal_cls">zz</span>
+						<div class="text-center h1">Patientez svp</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade bd-example-modal-xl" id="periodeModal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form class="form-horizontal bordered-row" action="/save_period/" id="deleteFormAction" method="post">
+						{% csrf_token %}
+						<input type="hidden" name="edit_or_create" id="edit_or_create_Période" value="c">
+						<input type="hidden" name="edit_id" id="edit_id_Période">
+						<div class="modal-header">
+							<div class="modal-title" id="modify_title_Période">Ajouter Période</div>
+						</div>
+						<div class="modal-body">
+							<input type="hidden" name="institution" value="{{institution.id}}">
+							<div class="col-lg-7 form-group">
+								<label>Renseigner la Période</label>
+								<input type="text" class="form-control" name="periode">
+							</div>
+							<div class="col-lg-12 form-group">
+								<label>Préciser le Découpage</label>
+								<textarea type="text" rows=3 class="form-control" name="decoupage"> </textarea>
+							</div>
+						  <!-- <div class="col-lg-7 form-group">
+							<label>Détails du Découpage</label>
+							<input type="text" class="form-control" name="details_decoupage">
+						</div> -->
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+						<button type="submit" class="btn btn-primary"> Confirmer</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade bd-example-modal-xl" id="subperiodeModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form class="form-horizontal bordered-row" action="/save_period/" id="deleteFormAction" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="edit_or_create" id="edit_or_create_Sous-Période" value="c">
+					<input type="hidden" name="edit_id" id="edit_id_Sous-Période">
+					<div class="modal-header">
+						<div class="modal-title" id="modify_title_Sous-Période">Ajouter Sous-Période</div>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" name="sub_period" value="0">
+						<input type="hidden" name="institution" value="{{institution.id}}">
+						<div class="col-lg-7 form-group">
+							<label>Renseigner la Période</label>
+							<select class="form-control" name="big_periode">
+								{% for periode in institution.periodes %}
+								<option value="{{periode.m_periode.id}}">{{periode}}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-lg-7 form-group">
+							<label>Renseigner la Sous-Période</label>
+							<input type="text" class="form-control" name="periode">
+						</div>
+						<div class="col-lg-12 form-group">
+							<label>Préciser le Découpage</label>
+							<textarea type="text" class="form-control" name="decoupage"> </textarea>
+						</div>
+						<div class="col-lg-12 form-group">
+							<label>Détails du Découpage</label>
+							<textarea type="text" class="form-control" name="details"> </textarea>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+						<button type="submit" class="btn btn-primary"> Confirmer</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade bd-example-modal-xl" id="addonsLogic" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-title">Modules <span class='text-success modules_name'> </span></div>
+				</div>	
+				<div class="modal-body">
+					<ul class="list-group">
+					</ul>
+				</div>	
+			</div>
+		</div>
+	</div>
+	<div class="modal fade bd-example-modal-xl" id="LogicModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form class="form-horizontal bordered-row" onsubmit='saveEntity()' action="/save_entity/" method="post">
+					{% csrf_token %}
+					<div class="modal-header">
+						<div class="modal-title">Logique de l'Institution :<span class='logic_editer text-success'> Nouvelle Entité</span></div>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" name="institution" value="{{actual_institution.id}}">
+						<input type="hidden" id="edit_or_create" name="edit_or_create" value="c">
+						<input type='hidden' name='fields_name' id='fields_name'>
+						<input type='hidden' name='fields_type' id='fields_type'>
+						<input type='hidden' name='fields_name2' id='fields_name2'>
+						<input type='hidden' name='fields_type2' id='fields_type2'>
+						<input type='hidden' value='0' name="entity_image">
+						<input type="hidden" name="enum_fields" id="enum_fields">
+						<input type="hidden" name="enum_rapp_fields" id="enum_rapp_fields">
+						<input type="hidden" name="indicateurs_field" id="indicateurs_field" valeur="indicateurs_field">
+						<div>
+							<div class="row">
+								<div class="col-lg-6 form-group">
+									<label>Nom de l'Entité</label>
+									<input type='text' required class="form-control logic_editer" name="entity_nom">
+								</div>
+								<div class="col-lg-6 form-group">
+									<label>Arborescence de l'Entité</label>
+									<select class="form-control logic_editer" name="entity_hierachy">
+										<option selected="" value="-1">Entité Source</option>
+										{% for entity in actual_institution.get_entities.reverse %}                          
+										{% if entity.m_entity_type.is_tache == False %}
+										<option value="{{entity.m_hierachie}}">{{entity}}</option>
+										{% endif %}
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-lg-9">
+									<input id='add_img_cvr' type="checkbox" name="entity_image">
+									<label for='add_img_cvr'> Ajouter une Image de couverture </label>
+								</div>
+							</div>
+							<!-- <label>Champs de l'Entité</label> -->
+							<div class="" style="padding:10px; border:1px solid #bbb;">
+								<label class="text-success"> Informations de l'Entité</label>
+								<div class="logic_editer">
+									<div class="d-flex justify-content-between form-group">
+
+										<div class="col-lg-6">
+											<label> Nom du Champs </label>
+											<input value='Nom' readonly type='text' class="entity_name form-control">
+										</div>
+										<div  class="col-lg-6">
+											<label> Type </label>
+											<select class="entity_type form-control">
+												{% include "./includes/type_entities.html" %}
+											</select>
+											<!-- <div>
+												<input type="checkbox" name="">
+												<label> Ajouter une Aggreagtion </label>
+											</div> -->
+										</div>
+									</div>
+ 
+									<div class="d-flex justify-content-between form-group">
+										<div class="col-lg-6">
+											<label> Nom du Champs </label>
+											<input value='Objectifs' readonly type='text' class="entity_name form-control">
+										</div>
+										<div  class="col-lg-6">
+											<label> Type </label>
+											<select class="entity_type form-control">
+												{% include "./includes/type_entities.html" %}
+											</select>
+											<!-- <div>
+												<input type="checkbox" name="">
+												<label> Ajouter une Aggreagtion </label>
+											</div> -->
+										</div>
+									</div>
+
+
+								</div>
+								<div>
+									<div onclick='addChamps(this)' style='cursor:pointer;' class='text-center text-success'>+ Ajouter un Champs</div>
+								</div>
+							</div>
+							<div class="mt-3" style="padding:10px; border:1px solid #bbb;">
+								<label class="text-info"> Informations à Rapporter </label>
+								<div class="logic_editer">
+									<div class="d-flex justify-content-between form-group">
+										<div class="col-lg-6">
+											<label> Nom du Champs </label>
+											<input value='Résultat Obtenu' type='text' class=" 2 form-control">
+										</div>
+										<div class="col-lg-6">
+											<label> Type </label>
+											<select class="entity_type2 form-control">
+												{% include "./includes/type_entities.html" %}
+											</select>
+										</div>
+									</div>
+								</div>
+								<div>
+									<div onclick="addChamps(this,'2')" style='cursor:pointer;' class='text-center text-info'>+ Ajouter un Champs</div>
+								</div>
+							</div>														
+						</div>
+						<input type="hidden" name="edit_id" value="" class="logic_editer">
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+							<button type="submit" class="btn btn-primary"> Confirmer</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade bd-example-modal-xl" id="LogicModal2" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form class="form-horizontal bordered-row" onsubmit='saveOperation()' action="/save_entity/" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="ope_aggregate" value="0">
+					<input type="hidden" name="aggregate_fields_name" id="aggregate_fields_name" value="">
+					<input type="hidden" name="aggregate_fields_type" id="aggregate_fields_type" value="">
+					<input type="hidden" name="aggregate_rap_fields_name" id="aggregate_rap_fields_name" value="">
+					<input type="hidden" name="aggregate_rap_fields_type" id="aggregate_rap_fields_type" value="">
+					<input type="hidden" name="institution" value="{{actual_institution.id}}">
+					<input type="hidden" name="edit_or_create_O" value="c">
+					<div class="modal-header">
+						<div class="modal-title">Logique de l'Institution :<span class='logic_editer_O text-successr'> Opération </span></div>
+					</div>
+					<div class="modal-body">
+						<div class="text-center h5 p-3"> 
+							Il s'agit de l'Entité Elementaire de Traitement, vous pouvez la renommer ou manipuler directement les Add-ons.
+						</div>
+						<div class="d-flex justify-content-center">
+							<center class="text-center col-lg-6 form-group">
+								<label>Nom de l'Entité</label>
+								<input value="{{actual_institution.operations_name}}" type='text' class="form-control logic_editer_O" name="aggregate_name">
+							</center>
+						</div>
+
+						<div class="">
+							<div> <small class="text-secondary"> Champs d'Informations </small> </div>
+							<div> 
+								{% for field in actual_institution.operations_modules.fill_fields %}
+								<div class="d-flex justify-content-between form-group">
+									<div class="col-lg-6">
+										<label> Nom du Champs </label>
+										<input value='{{field.field}}' type='text' class="entity_name_O form-control" required>
+									</div>
+									<div  class="col-lg-4">
+										<label> Type </label>
+										<select data-value='{{field.type}}' onchange='test_type_O()' class="aggr_selec entity_type_O form-control">
+											{% include "./includes/type_entities.html" %}
+										</select>
+											<!-- <div>
+												<input type="checkbox" name="">
+												<label> Ajouter une Aggreagtion </label>
+											</div> -->
+											<!-- <input type='checkbox'> <label> Fonctions d'Aggregat </label> -->
+										</div>
+										<div class="col-lg-1">
+											<i class="fas fa-times btn btn-danger" onclick="removeLine(this)"></i>
+										</div>
+									</div>                               
+									{% endfor %}
+									<div id='nd_ope_div'>
+										
+									</div>
+									<div class="text-center text-success" onclick="addChamps(this,'0','op')" style="cursor:pointer;">+ Ajouter un Champs</div>
+								</div>
+								<!-- -->
+								<div> <small class="text-secondary"> Champs à Renseigner </small> </div>
+								<div> 
+									{% for field in actual_institution.operations_modules.fill_fields_rapp %}
+									<div class="d-flex justify-content-between form-group">
+										<div class="col-lg-6">
+											<label> Nom du Champs </label>
+											<input value='{{field.field}}' type='text' class="entity_name2_O form-control">
+										</div>
+										<div  class="col-lg-4">
+											<label> Type </label>
+											<select data-value='{{field.type}}' class="aggr_selec entity_type2_O form-control">
+												{% include "./includes/type_entities.html" %}
+											</select>
+											<!-- <div>
+												<input type="checkbox" name="">
+												<label> Ajouter une Aggreagtion </label>
+											</div> -->
+											<!-- <input type='checkbox'> <label> Fonctions d'Aggregat </label> -->
+										</div>
+										<div class="col-lg-1">
+											<i class="fas fa-times btn btn-danger" onclick="removeLine(this)"></i>
+
+										</div>
+									</div>
+									{% endfor %}
+
+									<div id='nd_ope_div2'>
+										
+									</div>
+									<div onclick="addChamps(this,'0','op2')" style='cursor:pointer;'  class="text-center text-success">+ Ajouter un Champs</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+							<button type="submit" class="btn btn-primary"> Confirmer</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		{% endblock %}
+
+
+		{% block script %}
+		<script>
+			aggr_selec = document.getElementsByClassName('aggr_selec');
+			for (var i=0; i<aggr_selec.length; i++){
+				data_value = aggr_selec[i].getAttribute('data-value');
+				options = aggr_selec[i].getElementsByTagName('option');
+				for (var j=0; j<options.length; j++){
+					//alert(options[j].value)
+					if (options[j].value == data_value){
+						options[j].selected = true;
+					}
+				}
+			}
+			function addonsLogic(element=null){
+				$("#addonsLogic").modal('show');
+				$(".modules_name").text(element.getAttribute('data-name'));
+			}
+
+			insti_div = document.getElementsByClassName("insti_div");
+			for (var i=1; i<insti_div.length; i++){
+				tmp = " ";
+				for (var j=0; j<i; j++){
+					tmp +="<div style='opacity:0;' class='d-none d-md-block card mr-3'><b style='' class='card-header'></b></div>";
+				}
+				tmp +="<div style='background:#fff;border:none;' class='d-none d-md-block card mr-3'><b style='background:#fff;border:none;' class='card-header'><i class='fas fa-angle-right'></i></b></div>";	
+				insti_div[i].innerHTML = tmp + insti_div[i].innerHTML;
+			}
+
+			function addChamps(element,index='',oper='#'){
+				enum_val = "<div style='display:none;' class='enum-val enum_ah"+index+" text-primary w-100'> <div> <small> Specifiez les Valerurs </small> </div>";
+				enum_val += "<div class='enum-values d-flex w-100 flex-wrap'>"
+				enum_val +="<div class='col-6 p-2'> <label>Valeur</label> <div class='d-flex'> <div><input type='text' class='form-control'></div>   </div> </div> ";
+				enum_val +="<div class='col-6 p-2'> <label>Valeur</label> <input type='text' class='form-control'></div> ";
+				enum_val +="  </div> <div><b onclick='new_ENUM_W(this,6);' class='btn btn-primary'>+</b>  <b onclick='delete_ENUM_W(this,6);' class='btn btn-danger'>x</b>  </div> </div> "
+				if (oper == '#'){
+					entity_form = element.parentNode.parentNode.getElementsByClassName("logic_editer")[0];
+					//alert(parent);
+					node = document.createElement("div");
+					node.setAttribute('class','mt-2 col-lg-12');
+					node.setAttribute('style','display:flex;flex-wrap:wrap;');
+					node.innerHTML = "<div class='col-lg-6'> <div><label> Nom du Champs </label></div> <div><input class='entity_name"+index+" form-control' required type='text'></div></div> <div class='col-lg-5'> <div><label> Type </label></div> <div><select onchange='changeType(this)' class='form-control entity_type"+index+" '>"+"{% include './includes/type_entities.html' %}"+"</select></div>"+enum_val+"</div><div class='col-1'> <i onclick='removeLine(this);' class='fas fa-times line_remove text-danger'></i> </div>";
+					entity_form.appendChild(node);
+					/*entity_form.innerHTML += "<div class='col-lg-12 form-group'><div class='col-lg-6'><label> Nom du Champs </label>";
+					entity_form.innerHTML += "<input type='text' class='form-control'></div><div class='col-lg-6'><label> Type </label><input type='text' class='form-control'></div>";
+					entity_form.innerHTML += "</div>";*/
+				}
+				else{
+					node = document.createElement("div");
+					node.setAttribute('class','logic_editer_O');
+					if (oper == 'op2'){
+						nd_ope_div = document.getElementById("nd_ope_div2");
+
+				enum_val = "<div style='display:none;' class='enum-val enum_ah"+index+" text-primary w-100'> <div> <small> Specifiez les Valerurs </small> </div>";
+				enum_val += "<div class='enum-values d-flex w-100 flex-wrap'>"
+				enum_val +="<div class='col-6 p-2'> <label>Valeur</label> <div class='d-flex'> <div><input type='text' class='form-control'></div>   </div> </div> ";
+				enum_val +="<div class='col-6 p-2'> <label>Valeur</label> <input type='text' class='form-control'></div> ";
+				enum_val +="  </div> <div><b onclick='new_ENUM_W(this,6);' class='btn btn-primary'>+</b>  <b onclick='delete_ENUM_W(this,6);' class='btn btn-danger'>x</b>  </div> </div> "
+						node.innerHTML = "<div class='d-flex flex-wrap justify-content-between form-group'><div class='col-lg-6'><label> Nom du Champs </label><input required type='text' class='entity_name2_O form-control'></div><div class='col-lg-4'><label> Type </label><select onchange='changeType(this)' class='entity_type2_O form-control'>"+"{% include './includes/type_entities.html' %}"+"</select></div> <div class='col-lg-1'><i class='fas fa-times btn btn-danger'></i></div>"+enum_val+" </div>";
+					}
+					else{
+						nd_ope_div = document.getElementById("nd_ope_div");
+						node.innerHTML = "<div class='d-flex justify-content-between form-group'><div class='col-lg-6'><label> Nom du Champs </label><input required type='text' class='entity_name_O form-control'></div><div class='col-lg-4'><label> Type </label><select onchange='changeType(this)' class='entity_type_O form-control'>"+"{% include './includes/type_entities.html' %}"+"</select></div> <div class='col-lg-1'><i class='fas fa-times btn btn-danger'></i></div> </div>";
+					}
+					nd_ope_div.appendChild(node);
+				}
+
+			}
+
+			function saveEntity(){
+				entity_name = document.getElementsByClassName('entity_name');
+				entity_type = document.getElementsByClassName('entity_type');
+				names = "";
+				types = "";
+				for (var i=0; i<entity_name.length; i++){
+					names += entity_name[i].value + "|";
+					types += entity_type[i].value + "|";
+				}
+				fields_name = document.getElementById("fields_name");
+				fields_type = document.getElementById("fields_type");
+				fields_name.value = names;
+				fields_type.value = types;
+
+	// Informations to Rapport
+	entity_name2 = document.getElementsByClassName('entity_name2');
+	entity_type2 = document.getElementsByClassName('entity_type2');
+	names2 = "";
+	types2 = "";
+	for (var i=0; i<entity_name2.length; i++){
+		names2 += entity_name2[i].value + "|";
+		types2 += entity_type2[i].value + "|";
+	}
+	fields_name2 = document.getElementById("fields_name2");
+	fields_type2 = document.getElementById("fields_type2");
+	fields_name2.value = names2;
+	fields_type2.value = types2;
+
+	//Enumerations Fields
+	enum_input = document.getElementById("enum_fields")
+	enum_values_div = document.getElementsByClassName("enum_ah");
+	for (var i=0; i<enum_values_div.length; i++){
+		enum_values = enum_values_div[i].getElementsByTagName('input');
+		enum_tmp = entity_name[i].value +"#";
+		k=0;
+		for (var j=0;j<enum_values.length;j++){
+			if (enum_values[j].value != ""){
+				enum_tmp += enum_values[j].value + "|";
+				k++;
+			}
+		}
+		if (k>0){
+			enum_input.value += enum_tmp;
+			enum_input.value += "\n";
+		}
+	}
+
+	indicateurs_field = document.getElementById("indicateurs_field");
+	indiCheck = document.getElementsByClassName('indi-check');
+	for (var i=0; i<indiCheck.length; i++){
+		if (indiCheck[i].checked == true){
+			indicateurs_field.value += "1";
+		}
+		else{
+			indicateurs_field.value += "0";
+		}
+		indicateurs_field.value += "_";
+	}
+}
+
+function saveOperation(){
+	entity_name = document.getElementsByClassName('entity_name_O');
+	entity_type = document.getElementsByClassName('entity_type_O');
+	names = "";
+	types = "";
+	for (var i=0; i<entity_name.length; i++){
+		names += entity_name[i].value + "|";
+		types += entity_type[i].value + "|";
+	}
+	fields_name = document.getElementById("aggregate_fields_name");
+	fields_type = document.getElementById("aggregate_fields_type");
+	fields_name.value = names;
+	fields_type.value = types;
+
+	// Informations to Rapport
+	entity_name2 = document.getElementsByClassName('entity_name2_O');
+	entity_type2 = document.getElementsByClassName('entity_type2_O');
+	names2 = "";
+	types2 = "";
+	for (var i=0; i<entity_name2.length; i++){
+		names2 += entity_name2[i].value + "|";
+		types2 += entity_type2[i].value + "|";
+	}
+	fields_name2 = document.getElementById("aggregate_rap_fields_name");
+	fields_type2 = document.getElementById("aggregate_rap_fields_type");
+	fields_name2.value = names2;
+	fields_type2.value = types2;
+
+
+}
+
+function editLogic(element=false,edit=false){
+	logic_editer = document.getElementsByClassName("logic_editer");
+	edit_or_create = document.getElementById('edit_or_create');
+	classnames = ["",""];
+	if (edit){
+		name = element.getAttribute("data-elt");
+		hierachie = parseInt(element.getAttribute("data-hierachie"));
+		typefields = element.getAttribute("data-typefields").split("|");
+		fields = element.getAttribute("data-fields").split("|");
+		expected_fields = element.getAttribute("data-expected").split("|");
+		expected_fields_type = element.getAttribute("data-expected_type").split("|");
+		pic_represented = element.getAttribute('data-pic');
+		if (pic_represented == 'True'){
+			add_img_cvr = document.getElementById('add_img_cvr');
+			add_img_cvr.checked = true;
+		}
+		else{
+			add_img_cvr = document.getElementById('add_img_cvr');
+			add_img_cvr.checked = false;			
+		}
+		champs1= [typefields,expected_fields_type];
+		champs2 = [fields,expected_fields];
+		logic_editer[0].textContent = " Modifier "+name;
+		logic_editer[1].value = name;
+		logic_editer[2].value = (hierachie-1);
+		logic_editer[3].innerHTML = "";
+		logic_editer[4].innerHTML = "";
+		aka = "";
+		for (var i=0; i<2; i++){
+			if(i==0){
+				wer = '';
+			}
+			else{
+				wer = 2;
+			}
+			for ( var j = 0; j<champs1[i].length-1; j++){
+				enum_val = "<div style='display:none;' class='enum-val enum_ah"+wer+" text-primary w-100'> <div> <small> Specifiez les Valerurs </small> </div>";
+				enum_val += "<div class='enum-values d-flex w-100 flex-wrap'>"
+				enum_val +="<div class='col-3 p-2'> <label>Valeur</label> <div class='d-flex'> <div><input type='text' class='form-control'></div>   </div> </div> ";
+				enum_val +="<div class='col-3 p-2'> <label>Valeur</label> <input type='text' class='form-control'></div> ";
+				enum_val +="  </div> <div><b onclick='new_ENUM_W(this);' class='btn btn-primary'>+</b>  <b onclick='delete_ENUM_W(this);' class='btn btn-danger'>x</b>  </div> </div> "
+				aka = "";
+				aka += "<div class='col-lg-6'><label>"+"Nom du Champs"+"</label><input value=\""+champs2[i][j]+"\" type='text' class='entity_name"+wer+" form-control'></div><div class='col-lg-5'><label> Type </label><select class='entity_type"+wer+" form-control'>";
+				aka += "<option value='string' "; if (champs1[i][j]== 'string'){aka+=" selected "}aka+=">Texte court </option>";
+				aka += "<option value='int' "; if (champs1[i][j]== 'int'){aka+=" selected "}aka+=">Entier </option>";
+				aka += "<option value='text' "; if (champs1[i][j]== 'text'){aka+=" selected "}aka+=">Texte </option>";
+				aka += "<option value='image' "; if (champs1[i][j]== 'image'){aka+=" selected "}aka+=">Image </option>";
+				aka += "<option value='file' "; if (champs1[i][j]== 'file'){aka+=" selected "}aka+=">Fichier </option>";
+				aka += "<option value='date' "; if (champs1[i][j]== 'date'){aka+=" selected "}aka+=">Date </option>";
+				aka += "<option value='time' "; if (champs1[i][j]== 'time'){aka+=" selected "}aka+=">Heure </option>";
+				
+				aka += "<option value='enum' "; if (champs1[i][j]== 'enum'){aka+=" selected "}aka+=">Liste </option>";
+				aka += "</select></div>";
+				if (j>0){
+					aka += "<div class='col-lg-1'><i class='fas fa-times text-danger' onclick='removeLine(this);'></i></div> <div> <input checked type='checkbox'> <label> Afficher par défaut </label>  </div>"
+				}
+				logic_editer[3+i].innerHTML += " <div class='d-flex flex-wrap justify-content-between form-group'>"+aka+"</div>"+enum_val;
+			}		
+		}
+		edit_or_create.value = 'e';
+		logic_editer[5].value = element.getAttribute("data-id");
+	}
+	else{
+		logic_editer[0].textContent = " Ajouter Entité";
+		logic_editer[1].value = "";
+		logic_editer[2].value = -1;
+		// Attributis Modificateur //
+		aka = ""
+		default_values = ["Nom","Résultat Obtenu","Objectifs"];
+		logic_editer[3].innerHTML = "";
+		logic_editer[4].innerHTML = "";
+		types_aka = ["<option value='string'>Texte court </option>","<option value='text'>Texte </option>","<option value='text'>Texte </option>"]
+		for (var j=0; j<default_values.length; j++){
+			i = j%2;
+			if(i==0){
+				wer = '';
+			}
+			else{
+				wer = 2;
+			}
+			aka = ""
+			aka += "<div class='col-lg-6'><label>"+"Nom du Champs"+"</label><input readonly value='"+default_values[j]+"' type='text' class='entity_name"+wer+" form-control'></div><div class='col-lg-6'><label> Type </label><select class='entity_type"+wer+" form-control' onchange='changeType(this)' >";
+
+			aka += types_aka[j];
+			aka += "</select>   </div>";
+			enum_val = "<div style='display:none;' class='enum-val enum_ah"+wer+" text-primary w-100'> <div> <small> Specifiez les Valerurs </small> </div>";
+			enum_val += "<div class='enum-values d-flex w-100 flex-wrap'>"
+			enum_val +="<div class='col-3 p-2'> <label>Valeur</label> <div class='d-flex'> <div><input type='text' class='form-control'></div>   </div> </div> ";
+			enum_val +="<div class='col-3 p-2'> <label>Valeur</label> <input type='text' class='form-control'></div> ";
+			enum_val +="  </div> <div><b onclick='new_ENUM_W(this);' class='btn btn-primary'>+</b>  <b onclick='delete_ENUM_W(this);' class='btn btn-danger'>x</b>  </div> </div> "
+			agreg = "<center class='mt-3'> <input type='checkbox'> <label> Fonctions d'Aggregat </label> </div>  <div> <span class='btn btn-light'> Min </span> <span class='btn btn-light'> Max </span> <span class='btn btn-light'> Avg </span> <span class='btn btn-light'> Sum </span> <span class='btn btn-light'> Cmb </span>  </center>";
+			agreg_func = "<div>"+"<div class='py-2 d-flex justify-content-center'><div class='px-2'> = Min </div> <input type='text' class='form-control col-lg-5'> </div>"+"</div>";
+			logic_editer[3+i].innerHTML += "<div class='d-flex flex-wrap justify-content-between form-group'>"+aka+"</div>"+enum_val;//+agreg+agreg_func;
+		}
+		edit_or_create.value = 'c';
+	}
+}
+
+function removeLine(element){
+	parent2 = element.parentNode.parentNode;
+	parent3 = parent2.parentNode;
+	parent3.removeChild(parent2);
+	//alert(element.parentNode.parentNode.innerHTML)
+}
+
+function new_ENUM_W(element,col_size='3'){
+	parent = element.parentNode.parentNode;
+	enum_values = parent.getElementsByClassName('enum-values')[0];
+	enum_val = "";
+	enum_val = document.createElement("div");
+	enum_val.setAttribute('class',"col-"+col_size+" p-2");
+	enum_val.innerHTML +=" <label>Valeur</label> <div class='d-flex'> <div><input type='text' class='form-control'></div>   </div> ";
+	enum_values.appendChild(enum_val)
+}
+
+function delete_ENUM_W(element,col_size='3'){
+	parent = element.parentNode.parentNode;
+	enum_values = parent.getElementsByClassName('enum-values')[0];
+	col = enum_values.getElementsByClassName("col-"+col_size)[0];
+	enum_values.removeChild(col)
+}
+
+
+function changeType(element){
+	parent = element.parentNode.parentNode.parentNode;
+	enum_val = parent.getElementsByClassName('enum-val')[0];
+	if (element.value == 'enum'){
+		$(enum_val).show('slow');
+	}
+	else{
+		$(enum_val).hide('slow');		
+	}
+	if (element.value == 'choix'){
+		//alert("fdfd");
+		//alert(parent.innerHTML)
+	}
+}
+
+function configPeriodType(){
+	period_type_select = document.getElementById("period_type_select");
+	options = period_type_select.getElementsByTagName("option");
+	actual_index = 0;
+	for (var i=0; i<options.length; i++){
+		if (options[i].selected == true){
+			actual_index = i;
+			break;
+		}
+	}
+	lines = options[actual_index].getAttribute("data-choices").split("|");
+	logic = parseInt(options[actual_index].getAttribute("data-logic"));
+	periodes_choosen = document.getElementById('periodes_choosen');
+	periodes_choosen.innerHTML = "";
+	for (var i=0; i<lines.length; i++){
+		periodes_choosen.innerHTML += "<li class='list-group-item mb-2'> <input id='aline"+i+"' onchange='updatePeriodes(this,"+i+")' type='checkbox'> "+"<label for='aline"+i+"'>"+lines[i]+"<small class='CPT_desc'> </small>"+"</label>"+" </li>";
+	}
+	CPT_desc = document.getElementsByClassName("CPT_desc");
+	now = new Date();
+  months = ["Jan","Fev","Mars","Avr","Mai","Jui","Jul","Aou","Sep","Opt","Nov","Dec"];
+  sub_periods_small = document.getElementById("sub_periods_small");
+		sub_periods_small.innerHTML = ""
+	if (logic == 3){
+		for (var i=0; i<12; i++){
+			first_day = new Date(now.getFullYear(),i,1);
+			first_day = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear();
+		    last_day = new Date(now.getFullYear(),(i+1),0);
+			last_day = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear();
+
+			CPT_desc[i].innerHTML += " du "+first_day+" au "+last_day
+		}
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-primary' style='font-weight:bold;'>Journalier</small><small>&nbsp;|&nbsp;</small>";
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-dark' style='font-weight:bold;'>Hebdomadaire</small><small>&nbsp;|&nbsp;</small>";
+	}
+	else if (logic == 2){
+		first_date = new Date(now.getFullYear(),0,1).getUTCDay()
+		for (var i=0; i<53; i++){
+			first_day = new Date(now.getFullYear(),0,1+(i*7)-first_date);
+			first_day = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear();
+		    last_day = new Date(now.getFullYear(),0,6+(i*7)-first_date);
+			last_day = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear();
+
+			CPT_desc[i].innerHTML += " du "+first_day+" au "+last_day
+		}
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-primary' style='font-weight:bold;'>Journalier</small><small>&nbsp;|&nbsp;</small>";		
+	}
+	else if (logic == 6){
+		for (var i=0; i<2; i++){
+			first_day = new Date(now.getFullYear(),i*6,1);
+			first_day = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear();
+		    last_day = new Date(now.getFullYear(),6*(i+1),0);
+			last_day = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear();
+
+			CPT_desc[i].innerHTML += " du "+first_day+" au "+last_day
+		}
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-primary' style='font-weight:bold;'>Journalier</small><small>&nbsp;|&nbsp;</small>";
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-dark' style='font-weight:bold;'>Hebdomadaire</small><small>&nbsp;|&nbsp;</small>";
+		sub_periods_small.innerHTML += "<small data-type='2' class='text-dark' style='font-weight:bold;'>Mensuel</small><small>&nbsp;|&nbsp;</small>";
+		sub_periods_small.innerHTML += "<small data-type='3' class='text-dark' style='font-weight:bold;'>Trimestriel</small><small>&nbsp;|&nbsp;</small>";		
+	}
+	else if (logic == 9){
+		for (var i=0; i<4; i++){
+			first_day = new Date(now.getFullYear(),i*3,1);
+			first_day = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear();
+		    last_day = new Date(now.getFullYear(),3*(i+1),0);
+			last_day = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear();
+
+			CPT_desc[i].innerHTML += " du "+first_day+" au "+last_day
+		}
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-primary' style='font-weight:bold;'>Journalier</small><small>&nbsp;|&nbsp;</small>";
+		sub_periods_small.innerHTML += "<small data-type='0' class='text-dark' style='font-weight:bold;'>Hebdomadaire</small><small>&nbsp;|&nbsp;</small>";
+		sub_periods_small.innerHTML += "<small data-type='2' class='text-dark' style='font-weight:bold;'>Mensuel</small><small>&nbsp;|&nbsp;</small>";			
+	}
+}
+function updatePeriodes(element,index){
+	lines = options[actual_index].getAttribute("data-choices").split("|");
+	choosen_peri = document.getElementById("choosen_peri");
+	choosen_peri.innerHTML+= "<div class='p-2'> <div class='btn btn-light'>"+lines[index]+" </div> </div>"
+}
+//configPeriodType();
+
+function set_devise(sens,devise="#"){
+			$.ajax({
+				url: '/ajax_institution/',
+				data: {
+					'institution':{{actual_institution.id}},
+					'sens':sens,
+					'devise':devise
+				},
+				dataType: 'json',
+				success: function (data) {
+				},
+				error: function(data){
+					
+				}
+	}); 	
+}
+
+
+default_operation = document.getElementById("default_operation");
+default_operation.onchange = function(){
+	operation_DIV =document.getElementById("operation_DIV");
+	if(this.checked == false){
+		$("#operation_DIV").show();
+		sens = 1;
+	}
+	else{
+		$("#operation_DIV").hide();
+		sens = 0
+	}
+	set_devise(sens)
+}
+
+default_financial = document.getElementById("default_financial")
+default_financial.onchange = function(){
+	if(this.checked){
+		$("#devise_financial").slideDown("slow");
+		sens = 2
+	}
+	else{
+		$("#devise_financial").slideUp("slow")	
+		sens = 3
+	}
+	set_devise(sens,document.getElementById("devise_select").value)
+}
+devise_select = document.getElementById("devise_select")
+devise_select.onchange = function(){
+	set_devise(2,this.value)
+}
+function save_indicateur(){
+
+	indi_adds = document.getElementById("indi_adds");
+	indi_cibls = document.getElementById("indi_cibls");
+	indi_srcs = document.getElementById("indi_srcs");
+
+	// Champs additionnels
+	tmp = "";
+	indi_add1 = document.getElementsByClassName("indi_add1");
+	indi_add2 = document.getElementsByClassName("indi_add2");
+	for (var i=0; i<indi_add2.length; i++)
+	{
+		indi_add2_text = indi_add2[i].value.replace("\n","<br>");
+		tmp += indi_add1[i].value+"|"+indi_add2_text+"#";
+	}
+	indi_adds.value = tmp;
+
+	// Resultats ciblés
+	tmp = "";
+	ind_periodicite = document.getElementById("ind_periodicite");
+	indi_cibl1 = document.getElementsByClassName("indi_cibl1");
+	indi_cibl2 = document.getElementsByClassName("indi_cibl2");
+	for (var i=0; i<indi_cibl2.length; i++)
+	{
+		indi_add2_text = indi_cibl2[i].value.replace("\n","<br>");
+		tmp += ind_periodicite.getAttribute('data-type')+"#"+indi_cibl1[i].value+"|"+indi_cibl2[i].value+"$";
+	}
+	indi_cibls.value = tmp;
+
+	// Sources de verification
+	indiSrc1 = document.getElementsByClassName("indiSrc1");
+	indiSrc2 = document.getElementsByClassName("indiSrc2");
+	tmp = "";
+	for (var i=0; i<indiSrc2.length; i++)
+	{
+		indi_Src2text = indiSrc2[i].innerHTML.replace("\n","<br>");
+		tmp += indiSrc1[i].value+"#"+indi_Src2text+"\n";
+	}
+	indi_srcs.value = tmp;
+
+}
+
+function init_indicateur(element){
+	indi_entity = document.getElementById("indi_entity");
+	indi = element.getAttribute("data-entity");
+	indi_entity.value = indi;
+}
+
+function test_type_O(){
+
+}
+
+hieraSelec = document.getElementsByClassName("hieraSelec");
+hieraSelec_option = document.getElementsByClassName("hieraSelec_option");
+for (var i=0;i<hieraSelec_option.length;i++){
+	if (hieraSelec_option[i].value.split("#").length > 1){
+			hieraSelec_option[i].textContent = hieraSelec_option[i].value.split("#")[1]
+	}
+}
+function selectHIERA(select=1){
+	select = select-1;
+	element = hieraSelec[select].value;
+	if (element.split("#").length > 1){
+		element = element.split("#")[1];
+	}
+	//alert(select)
+	for (var i=select+1;i<select+2;i++){
+		options= hieraSelec[i].getElementsByTagName("option");
+		for (var j=0; j<options.length; j++){
+			val = options[j].value.split("#");
+			if (val[0] != element){
+				options[j].style.display = "none";
+			}
+			else{
+				options[j].style.display = "block";
+				options[j].selected = true;
+			}
+		}
+	}	
+}
+
+function loadselectHIERA(value){
+	for (var i=value; i<hieraSelec.length; i++){
+		selectHIERA(i);
+	}
+}
+loadselectHIERA(1);
+
+function delIndiChamps(){
+	parent3 = parent2.parentNode;
+	parent3.removeChild(parent2);
+	addIndiCamver = document.getElementById("addIndiCamver");
+	divs = addIndiCamver.getElementsByTagName("div")[0];
+	addIndiCamver.removeChild(divs)
+}
+
+function addIndiChamps(){
+	addIndiCamver = document.getElementById("addIndiCamver");
+	divs = addIndiCamver.getElementsByTagName("div")[0];
+	addIndiCamver.innerHTML += "<div><i onclick='delIndiChamps()' class='fas fa-times text-danger'></i></div>"+divs.innerHTML;
+}
+
+function lauIndi(elt){
+	edit_or_create_ind_val = document.getElementById("edit_or_create_ind_val");
+	edit_or_create_ind_val.value = "c";
+	entity_ind_value = document.getElementById("entity_ind_value");
+	entity_ind_value.textContent = elt.getAttribute("data-ent_name");
+
+	ind_id = document.getElementById("entity_ind_id");
+	ind_id.value = elt.getAttribute("data-ent_id");
+}
+
+function editIndi(elt){
+	lauIndi(elt);
+	edit_or_create_ind_val = document.getElementById("edit_or_create_ind_val");
+	edit_or_create_ind_val.value = "e";
+
+	contain = elt.getAttribute("data-contain");
+	contain1 = contain.split("\n")
+	cha_value = document.getElementsByClassName("cha_value")
+	cha_type = document.getElementsByClassName("cha_type")
+	if (contain1.length-1 > cha_value.length){
+		n = contain1.length - cha_value.length
+		for (var i=0;i<n;i++){
+			addIndiChamps();
+		}
+	}
+	for (var i=0;i<contain1.length;i++){
+		tmp = contain1[i].split("|");
+		cha_value[i].value = tmp[0];
+		cha_type[i].value = tmp[1];
+	}
+}
+
+function save_indi_val(){
+	ind_val = document.getElementById("ind_val")
+	cha_value = document.getElementsByClassName("cha_value")
+	cha_type = document.getElementsByClassName("cha_type")
+	result = ""
+	for (var i=0;i<cha_value.length;i++){
+		result += cha_value[i].value+"|"+cha_type[i].value+"\n"
+	}
+	ind_val.value = result;
+}
+</script>
+{% endblock %}

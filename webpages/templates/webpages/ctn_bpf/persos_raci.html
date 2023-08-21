@@ -1,0 +1,323 @@
+{% extends './roles.html' %}
+{% load static %}
+{% block add_title %} 
+Repartition RACI
+{% endblock %}
+
+{% block repartition_lines %} 
+<div>
+	<div><small>Vous pourriez attribuer des entites au personnel via cette Interface</small>&nbsp;<small class="text-danger">Seuls les Roles specifiques sont concernes</small></div>
+	<div><small><a href="/personnels/">Informations Personnel</a></small></div>
+</div>
+{% endblock %}
+
+{% block table %}
+<table class="table">
+	<tr class=" ">
+		<th></th>
+		<th>Personnel</th>
+		<th>Fonction</th>
+		<th>Entites</th>
+	</tr>
+	<tbody>
+		                                			{% for line in pages_o %}
+                                			{% if line.get_function.m_role.m_simple_auth != None %}
+                                			<tr>                                				
+                                				<td><img src="{{line.photo.url}}" style="border-radius:100%;width:50px;height:50px;"></td>
+                                				<td>{{line.nom}}</td>
+                                				<td>{{line.get_function}}</td>
+                                				<td ><div style="overflow-y: auto;max-height:125px;">{% for l in line.RACI_entities %}<div class="d-flex space-between flex-wrap"><div><small class=""> {% for h in l.m_entity.sup_hierachie %} {{h}} > {% endfor %} {{l.m_entity}}</small></div>{% for r in l.RACI_detail %}<div class="px-2">{% if r.m_status == 1 %}<small class="badge badge-{{r.m_color}}"> {{r}} </small>{% endif %}</div>{% endfor %}</div>  <div> <!-- <small data-toggle='modal' style="font-weight:bold;cursor:pointer;" data-target='#EntityModal' data-id="{{l.id}}" onclick="editAssign({{line.id}},'{{line.nom}}',{{l.id}})" class="text-success"><i class="fas fa-pen"></i> Modifier</small> --> &nbsp;&nbsp; <small data-target="#deleteModal" data-toggle="modal" data-id="{{l.id}}" onclick="merde(this)" class="text-danger" style="cursor:pointer;"> <i class="fas fa-times" ></i> Supprimer </small>&nbsp;&nbsp;  </div>                              					{% endfor %}<small data-toggle='modal' style="font-weight:bold;cursor:pointer;" data-target='#EntityModal' onclick="loadAssign({{line.id}},'{{line.nom}}')" class="text-primary">+ Ajouter une Entite</small></div></td>
+                                			</tr>
+                                			{% endif %}
+                                				{% endfor %}
+                                			 
+	</tbody>
+</table>
+<!--<small data-toggle='modal' style="font-weight:bold;cursor:pointer;" data-target='#EntityModal' onclick="loadAssign({{line.id}},'{{line.nom}}')" class="text-success"><i class="fas fa-pen"></i> Personnaliser</small> &nbsp;&nbsp; <small class="text-danger"> <i class="fas fa-times"></i> Supprimer </small>&nbsp;&nbsp;  
+-->
+{% endblock %}
+
+{% block modals %}
+	<div class="modal fade" id="EntityModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form class="form-horizontal bordered-row" action="/assign_RACI/" onsubmit="assign_RACI()" method="post">
+					{% csrf_token %}
+					<div class="modal-body">
+						<input type="hidden" name="generator_d" value="e">
+						<input type="hidden" id="entity_id" name="entity_id" class="entity_id">
+						<input type="hidden" name="hierachy" value="{{hierachy}}">
+						<input type="hidden" name="perso_assign" id="perso_assign">
+						<input type="hidden" name="values_assign" id="values_assign">
+						<h5>Assigner Entite <span class="dup_name text-primary h5"></span> </h5>
+						<h6 class="text-success mb-2" id="perso_name"></h6>
+						<div class="my-2">
+				<!--
+				{% for es in ents %}
+				<label><small>{{es.label}}</small></label>
+				<select data-hierachy="{{es.hierachie}}" onchange="get_subsent(this);" class="mb-2 entChanger form-control">
+					<option value="0">Tous</option>
+					{% for e in es.entities %}
+					<option value="{{e.id}}">{{e}}</option>
+					{% endfor %}
+				</select>
+				{% endfor %}
+			-->
+				<input type="hidden" id="entHidden" name="entHidden">
+				<div class="col-lg-12 d-flex my-2">
+					<div class="col-lg-4">
+						<label><small>Gestionnaire</small></label>
+						<div>
+							<input type="hidden" name="institution" value="{{actual_institution.id}}">
+							<ul id="matieres_div" class="list-group">
+								
+							</ul>						</div>
+					</div>
+					<div class="col-lg-8">
+						<div id="matieres_div2" class="d-flex flex-wrap">
+							
+						</div>
+					</div>
+				</div>
+				<div><input type="submit" class="btn btn-success" value="Assigner" name=""></div>
+						</div>
+					</div>
+					<div class="pl-3 py-2">
+							<input  type="checkbox" name="recursive_oper" id="recursive_oper">
+							&nbsp;
+							<label for="recursive_oper"> Appliquer Recursivement aux {{operations_name}}</label>
+						</div>
+					<div class="modal-footer text-center">
+						
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+function get_subsent(elt){
+		hierachy = elt.getAttribute("data-hierachy")
+		val = elt.value;
+		entChanger = document.getElementsByClassName("entChanger")
+		institution = {{actual_institution.id}}
+		if ( hierachy == "0") {
+			pre_hierachy = -1;
+		}
+		else if( hierachy == "-1" ){
+			val == "-1";
+		}
+		else{
+			pre_hierachy = entChanger[parseInt(hierachy)-1].value;
+		}
+		$.ajax({
+			url: '/get_elements_subsequency/',
+			data: {
+				'institution':institution,
+				'nature':hierachy,
+				'entity':val,
+				'report':100
+			},
+			dataType: 'json',
+			success: function (data) {
+				n = entChanger.length-1;
+				k= data.data_ids.length;
+				for (var i=0;i<data.data_ids.length;i++){
+					html = ""
+
+					tmp = data.data_ids[i];
+					tmp2 = data.data_names[i];
+					for (var j=0;j<tmp.length;j++){
+						html += "<option value='"+tmp[j]+"'>"+tmp2[j]+"</option>"; 
+					}
+					html += "<option value='0'>Tous</option>"
+					if (parseInt(hierachy)+i+1<= n){
+						entChanger[(parseInt(hierachy)+i+1)].innerHTML = html ;
+					}
+					else{
+						break;
+					}
+				}
+		
+				matieres_div = document.getElementById("matieres_div2");
+				matieres_div.innerHTML = ""
+				for (var j=0;j<tmp.length;j++){
+					matieres_div.innerHTML += "<li data-value='"+tmp[j]+"' class='col-12 mb-2 matiere_li list-group-item d-flex space-between flex-wrap'><div>  <b>" +tmp2[j]+"</b></div> <div class='d-flex px-2'> <div class='px-2 text-success'> R </div> <div> <input type='checkbox'> </div> </div>"+"<div class='d-flex px-2'> <div class='px-2 text-danger'> A </div> <div> <input type='checkbox'> </div> </div>"+"<div class='d-flex px-2'> <div class='px-2 text-primary'> C </div> <div> <input type='checkbox'> </div> </div>"+"<div class='d-flex px-2'> <div class='px-2 text-warning'> I </div> <div> <input type='checkbox'> </div> </div>"+"</li>"
+				}
+			},
+			error: function(data){
+				alert("error")
+			}
+		});
+	}
+
+	function loadAssign(id_perso,nm_perso){
+		perso_name = document.getElementById("perso_name")
+		perso_name.textContent = nm_perso
+		perso_assign = document.getElementById("perso_assign");
+		perso_assign.value = id_perso;
+		get_raci_levels(id_perso)
+	}
+
+function editAssign(id_perso,nm_perso,RACI_entities){
+		perso_name = document.getElementById("perso_name")
+		perso_name.textContent = nm_perso
+		perso_assign = document.getElementById("perso_assign");
+		perso_assign.value = id_perso;
+		get_raci_levels(id_perso,0,RACI_entities)
+	}
+
+	function assign_RACI(){
+		matiere_li = document.getElementsByClassName("matiere_li");
+		values_assign = document.getElementById("values_assign");
+		
+		tmp = ""
+		for (var i=0;i<matiere_li.length;i++){
+			racis = matiere_li[i].getElementsByTagName("input")
+			tmp_raci = ""	
+			for (var j=0;j<4;j++){
+				if (racis[j].checked == true){
+					tmp_raci += "1";
+				}
+				else{
+					tmp_raci += "0";
+				}
+				tmp_raci += "|"
+			}
+			tmp += matiere_li[i].getAttribute("data-value")+"#"+tmp_raci+"$";
+		}
+		values_assign.value = tmp;
+	}
+
+	function get_racis(){
+		$.ajax({
+			url: '/get_element/',
+			data: {
+				'institution':institution,
+				'nature':hierachy,
+				'entity':val,
+				'report':100,
+				'pre_hierachy':pre_hierachy
+			},
+			dataType: 'json',
+			success: function (data) {
+				for (var i=0;i<3;i++){
+					html = ""
+
+					tmp = data.ajax_steps[i].split("#");
+					tmp2 = data.ajax_steps2[i].split("#");
+					for (var j=0;j<tmp.length;j++){
+						html += "<option value='"+tmp[j]+"'>"+tmp2[j]+"</option>"; 
+					}
+					html += "<option value='0'>Tous</option>"
+					entChanger[i].innerHTML = html ;
+				}
+
+					tmp = data.ajax_steps[i].split("#");
+					tmp2 = data.ajax_steps2[i].split("#");				
+				matieres_div = document.getElementById("matieres_div");
+				matieres_div.innerHTML = ""
+				for (var j=0;j<tmp.length;j++){
+					matieres_div.innerHTML += "<li data-value='"+tmp[j]+"' class='mat_check matiere_li list-group-item d-flex space-between flex-wrap'><div>  <b>" +tmp2[j]+"</b></div> <div class='d-flex px-2'> <div class='px-2'> R </div> <div> <input type='checkbox'> </div> </div>"+"<div class='d-flex px-2'> <div class='px-2'> A </div> <div> <input type='checkbox'> </div> </div>"+"<div class='d-flex px-2'> <div class='px-2'> C </div> <div> <input type='checkbox'> </div> </div>"+"<div class='d-flex px-2'> <div class='px-2'> I </div> <div> <input type='checkbox'> </div> </div>"+"</li>"
+				}
+			},
+			error: function(data){
+				alert("error")
+			}
+		});
+	}
+
+	function get_raci_levels(perso_id,entity=0,RACI_detail=0){
+
+		$.ajax({
+			url: '/ajax_RACI_user/',
+			data: {
+				'institution':{{actual_institution.id}},
+				'perso':perso_id,
+				'type_RACI':'1',
+				'entity_filter':RACI_detail
+			},
+			success: function(data){
+				matieres_div = document.getElementById("matieres_div");
+				matieres_div.innerHTML = ""
+				tmp = data.roles;
+				n = tmp.length;
+				tmp2 = ""
+				for (var j=0;j<n;j++){
+					if (j == n-1){
+					 tmp2+= "<li data-value='"+tmp[j]+"' class=' LVL_LI d-flex space-between flex-wrap'> <label><small>"+tmp[j]+"</small></label> <select class='entChanger form-control' onchange='get_subsent(this)' data-hierachy='"+data.elts_hierachy[j]+"'> " 
+					}
+					else{
+					 tmp2+= "<li data-value='"+tmp[j]+"' class=' LVL_LI d-flex space-between flex-wrap'> <label><small>"+tmp[j]+"</small></label> <select class='entChanger form-control' onchange='get_subsent(this)' data-hierachy='"+data.elts_hierachy[j]+"'> " 						
+					}
+					 for (var k=0; k<data.elts[j].length; k++){
+					 	tmp2 += "<option value='"+data.elts_id[j][k]+"'>"+data.elts[j][k]+" </option>"
+					 }
+					 tmp2 += "</select>  "+"</li>"
+				}
+				if (n==1)
+				{
+				matieres_div.innerHTML = "<li data-value='-1' class='LVL_LI d-flex space-between flex-wrap'> <label><small>Tous</small></label> <select class='d-none entChanger form-control' onchange='get_subsent(this)' data-hierachy='-1'> <option value='-1'> Tous </option> </select> </li>";				
+				}
+				else{
+				matieres_div.innerHTML = tmp2
+					
+				}
+				last_elt = document.getElementsByClassName("entChanger")[0]
+				if (data.elt_actu_id = "#"){
+					get_subsent(last_elt)
+				}
+				else{
+
+				}
+			},
+			error: function(data){
+				alert("Actualisez la Page svp")
+			}
+		});
+	}
+
+	function elements_hierachy(elt){
+		hierachy = elt.getAttribute("data-hierachy")
+		val = elt.value;
+		entChanger = document.getElementsByClassName("entChanger")
+
+		if ( hierachy != "0") {
+			pre_hierachy = entChanger[parseInt(hierachy)-1].value;
+		}
+		else{
+			pre_hierachy = -1;
+		}
+		$.ajax({
+			url: '/get_elements_subsequency/',
+			data: {
+				'nature':hierachy,
+				'entity':val,
+				'report':100,
+				'pre_hierachy':pre_hierachy
+			},
+			dataType: 'json',
+			success: function (data) {
+				for (var i=0;i<data.ajax_steps.length;i++){
+
+					html = ""
+
+					tmp = data.ajax_steps[i].split("#");
+					tmp2 = data.ajax_steps2[i].split("#");
+					for (var j=0;j<tmp.length;j++){
+						html += "<option value='"+tmp[j]+"'>"+tmp2[j]+"</option>"; 
+					}
+					html += "<option value='0'>Tous</option>"
+					entChanger[i].innerHTML = html ;
+				}
+			},
+			error: function(data){
+			}
+		});
+	}
+</script>
+{% endblock %}

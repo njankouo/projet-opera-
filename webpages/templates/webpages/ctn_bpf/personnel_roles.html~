@@ -1,0 +1,32 @@
+{% extends './roles.html' %}
+{% load static %}
+{% block add_title %} 
+ - Gestionnaire des Roles et Permissions de l'Institution
+{% endblock %}
+
+{% block table %}
+
+<div class="d-flex justify-content-between">
+    <div class="col-lg-12">
+        <h4 class="card-title">Rôles</h4>
+        <table class="col-lg-12">
+            <tr class="bg-success text-white">
+                {% for field in fields %}
+                <th style="font-size:13px;">{{field}}</th>
+                {% endfor %}
+                <th></th>
+            </tr>
+            {% for line in lines %}
+            <tr>
+                <td>{{line.nom}}</td>
+                <td>{{line.description}}</td>
+                <td><b>{{line.permission}}</b></td>
+                <td><button class="btn btn-success" onclick="editAction(333)"><i class="fas fa-pencil-alt"></i>
+                </button> <button class="btn btn-danger" onclick="deleteAction(333)"><i class="fas fa-trash-alt"></i></button>
+                </td>               
+            </tr>
+            {% endfor %}
+        </table>
+    </div> 
+</div>
+{% endblock %}

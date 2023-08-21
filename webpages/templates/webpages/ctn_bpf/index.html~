@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title> OPERA+ Suivi et Evaluation des Plans d'Actions{% block add_title %} {% endblock %}</title>
+    	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    	<meta content="Online Plateforme for M&E of the Work Plan" name="description">
+    	<meta content="BeInfo" name="author">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="shortcut icon" href="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+   <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/bootstrap/bootstrap.min.css' %}">
+   <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/css/simple-sidebar.css' %}">
+   <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/fontawesome/css/all.min.css' %}">
+   <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/css/style.css' %}" >
+    	<link href="{% static 'webpages/ctn_bpf/icons.min.css' %}" rel="stylesheet" type="text/css">
+    	<link rel="stylesheet" id="custom_css1-css" href="./Business Plan - Admin &amp; Dashboard Template2_files/dataTables.checkboxes.css" type="text/css" media="all">
+    	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    	<link href="{% static 'webpages/ctn_bpf/theme.min.css' %}" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Licorice&family=Ubuntu:wght@300&display=swap" rel="stylesheet">    
+        {% block style %}
+
+        {% endblock %}
+        <style>
+
+        #loader {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    z-index: 999999;
+    overflow: visible;
+    background: #fff url({% static 'webpages/ctn_bpf/waiting.gif' %}) no-repeat center center;
+}
+        #tache_filter{display:none;}
+        td.details-control {
+            background: url('../public/icons/details_open.png') no-repeat center center;
+            cursor: pointer;
+        }
+        tr.shown td.details-control {
+            background: url('../public/icons/details_close.png') no-repeat center center;
+        }
+        td,th{min-width: 160px;}
+        legend{
+            text-transform:uppercase;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .bg-light .nav-link{color:blue; important!}
+/* Style the navbar */
+
+/* The sticky class is added to the navbar with JS when it reaches its scroll position */
+.btn{
+    cursor: pointer;
+}
+
+.sticky {
+  position: fixed;
+  top: 0px;left:0px;
+  width: 100%;
+  z-index: 9999;
+}
+.scroll-reveal{
+    display: none;
+}
+.sticky .scroll-reveal{
+    display: block;
+}
+body *{
+    font-family:Ubuntu;
+}
+ g-top: 60px;
+}
+        </style>
+    </head>
+    <body style="overflow-x:hidden;" id='body_HTML'>
+        {% block body %}
+        {% if user.is_authenticated %}
+        <!-- Begin page -->
+            {% if animate != None %} <div id="loader"></div> {% endif %}
+            <div class="main-content">
+			<header id="page-topbar">
+                    <div class="navbar-header">
+                        <!-- LOGO -->
+                        <div class="navbar-brand-box align-items-left">
+                            <a href="/" class="d-binline-block ">
+                                	<b><span style="color:orange;">
+                                    OPERA+</span>
+                                    <span style="color:green;">
+                                    {{user.personnel.actual_institution }}
+                                    
+                                    <!-- CTN PBF <span class="d-none">(Suivi des recommandations)</span> -->
+
+                                    </span></b>
+                            </a>
+                            {% if user.is_staff %}<!-- <a href="/gestionnaire/i" class="ml-3 logo"><i class=" text-success fas fa-cog"></i></a>-->{% endif %}
+                            <a class=" d-md-none logo" data-toggle="collapse" href="#topnav-menu-content">
+                                <b><i class="text-info fas fa-fw fa-bars"></i></b>
+                            </a>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <div class="dropdown d-inline-block ml-2">
+                                <div type="button" class="btn header-item d-flex" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <!--img class="rounded-circle header-profile-user" src="assets/images/users/avatar-3.jpg"
+                                        alt="Header Avatar"-->
+                                    {% if user.personnel.photo == None %}<i class="fas fa-user-circle text-info fa-3x"></i>
+                                    {% else %}
+                                    <div><img style="width:50px;height:50px;border-radius:100%;display:inline;" src="{{user.personnel.photo.url}}"></div>
+                                    {% endif %}
+                                    <div class="pt-1"><span class=" d-inline-block ml-1"><!-- brainskullkid@gmail.com--> 
+                                    	<div class="d-none d-md-block"><b style="text-transform:uppercase;">{{prenom}}</b></div>
+                                    	<div class="d-none d-md-block"><small>{{role}}</small></div>
+                                    </span></div>
+                                    
+                                </div>
+                                <div class="dropdown-menu dropdown-menu-right">
+
+                                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="/profile/">
+                                        <span>Profil</span>
+
+                                    </a>
+                                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="/institution/">
+                                        <span>Institution</span>
+
+                                    </a>
+                                    <a  class="dropdown-item d-flex align-items-center justify-content-between" href="/log/1/">
+                                        <span>Déconnexion</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+<div class="collapse mb-3"  id="topnav-menu-content">
+  <div class="card card-body">
+    <ul style="list-style:none;" class="list-group">
+        <li class="list-gbroup-item">
+            <a href="/operations/" class="btn btn-info">Opérations</a>
+        </li>
+																		<li class="nav-item">
+                                        <a style="" class="text-info nav-link" href="/">
+                                            Accueil
+                                        </a>
+                                    </li>
+																		{% if permissions > 1 %}
+                                    <li class="text-info nav-item dropdown">
+                                        <a class="text-info nav-link dropdown-toggle arrow-none" href="#" id="topnav-components" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Gestionnaire
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="topnav-components">
+																				{% for  niveau in actual_institution.get_entities %}
+		                                        <a href="/gestionnaire/{{niveau.m_hierachie}}/" class="{% if g_v == niveau.m_hierachie %} text-success {% endif %} dropdown-item">{{niveau}}s</a>
+																				{% endfor %}
+                                            <a href="/gestionnaire/t" class="{% if g_v == 't' %} text-success {% endif %} dropdown-item">Taches</a>
+                                            <a href="/gestionnaire/s" class="{% if g_v == 's' %} text-success {% endif %} dropdown-item">Structures</a>
+                                            <a href="/gestionnaire/p2"class="{% if g_v == 'p2' %} text-success {% endif %} dropdown-item">Personnel</a>
+                                        </div>
+                                    </li>
+																	{% endif %}
+																	{% if permissions > 1 %}
+                                    <li class=' nav-item'>
+                                        <a class=" text-info nav-link" href="/configurations/">
+                                           Configuration
+                                        </a>
+                                    </li>
+																	{% endif %}
+                                    <li class='text-info nav-item'>
+                                        <a class="text-info nav-link" href="/history/">
+                                            Historique
+                                        </a>
+                                    </li>
+    </ul>
+  </div>
+</div>
+
+                </header>
+                <div style="width:100%;height:2px;" class="d-md-none mb-4 btn-info">
+                    
+                </div>
+<div class="topnav bg-info d-none d-md-block " id='navbar_top' >
+                    <div class="container-fluid">
+                        <nav class="navbar bg-info py-0 navbar-light navbar-expand-md topnav-menu">
+
+                            <div class="collapse navbar-collapse py-0" style='display:flex;justify-content:space-between;' id="topnav-menu-content">
+                                <ul class="navbar-nav py-0">
+                                                                <li class="scroll-reveal nav-item"><a class="nav-link" href="/" class="logo">
+                                    
+                            </a></li>
+                                    <li class="nav-item  ">
+                                        <a style="" class="{% if menu == 'i' %} text-info bg-light {% else %} text-white {% endif %} nav-link" href="/">
+                                            Accueil
+                                        </a>
+                                    </li>
+{% if permissions > 1 %}
+                                    <li class="nav-item dropdown ">
+                                        <a class="nav-link dropdown-toggle arrow-none {% if menu == 'g' %} text-info bg-light {% else %} text-white {% endif %}" href="#" id="topnav-components" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Gestionnaire
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="topnav-components">
+																				{% for  niveau in actual_institution.get_entities %}
+		                                        <a href="/gestionnaire/{{niveau.m_hierachie}}/" class="{% if g_v == niveau.m_hierachie %} text-success {% endif %} dropdown-item">{{niveau}}s</a>
+																				{% endfor %}
+                                            <!-- <a href="/gestionnaire/100/" class="{% if g_v == 't' %} text-success {% endif %} dropdown-item">Taches</a> -->
+                                            <a style='border-top:1px solid #ddd;' href="/structures/" class="{% if g_v == 's' %} text-success {% endif %} dropdown-item">Structures</a>
+                                            <a href="/personnels/"class="{% if g_v == 'p2' %} text-success {% endif %} dropdown-item">Personnel</a>
+                                        </div>
+                                    </li>
+{% endif %}
+{% if permissions > 1 %}
+                                    <li class="nav-item ">
+                                        <a class="{% if menu == 'c' %} text-info bg-light {% else %} text-white {% endif %} nav-link" href="/configurations/">
+                                           Configuration
+                                        </a>
+                                    </li>
+{% endif %}
+                                    <li class="nav-item">
+                                        <a class="text-white nav-link {% if menu == 'h' %} text-info bg-light {% else %} text-white {% endif %}" href="/hiddstory/">
+                                            Historique
+                                        </a>
+                                    </li>
+
+                                </ul>
+<ul class="navbar-nav" style='display:flex;'>
+
+                                    <li class="nav-item {% if menu == 'o' %} text-info bg-light {% endif %}">
+                                        <b><a class="{% if menu == 'o' %} text-info {% else %} text-white  {% endif %} nav-link " href="/operations/">
+                                            &nbsp;&nbsp;Opérations
+                                        </a></b>
+                                    </li>
+<li class='nav-item'> 
+                                            <!--<a class=" nav-link dropdown-toggle arrow-none" href="/calendar/" >
+                                           <i class="fas fa-calendar text-dark"></i>
+                                           <span class="badge badge-light" id='count_work2'>0</span>
+                                        </a>-->
+                                        
+</li>
+<li class='nav-item'> 
+                                            <a class=" nav-link dropdown-toggle arrow-none" href="/operations/" >
+                                           <i class="fas fa-bell text-success"></i><span class="badge badge-light" id='count_work'>0</span>
+                                        </a>
+                                        
+</li>
+
+<li class="scroll-reveal">
+<a href="" class="nav-link">
+                                    <i class="fas fa-user-circle fa-2x"></i><span class="text-white">{{user.firstname}}</span>
+</a>
+</li>
+</ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            
+{% block content %}
+                <div class="page-content" style='padding:0px;margin:0px;'>
+                    <div class="container-fluid"  style='padding:0px;margin:0px;'>
+								<div class="row"  style='padding:0px;margin:0px;'>
+
+        </div>
+       <div style='width:100vw;margin:0px;padding:12px;'>
+		<div class="row" style='width:100vw;padding:0px;'>
+          <div class="col-12">
+			<div class="card" style='width:100%;height:100%;'>
+            <div class="card-body" >
+                <!--h4 class="card-title">Menu à la carte</h4-->
+                {% block search_filters %}
+        <form data-toggle="validator" role="form" action="/filter_op/" method="POST">
+                {% csrf_token %}
+				<div class="row" style='border-bottom:2px solid #eee;'>
+				  <div class="col-sm-3">
+					<div class="form-group">
+												<label for="exampleFormControlSelect1">Niveau d'éxécution</label>
+												<select class="form-control" name="niveau" id="exampleFormControlSelect1">
+													<option value="tache" selected="">Tache</option>
+													<option value="activite">Activité</option>
+													<option value="action">Action</option>
+													<option value="programme">Programme</option>
+												</select>
+					</div>
+				  </div>
+				  <div class="col-sm-3">
+					<div class="form-group">
+												<label for="typeperiode">Période</label>
+												<select class="form-control" id="typeperiode" name="periode">
+{% for value in user.personnel.actual_institution.default_period.decoup_slip %}
+<option value="{{value.id}}">{{value}}</option>
+{% endfor %}
+																									</select>
+					</div>
+				 </div>
+				 <div class="col-sm-3">
+					<div class="form-group">
+												<label for="structure">Structures</label>
+												<select class="form-control" id="structure" name="structure">
+													<option value="00" selected="">Toutes les structures</option>
+																										<option value="103">CTN-PBF</option>
+																										<option value="104">ACV et Régulateurs</option>
+																										<option value="109">sdsds</option>
+																									</select>
+					</div>
+				 </div>
+				 <div class="col-sm-3">
+                    <label for="structure" class="d-none d-md-block">&nbsp;</label>
+    				 <div class="form-group" >
+    				    <button type="submit" class="btn btn-success waves-effect waves-light">Filtrer</button>
+    				 </div>
+				 </div>
+				
+				</div>
+            </form>
+                {% endblock %}
+                                {% block documenter %}
+                                <div class="row pl-3" style='display:flex;justify-content:space-between;margin-top:10px;'>
+                                    {% block generate_docs %}
+                                    {% block search_doc %}
+                                    <div style='display:flex;' class="col-lg-3"> <!-- <label> Search </label> --> 
+                                        <label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+                                        <input type='text' class='chercher form-control' style='border-radius:0px;' placeholder="Recherche..."> 
+                                    </div>
+                                    {% endblock %}
+                                    <div class="btn-group" role="group" style='display:flex;' aria-label="Button group with nested dropdown">
+                                        <div class="btn-group" role="group">
+                                            {% if detail_g_v != None %}
+                                            <button type="button" class="btn btn-danger" onclick="launchPDF(9,'{{entity}} : {{base_val}}')">
+                                                <b>Document : {{entity}}</b> <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            {% elif g_v == None %}
+                                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#pdfModal">
+                                                <b>Rapport des Tâches</b> <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                        <div class="ml-2 btn-group" role="group">
+                                            {% if detail_g_v != None %}
+                                            <button id="btnGroupDrop1" type="button" class="btn btn-info" data-toggle="modal" data-target="#miniChartModal">
+                                                <b>Evolution</b> <i class="fas fa-chart-bar"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endblock %}
+
+                                </div>
+                                {% endblock %}
+					  		              <div id="tache_aka" class="table table-responsive table-stripped" style="margin-top: 10px;">
+{% block table %}
+<table class="no-footer table table-stripped " id="tache"  role="grid" aria-describedby="tache_info" style="font-size:12px;font-family: Ubuntu;">
+<thead id='thead_tache'>
+<tr role="row">
+    <!-- <th class="details-control sorting_disabled"  aria-label="" style="min-width: 40px;"></th> -->
+    <th class="sorting_asc" tabindex="0" aria-controls="tache"  aria-label="Activité: activate to sort column descending" aria-sort="ascending" style="width:220px;">Activité</th>
+    <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">Tache</th>
+    <th class="sorting" colspan="1" tabindex="0" aria-controls="tache"  aria-label="Résultat Attendu: activate to sort column ascending" style="" >Résultat Attendu</th>
+    <th class="sorting" colspan="1"  tabindex="0" aria-controls="tache" style=""  aria-label="Indicateur de processus: activate to sort column ascending" style="">Indicateur Processus</th>
+    <!-- <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Val. Attendue: activate to sort column ascending" style="">Val. Attendue</th>
+    <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Val. Réalisée : activate to sort column ascending" style="">Val. Réalisée </th> -->
+    <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Taux d exe: activate to sort column ascending" style="">Taux d'execution</th>
+    <!-- <th class="sorting " tabindex="0" aria-controls="tache"  aria-label="Justification : activate to sort column ascending" style="">Justification </th> -->
+    <!-- <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Budget Utilisé: activate to sort column ascending" style="">Budget</th> -->
+    <th colspan="2" data-print='0' class="noprint sorting text-success"  tabindex="0" aria-controls="tache"  aria-label="Chart: activate to sort column ascending" style="">Graphiques</th>
+    <th> Décision </th>
+</tr>
+</thead>
+<tbody id='tbody_tache'>
+    {% for line in lines %}
+    <tr class='bg-light '>
+        <td>{{line.activite}}</td>
+        <td>{{line}}</td>
+        <td colspan="1">{{line.result_process}}</td>
+        <td colspan="1" >{{line.indicateurresult}}</td>
+        <td class="{% if line.progression < 25 %} text-danger {% elif line.progression < 50 %} text-warning {% else %} text-success {% endif %}"><b>{{line.progression}} % </b></td>
+        <td colspan="2" data-print='0' class="noprint text-success"><span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher(this);" class="grapherBTN btn btn-success"><i class="fas fa-chart-bar"></i></span>&nbsp;<span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher(this);" class="grapherBTN btn btn-info"><i class="fas fa-chart-pie"></i></span>&nbsp;<span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher(this);" class="grapherBTN btn btn-warning"><i class="fas fa-chart-line "></i></span>&nbsp;<span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher(this);" class="grapherBTN btn btn-danger"><i class="fas fa-table "></i></span></td>
+        <td><span>Aucun Statut</span></td>
+    </tr>
+    <tr class="text-success">
+     <th colspan='8' class='morer noprint' data-print='0' data-stat='0' data-line="{{line.id}}" style="cursor:pointer;"><b style="text-transform:uppercase;font-size:12px;" >Voir les Opérations</b> <i class="fas fa-angle-down p-1 text-success"></i></th> 
+    </tr>
+                                                    <tr data-nature="0" data-line="{{line.id}}" style="display:none;" class="text-success " role="row">
+                                                    <th  >Opérations</th>
+
+                                                    <th  >Personnel</th>
+                                                    <th>Montant</th>
+                                                    <th colspan='2'>Chronogramme de Mise en Oeuvre</th>
+                                                    
+                                                    <th colspan="1" data-print='0' class="noprint">Rapport Technique </th>
+                                                    <th colspan="1" data-print='0' class="noprint">Rapport Financier </th>
+                                                    {% if permissions > 1 or user == line.superviseur.bd_user %}<th data-print='0'  class=" text-success">Décision</th>{% endif %}
+                                                    {% if permissions < 4 %}<th data-print='0' >Actions</th>{% endif %}
+                                                    </tr>
+                                                    <tr data-line="{{line.id}}" style="display:none;" class="" role="row"></tr>
+    {% for operation in line.operations %}
+{% if operation.personnel.bd_user.id == user.id or user == line.superviseur.bd_user or permissions > 1 %}
+    <tr data-line="{{line.id}}" style="display:none;" data-nature="0" class="text-dark" >
+        <td>{{operation}}</td><!-- and permissions < 1 -->
+        <td>{{operation.personnel}}</td>
+        <td>{{operation.montant}}</td>
+        <td colspan="2"> <div style="display:flex;justify-content: space-between;">{% for period in operation.periodes.chrono_split %}<div style="" >{{period}}</div>{% endfor %}</div><div style="display:flex;justify-content: space-between;" class="">{% for period in operation.periodes.desc_split %}<div  style="font-weight:bold;">{% if period != '9' %}{% if operation.etat == '0' %}<i class="fas fa-clock"></i>{% elif operation.etat == '1' %}<i class="fas fa-check"></i>{% elif operation.etat == '2' %}<i class="fas fa-check text-success"></i>{% endif %}{% else %}<i style="opacity:0;'" class="fas fa-pen"></i>{% endif %}</div>{% endfor %}</div></td>
+                                                        
+                                                        <td class="noprint"  data-print='0' colspan="1">{% if operation.personnel.bd_user.id == user.id or  user == line.superviseur.bd_user or permissions > 1 %}<div><div>{% if operation.tech_rapports.first == None %}<span style="cursor:pointer;" onclick="rapport(this)" class=" btn-rapport" data-id="{{operation.id}}" data-rapport='0' data-tache="{{line}}" data-result="{{line.result_process}}" data-name="{{operation}}" data-target="#addModal" data-toggle='modal'>Rapport Technique&nbsp;<b class="fas fa-plus text-dark"></b></span>{% endif %}</div><div>{% for r in operation.tech_rapports %}<div class='text-secondary'><a href="{{r.piece_jointe.url}}" >{{r.date_creation}} - {{r}}</a></div>{% endfor %}</div></div>
+                                                        {% endif %}</td>
+                                                        <td class="noprint" data-print='0' > <div><div>{% if operation.finan_rapports.first == None %}<span style="cursor:pointer;" onclick="rapport(this)" class=" btn-rapport" data-name="{{operation}}" data-rapport='1' data-id="{{operation.id}}" data-tache="{{line}}" data-result="{{line.result_process}}" data-target="#addModal" data-toggle='modal'>Rapport Financier&nbsp;<b class="fas fa-plus text-dark"></b></span>{% endif %}</div></div>{% for r in operation.finan_rapports %}<div class='text-secondary'><a href="{{r.piece_jointe.url}}" >{{r.date_creation}} - {{r}}</a></div>{% endfor %}</div></td>
+                                                        {% if permissions > 1 or user == line.superviseur.bd_user %}
+                                                        <td data-print='0'> <span data-target="#validOperModal" data-operation="{{operation}}" data-personnel="{{operation.personnel}}" data-id="{{operation.id}}" data-toggle="modal" onclick="validerTache(this);" class="opera_valider fas fa-check btn btn-success p-1"></span>&nbsp;<span data-target="#annulerOperModal" data-toggle="modal" onclick="annulerTache(this)" class="fas fa-times btn btn-danger p-1"></span></td>
+                                                        {% endif %}
+                                                        {% if permissions < 4 or user == line.superviseur.bd_user %}  
+                                                       <td data-print='0' class="">&nbsp;<i class="fas text-dark fa-pen"></i>&nbsp;<i class="fas text-danger fa-trash mx-2"></i>&nbsp;
+                                                        </td>
+                                                        {% endif %}
+    </tr>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+</tbody>
+</table>
+{% endblock %}
+                                    </div>
+                                    </div>
+
+                                <div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                                                <h4 class="modal-title graphic_title">Graphique </h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <div id='chartDIV'>
+                                                    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="chartModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                                                <h4 class="modal-title graphic_title">Graphique </h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                    <canvas id="myChart2" style="width:100%;max-width:700px"></canvas>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="chartModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                                                <h4 class="modal-title graphic_title">Graphique </h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                               <div id='chartDIV3' style="display:none;">
+                                                    <canvas id='myChart3' style="width:100%;max-width:700px;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+<div class="modal fade" id="chartModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                                                <h4 class="modal-title graphic_title">Bilan Journalier </h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade bd-example-modal-xl" id="validOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div style='max-width:450px;' class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-success text-white">
+                                                <h4 class="modal-title">Valider le Rapport</h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action='/valid_rapport/' method="POST">
+                                                {% csrf_token %}
+                                                <div class="">
+                                                    <p>
+                                                        <div style="text-transform:uppercase;" class="h5">Vous Validez le Rapport sur l'Operation <b id='opera_valider_title' class="text-success"> </b> ?</div>
+                                                        <div>
+                                                            <input type="hidden" id="opera_valider_id" name="opera_valider_id">
+                                                            <input type="submit" class="btn btn-success" value="Oui" name="">
+                                                            <span class="btn btn-danger">Non</span>
+                                                        </div>
+                                                    </p>
+                                                </div>
+                                                </form>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                <div class="modal fade bd-example-modal-xl" id="annulerOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div style='max-width:450px;' class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-danger text-white">
+                                                <h4 class="modal-title">Annuler le Rapport</h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action='/in_valid_rapport/' method="POST">
+                                                {% csrf_token %}
+                                                <div class="">
+                                                    <p>
+                                                        <div style="text-transform:uppercase;" class="h5">Vous Invalidez le Rapport sur l'Operation <b id='opera_invalider_title' class="text-success"> </b> ?</div>
+                                                        <div>
+                                                            <input type="hidden" id="opera_invalider_id" name="opera_invalider_id">
+                                                            <input type="submit" class="btn btn-success" value="Oui" name="">
+                                                            <span class="btn btn-danger">Non</span>
+                                                        </div>
+                                                        <divs>
+                                                            <label>Veuillez associer un Commentaire Svp</label>
+                                                            <textarea rows='5'  name="opera_invalider_comment" class="form-control"></textarea>
+                                                        </div>
+                                                    </p>
+                                                </div>
+                                                </form>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+									<!--div class="modal fade bd-example-modal-xl" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" -->
+									<div class="modal fade bd-example-modal-xl" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title ">Rapport <b id='type_rapport' class="h4 text-success"> Technique </b> de l'Operation <span class="h4 text-info" id='tache-nom'></span></h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+															<div id="spinner" class="spinner-border avatar-lg text-primary m-2" role="status" style="position:absolute; display:none;"></div>
+																	<h6>Tache</h6>
+															<p id="tache-title"> </p>
+															<h6>Résultat Attendu</h6>
+															<p id="tache-result"> </p>
+                                                            
+															<div id="detail" class="card" style="margin-top: 30px;border: 1px solid #EBEEF3;">
+															<div class="card-body">
+
+
+<div>
+<div class="">
+                                                            <legend>Ajouter une pièce jointe pour l'opération <i id="codeoperation"></i></legend>
+                                                            <form enctype="multipart/form-data" action="/save_rapport/" class="form-horizontal form-chrono-file bordered-row"  method="post">
+                                                              {% csrf_token %}
+<input type="hidden" id="rapport_input" name="rapport_input">
+                                                                        <div class="row">
+                                                                        <div class="col-sm-6">
+                                                                                <div class="form-group">
+                                                                                    <small>NOM</small>
+                                                                                   <input type="text" class="form-control" name="operation_nom" id="nomfile">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-6">
+                                                                                <div class="form-group">
+                                                                                    <small>FICHIER</small>
+                                                                                   <input required="" type="file" class="form-control" name="operation_fichier" id="fichier">
+                                                                                   <input type="hidden" id='tache-id-op' class="form-control" name="operation_id">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-lg-12">
+                                                                                <legend>Ajouter un Commentaire</legend>
+                                                                                <div class="col-lg-12">
+                                                                                    <textarea style="width:100%;" rows=4></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-6">
+                                                                                <div><input class="btn btn-success" type="submit" value="CONFIRMER LA REALISATION" name=""></div>
+                                                                            </div>
+
+
+
+                                                                         </div>
+
+</div>
+														   </div>
+														</div>
+														<div id="detail-reprog" class="card" style="margin-top: 30px;display:none;border: 1px solid #EBEEF3;">
+														<div class="card-body">
+															<form class="form-horizontal form-reprog bordered-row" id="form-reprog" data-toggle="validator" role="form" method="post">
+																<input type="hidden" name="_token" value="XeNkZghck6r61Q5DVFUxjlRfgCkAGyYn4tb2ncnR">
+
+																		<fieldset style="font-size: 18px;">
+																		<legend>Reprogrammer l'opération <span id="idoperation"></span></legend>
+																		<div class="row">
+																			
+																			<div class="selector col-sm-8">
+								
+																			</div>
+																			<div class="col-sm-4">
+																			<button type="button" class="btn btn-primary" id="saveReprog">Save</button>
+																			</div>
+																			<div class="operation">
+								
+																			</div>
+																			<input type="hidden" class="form-control" name="tache_id" id="tache_idprog">
+																		</div>
+																		 
+																		</fieldset>
+																	
+															</form>
+														</div>
+														</div>
+														
+										    </div>
+												<!--div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
+												</div-->
+
+										</div>
+									</div>
+								</div>
+
+
+
+								<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title">Plan de travail opérationnel Global </h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+												
+                                                <form class="form-horizontal form-chart bordered-row" id="form-chart" data-toggle="validator" role="form" action="" method="get">
+																<input type="hidden" name="_token" value="XeNkZghck6r61Q5DVFUxjlRfgCkAGyYn4tb2ncnR">
+
+																		<div class="row">
+
+
+                                                                            <div class="col-sm-6">
+																				<div class="form-group">
+                                                                                    Periode
+																				   <input type="text" class="form-control" name="periodelibelle" id="periodelibelle">
+
+
+																				</div>
+																			</div>
+                                                                            <div class="col-sm-6">
+																				<div class="form-group">
+                                                                                   Titre du Document
+                                                                                   <input type="text" class="form-control" name="titredoc" id="titredoc">
+
+
+
+
+																				</div>
+																			</div>
+                                                                           
+
+																		 </div>
+																<button type="submit" class="btn btn-primary" id="saveChart">Générer le PDF</button>
+                                                            </form>
+
+										    </div>
+												<!--div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
+												</div-->
+
+										</div>
+									</div>
+								</div>
+					  
+					  
+					  
+                                  </div>
+            </div>
+            </div>
+</form>
+        </div>
+       </div>
+           
+       {% endblock %}       
+ 				
+
+        <!-- Overlay-->
+        {% block modals %}
+
+        {% endblock %}
+                <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <b>Générer un PDF</b>
+                      </div>
+                      <div class="modal-body mb-3">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <div>
+                                <div style="cursor: pointer;"  onclick="launchPDF(1,'Plan de Travail Opérationnel')" class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Opérationnel </b>
+                                </div>
+                                <div style="cursor: pointer;" onclick="launchPDF()"  class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Personnel </b>
+                                </div>
+                                <div style="cursor: pointer;" onclick="launchPDF()"  class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Opérationnel Global </b>
+                                </div>
+                                {% for subperiode in actual_institution.default_subperiod.decoup_desc_slip %}
+                                <div style="cursor: pointer;" onclick="launchPDF()"  class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Micro Plan {{actual_institution.default_periode}} / {{subperiode}}</b>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+                  </div>
+                </div>
+            </div>
+                <div class="modal fade" id="miniChartModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <b class="text-primary">Graphiques</b>
+                      </div>
+                      <div class="modal-body mb-3">
+                        <div class="d-flex flex-wrap justify-content-between">
+                               <div style="cursor:pointer;" data-index='0' data-tache="" data-target="#chartModal" data-toggle="modal" class="w-50 text-center text-danger charter_launch" data-dismiss="modal">
+                                  <div><i class="fa fa-chart-pie fa-3x"></i></div>
+                                  <div style=""> Evolution par Semaine</div>
+                               </div>
+                               <div style="cursor:pointer;" data-index='1' data-tache="" data-target="#chartModal3" data-toggle="modal" class="w-50 text-center text-info charter_launch" data-dismiss="modal">
+                                   <div><i class="fa fa-chart-bar fa-3x"></i></div>
+                                   <div style=""> Participation du Personnel</div>
+                               </div>
+                               <div style="cursor:pointer;" data-index='2' data-tache="" data-target="#chartModal2" data-toggle="modal" class="w-50 text-center text-success charter_launch" data-dismiss="modal">
+                                   <div><i class="fa fa-chart-line fa-3x"></i></div>
+                                   <div style=""> Réalisation de la Tache</div>
+                               </div>
+                               <div style="cursor:pointer;" data-index='3' data-tache="" data-target="#chartModal4" data-toggle="modal" class="w-50 text-center text-warning charter_launch" data-dismiss="modal">
+                                   <div><i class="fa fa-table fa-3x"></i></div>
+                                   <div style=""> Bilan Hebdomadaire</div>
+                               </div>
+                        </div>
+
+                    </div>
+                  </div>
+                </div>
+            </div>
+        <div class="menu-overlay"></div>
+
+{% else %}
+    {% include './login.html' %}
+{% endif %}      
+{% endblock %}
+<div class="menu-overlay"></div>
+
+</div>
+
+
+<footer class="mt-2 footer" style="position:static; background-color:#fff;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                                2022 © BeinInfo.
+            </div>
+            <div class="col-sm-6">
+                                <div class="text-sm-right">
+                                   <a href="/main/" class="text-primary">A Propos</a> | <a href="/main/" class="text-success">Aide</a> | Design &amp; Develop by Beinfos Plus
+                                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<div style="display:none;">
+    <table id='table_print'>
+        <thead id="table_print_header"></thead>
+        <tbody id="table_print_body"></tbody>
+    </table>
+    <table id='table_print2'>
+    </table>
+    <div id="table_print_body2">
+        
+    </div>
+</div>
+<div style="display:none;font-family:courier;" id='pdf'>
+ <div class="content-body" style="font-weight:normal;">
+            <h4 style="font-family:Ubuntu;font-weight:normal;">{{actual_institution}}</h2>
+            <h4 style="font-family:Ubuntu;font-weight:normal;" class="text-secondary">{{actual_institution.nom}}</h2>
+            <center>
+            <br>
+            </center>
+        </div>
+</div>
+
+                <div class="modal fade" id="rapportdoneModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header text-success">
+                        <b>Rapport Soumis avec Succès</b>
+                      </div>
+                      <div class="modal-body mb-3">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <div>
+                                <div class="text-center">
+                                    <img src="{% static 'webpages/ctn_bpf/smile-eyes-smiley.gif' %}">
+                                </div>
+                                <div class="h4 text-center">Votre <span class="h4 text-success">Rapport</span> a été enrégistrée, encore merci pour votre coordination</div>
+                            </div>
+                        </div>
+
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+<!--<script type="text/javascript" src="{% static 'webpages/ctn_bpf/pdfmake.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'webpages/ctn_bpf/vfs_font.js' %}"></script>-->
+  <script src='https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.min.js'></script>
+  <!-- html-to-pdfmake file: -->
+  <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/browser.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script> 
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+<script type="text/javascript">
+    {% if animate2 != None %}
+    $("#rapportdoneModal").modal('show');
+    {% endif %}
+    table_print_div = document.getElementById("table_print_body2")
+    tache_window = document.getElementById("tache");
+    table_print_header = document.getElementById("table_print_header");
+    table_print_body = document.getElementById("table_print_body");
+    tbody_tache = document.getElementById("tbody_tache");
+    theader_tache = document.getElementById("thead_tache");
+    //tache_div = [tbody_tache,theader_tache]
+    //trs = theader_tache.getElementsByTagName("tr");
+		trs = [];
+
+    for (var t=0;t<trs.length;t++){
+        trs_cells1 = trs[t].getElementsByTagName("th");
+        trs_cells2 = trs[t].getElementsByTagName("td");
+        line = "<tr>"
+        for (var t1=0; t1<trs_cells1.length; t1++){
+            if (trs_cells1[t1].getAttribute('data-print') != '0'){
+            line += "<th>"+trs_cells1[t1].innerHTML+"</th>";
+            }
+        }
+        for (var t2=0; t2<trs_cells2.length; t2++){
+            if (trs_cells2[t2].getAttribute('data-print') != '0'){
+                line += "<td>"+trs_cells2[t2].innerHTML+"</td>";
+            }
+        }        
+        line += "</tr>";
+        table_print_header.innerHTML += line;
+    }
+
+    trs = tbody_tache.getElementsByTagName("tr");
+    for (var t=0;t<trs.length;t++){
+            if (trs[t].getAttribute('data-nature') != '0'){
+
+            trs_cells1 = trs[t].getElementsByTagName("th");
+            trs_cells2 = trs[t].getElementsByTagName("td");
+            line = ""
+            for (var t1=0; t1<trs_cells1.length; t1++){
+                if (trs_cells1[t1].getAttribute('data-print') != '0'){
+                line += "<th>"+trs_cells1[t1].innerHTML+"</th>";
+                }
+            }
+            for (var t2=0; t2<trs_cells2.length; t2++){
+                if (trs_cells2[t2].getAttribute('data-print') != '0'){
+                    line += "<td>"+trs_cells2[t2].innerHTML+"</td>";
+                }
+            }        
+            //table_print_body.innerHTML += line;
+            if (line != ""){
+            line = "<tr>"+line+"</tr>";
+            table_print_div.innerHTML += "<table data-ipo='0' id='ipo"+t+"' class='table_add'><thead><th>Acitivte</th><th>Tache</th><th>Résultat Attendu</th><th>Indicateur Processus</th><th>Taux d'Execution</th><th>Décision</th></thead><tbody><tr>"+line+"</tr></tbody></table>";
+            }
+        }
+
+        else{
+            trs_cells2 = trs[t].getElementsByTagName("td");
+            line= "";
+            for (var t2=0; t2<trs_cells2.length; t2++){
+                if (trs_cells2[t2].getAttribute('data-print') != '0'){
+                    line += "<td>"+trs_cells2[t2].innerHTML+"</td>";
+                }
+            }  
+            if (line != ""){
+                table_print_div.innerHTML += "<table data-ipo='1' id='ipo"+t+"' class='table_add'><thead><th>Opération</th><th>Personnel</th><th>Montant</th><th>Chronogramme de Mise en Oeuvre</th><th>Décision</th></thead><tbody><tr>"+line+"</tr></tbody></table>";
+            }
+        }
+    }
+    //tache_window.print();
+    function launchPDF(index=0,name="document"){
+
+             var img = new Image;
+             img.onload = function() {
+                 //printDoc.addImage(this,10, 0, 212, 215,);
+                 
+             };
+             img.crossOrigin = "";  
+             img.src = "{{actual_institution.img.url}}";
+            if (index == 1 || index == 9){
+                var printDoc = new jsPDF({
+                    orientation:'landscape'
+                });
+                printDoc.fromHTML($('#pdf').get(0), 10, 10, {
+                        'width': 180,
+                        'font':'courier'
+                });                
+
+                printDoc.setFont("courier");
+                printDoc.setFontType("normal");
+
+            printDoc.setFontSize(24);
+            printDoc.text('PLAN DE TRAVAIL OPERATIONNEL', 80, 50)
+                printDoc.setFontSize(14);
+                var htmlstring = '';  
+                var tempVarToCheckPageHeight = 0;  
+                var pageHeight = 0;  
+                pageHeight = printDoc.internal.pageSize.height;  
+                specialElementHandlers = {  
+                    // element with id of "bypass" - jQuery style selector  
+                    '#bypassme': function(element, renderer) {  
+                        // true = "handled elsewhere, bypass text extraction"  
+                        return true  
+                    }  
+                };  
+                margins = {  
+                    top: 10,  
+                    bottom: 60,  
+                    left: 20,  
+                    right: 20,  
+                    width: 1200  
+                };  
+                var y = 20;  
+                printDoc.setLineWidth(2);
+                table_add = document.getElementsByClassName('table_add');
+                posY = 70;
+                for (var i=0; i<table_add.length; i++){
+                    if(table_add[i].getAttribute('data-ipo') == '0'){
+                        theme_color = "grid";
+                        start_tmp = posY+(10); 
+                    }
+                    else{
+                        theme_color = 'striped';
+                        start_tmp = posY+(2);
+                    }
+                    printDoc.autoTable({  
+                        html: '#'+table_add[i].id,  
+                        startY: start_tmp, 
+                        styles:{font:"courier"},
+                        theme:theme_color,
+                        columnStyles: {0: {cellWidth: 30},
+                        1: {cellWidth: 50},
+                        2: {cellWidth: 50},
+                        }, 
+                        styles: {  
+                            minCellHeight: 10  
+                        }  
+                    });
+                    posY = printDoc.lastAutoTable.finalY;                 
+                }
+
+            }
+
+            else if (index==15){// Historique
+                $("#pdf_title").text("Historique des travaux");
+            var printDoc = new jsPDF({
+                orientation:'landscape'
+            });
+            printDoc.fromHTML($('#pdf').get(0), 10, 10, {
+                    'width': 180,
+                    'font':'courier'
+            });                
+
+            printDoc.setFont("Ubuntu");
+            printDoc.setFontType("bold");
+            printDoc.setFontSize(24);
+            printDoc.text('HISTORIQUE DES TRAVAUX', 100, 50)
+
+
+                printDoc.autoTable({  
+                    html: '#tache',  
+                    startY: 70,  
+                    styles:{font:"courier"},
+                    theme:'grid',
+                    columnStyles: {                       
+                    },  
+                    styles: {  
+                        minCellHeight: 10  
+                    }  
+                });            
+            }
+            /*printDoc.autoPrint();
+            printDoc.output("dataurlnewwindow");*/
+            //printDoc.save(name)
+        //doc.save('a4.pdf');
+        printDoc.save(name);
+    }
+</script>
+<script type="text/javascript">
+        $.ajax({
+        url: '/count_notifs/',
+        data: {
+            {% if user.personnel != None %}
+            'value':{{user.id}},
+            {% else %}
+            'value':{{user.id}}
+            {% endif %}
+        },
+        dataType: 'json',
+        success: function (data) {
+            $("#count_work").text(data.result);
+        },
+        error: function(data){
+
+        }
+    }); 
+
+var xValues = [{% for periode in actual_institution.default_subperiod.decoup_desc_slip %}"{{periode}}",{% endfor %}""];
+
+var yValues = [55, 49, 44, 24, 15];
+var barColors = ["red", "green","blue","orange","brown"];
+
+
+
+var xyValues = [
+  {x:1, y:7},
+  {x:2, y:8},
+  {x:3, y:8},
+  {x:4, y:9},
+  {x:5, y:10}
+];
+
+personnels = [{% for perso in personnel %}"{{perso}}",{% endfor %}""]
+
+new Chart("myChart3", {
+  type: "pie",
+  data: {
+    labels: personnels,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    title: {
+      display: true,
+      text: "Participation de l'Equipe "
+    }
+  }
+});
+
+
+</script>
+<script type="text/javascript">
+/*main_div = document.getElementById('layout-wrapper');
+main_div.onscroll = function() {myFunction()};
+*/
+// Get the navbar
+
+var navbar = document.getElementById("navbar_top");
+
+// Get the offset position of the navbar
+var sticky = navbar.offsetTop;
+
+// Add the sticky class to the navbar when you reach its scroll position. Remove "sticky" when you leave the scroll position
+/*function myFunction() {
+  if (main_div.scrollTop >= (sticky+50)) {
+    navbar.classList.add("sticky");
+  } else {
+    navbar.classList.remove("sticky");
+  }
+}*/
+//alert()
+var actual_tache = 0;
+
+{% if operation != None %}
+type_month = new Date().getMonth();
+typeperiode = document.getElementById('typeperiode');
+function launchPeriode(){
+    months = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+    for (var m=0; m<months.length; m++){
+        if (m == type_month){
+            message = "<option value='"+m+"' selected>"+months[m]+" 2022 </option>"
+        }
+        else{
+            message = "<option value='"+m+"' >"+months[m]+" 2022 </option>"
+        }
+        typeperiode.innerHTML += message;
+    }
+}
+{% endif %}
+
+{% if operation != None %}
+morer_0 = document.getElementsByClassName("morer")[0];
+$(".morer").click(function(){
+    line = $(this).attr('data-line');
+    stat = parseInt($(this).attr('data-stat'));
+    $(".btn-rapport").click(function(){
+    $("#tache-title").html($(this).attr('data-tache'));
+    $("#tache-result").html($(this).attr('data-result'));
+    $("#tache-id-op").val($(this).attr('data-id'));
+    });
+    if (stat == 0 ){
+        $(this).html("<b>Masquer les Opérations</b><i class='fas fa-angle-up p-1 text-success'></i>");
+        $("tr[data-line='"+line+"']").show("fast");
+    }
+    else{
+        $(this).html("<b>Voir les Opérations</b><i class='fas fa-angle-down p-1 text-success'></i>");
+        $("tr[data-line='"+line+"']").hide("fast");
+    }
+    $(this).attr('data-stat',(1-stat));
+});
+morer_0.click();
+{% endif %}
+
+
+
+function rapport(element){
+$("#tache-title").html($(element).attr('data-tache'));
+$("#tache-result").html($(element).attr('data-result'));
+$("#tache-id-op").val($(element).attr('data-id'));
+$("#tache-nom").text($(element).attr('data-name'));
+if ($(element).attr('data-rapport') == '0'){
+    $("#type_rapport").text("Technique");
+    $("#rapport_input").val('c');
+}
+else{
+    $("#type_rapport").text("Financier");
+    $("#rapport_input").val('f');
+}   
+}
+
+function validerTache(element){
+    $("#opera_valider_title").text(element.getAttribute('data-operation'));
+    $("#opera_valider_id").val(element.getAttribute('data-id'));
+}
+function annulerTache(element){
+    $("#opera_invalider_title").text(element.getAttribute('data-operation'));
+    $("#opera_invalider_id").val(element.getAttribute('data-id'));
+}
+var ast = setTimeout(function(){
+          $("#loader").fadeOut('slow');
+},2000);
+
+function merde(element){
+    data_id = (element.getAttribute('data-id'));
+    $(".entity_id").val(data_id); 
+
+}
+function editBTN(element){
+    line = element.parentNode.parentNode;
+    edActionModal = document.getElementById("addActionModal")
+    tds = line.getElementsByTagName("td");
+    //alert(line.innerHTML);
+    edit_or_create = document.getElementById("edit_or_create");
+    edit_or_create.value = 'e'
+    edit_id = document.getElementById("edit_id");
+    edit_id.value = element.getAttribute('data-id');
+    input = edActionModal.getElementsByClassName("form-control");
+    for(var i=0; i<input.length; i++){
+        if (input[i].getAttribute('type') == 'file'){
+            //input[i].value = tds[(i-2)].textContent;
+        }
+        else if (input[i].getAttribute('type') == 'number' || input[i].getAttribute('type') == 'text' ){
+            input[i].value = tds[(i)].textContent;            
+        }
+        else if (input[i].tagName == 'SELECT'){
+            
+        }
+        else{
+            input[i].textContent = tds[(i)].textContent;  
+        }
+    }
+    result = "";
+}
+
+function filter_lines(type_search,value_search="|",sub_search="#"){
+    $.ajax({
+        url: '/ajax_lines/',
+        data: {
+            'sub_search':sub_search,
+            'value_search':value_search,
+            'type_search':type_search
+        },
+        dataType: 'json',
+        success: function (data) {
+            message = "";
+            $("#table_body").hide('');
+            if (data.lines_count > 0){
+                for (var i=0; i<data.lines_count; i++){
+                    text = data.lines[i].split("|");
+                    tr = "<tr>";
+                    for (var j=0;j<text.length;j++){
+                        tr+="<td>"+text[j]+"</td>";
+                    }
+                    tr += "<td><button class='btn btn-success edit-btn' ><i class='fas fa-pencil-alt'></i></button>";
+                    tr += " <button class='btn btn-danger delete-btn' data-target='#deleteModal' data-id='1' data-toggle='modal'><i class='fas fa-trash-alt'></i></button></td>";
+                    tr += "<td>"+data.progressions[i]+" % </td>";
+                    tr +="</tr>";
+                    message += tr;
+                }
+            }
+            else{
+                message =" <tr> <td> Aucune Donnée ne correspond à votre Recherche </td></tr>";
+            }
+            $("#table_body").html(message);
+            $("#table_body").show('');
+        },
+        error: function(data){
+
+        }
+    });
+}
+
+$(".chercher").keypress(function(){
+    filter_lines({% if detail_g_v == None %}"{{g_v}}"{% else %}"{{g_vs}}"{% endif %},$(this).val());
+});
+$(".filter-btn").click(function(){
+    searcher = document.getElementsByClassName('searcher');
+    nb_searchers = searcher.length;
+    code = searcher[(nb_searchers-1)].getAttribute('data-code');
+    sub_search = searcher[(nb_searchers-1)].value;
+    filter_lines("{{g_v}}","|",sub_search)
+});
+/*
+$(".searcher").change(function(){
+    val_sea = $(this).val();
+    val_code = $(this).attr('data-code')
+    $.ajax({
+        url: '/get_searches/',
+        data: {
+            'value':val_sea,
+            'type':val_code
+        },
+        dataType: 'json',
+        success: function (data) {
+            if (val_code == 'p'){
+
+            }
+            else if(val_code=='a'){
+
+            }
+            else if(val_code=='a1'){
+
+            }
+        },
+        error: function(data){
+
+        }
+    }); 
+});*/
+$(".charter_launch").click(function(){
+    index = $(this).attr('data-index');
+    //alert(index)
+    $(".graphic_title").text($(this).text());
+    $.ajax({
+        url: '/ajax_graphiques/',
+        data: {
+            'type_graph':index,
+            'id_tache':parseInt(actual_tache)
+        },
+        dataType: 'json',
+        success: function (dt) {
+            if ( index == '0'){
+            new Chart("myChart", {
+              type: "bar",
+              data: {
+                labels: xValues,
+                datasets: [{
+                  backgroundColor: barColors,
+                  data: dt.results
+                }]
+              },
+              options: {
+                legend: {display: false},
+                title: {
+                  display: true,
+                  text: "Evolution par Periode"
+                }
+              }
+            });
+            $("#chartDIV").attr("style='display:block;'");
+            }
+            else if( index == '1'){
+
+            new Chart("myChart2", {
+              type: "line",
+              data: {
+                labels: xValues,
+                datasets: [{
+                  data: [0,10,12,14,14],
+                  borderColor: "red",
+                  fill: false
+                },{
+                  data: [14,15,16,18,20],
+                  borderColor: "green",
+                  fill: false
+                },{
+                  data: [20,20,35,40,50],
+                  borderColor: "blue",
+                  fill: false
+                }]
+              },
+              options: {
+                legend: {display: false},
+                title: {
+                  display: true,
+                  text: "Réalisation de la Tâche "
+                }
+              }
+            });
+            $("#chartDIV2").show();
+            }
+            else if( index  == '2'){
+                $("#chartDIV3").show();
+            }
+        },
+        error: function(data){
+
+        }
+    }); 
+
+});
+
+function grapher(element){
+    actual_tache = $(element).attr('data-tache');
+}
+
+$(".fa-pencil-alt").click(function(){
+    $("#editFormAction").html($("#addFormAction").html());
+});
+main_td = document.getElementsByTagName('td');
+for (var i=0; i<main_td.length; i++){
+    //main_td[i].innerHTML = main_td[i].innerHTML.replace('\n','<br>');
+}
+</script>
+{% block script %}
+
+{% endblock %}
+</body>
+</html>

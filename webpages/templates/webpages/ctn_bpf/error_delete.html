@@ -1,0 +1,14 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block content %}
+<div>
+		<div class="text-center h3 mb-4">Contraintes liées à la Suppression : <span class="text-success h3"> {{entity}} </span></div>
+		<div class="text-center"> Désolé mais cet élément est lié à d'autres  <span class="text-success"> {{subs}}	</span>, sa suppression pourrait causer des pertubations au système
+		</div>
+
+		<div class="h3 mt-4 text-center">
+				<a href="{% if entity.m_type_entity.is_tache %}/taches/{{entity.id}}/{% else %}/gestionnaire/{{hierachie}}/{{entity.id}}/{% endif %}">Veuillez cliquer ici pour la gestionnaire : {{entity}}</a> 	
+		</div>
+</div>
+{% endblock %}

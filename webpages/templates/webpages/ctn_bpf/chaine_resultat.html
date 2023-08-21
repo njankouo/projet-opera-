@@ -1,0 +1,419 @@
+{% extends './index.html' %}
+{% block style %}
+<style type="text/css">
+  #myDiagramDiv canvas *{
+    font-family:Ubuntu;
+  }
+  #localDiagram canvas *{
+    font-family: Ubuntu;
+  }
+</style>
+{% endblock %}
+
+{% block BigLeft %}
+{% block miniBigLeft %}
+<div class="mb-3">
+  <div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary mb-2">
+    <div class="btn text-primary">Chaine de Resultats</div>
+    <div><i class="fas text-primary fa-angle-down"></i></div>
+  </div>
+  <div class="pl-2">
+    <div class="py-1"><input checked="" class="section_checkbox" value="0" type="radio" name="ch1"><small>&nbsp;C.Resultats Proccess</small></div>
+    <div class="py-1"><input class="section_checkbox" value="1" type="radio" name="ch1"><small>&nbsp;C.Resultats Technique</small></div>
+    {% if finan_options != None %}
+    <div class="py-1"><input class="section_checkbox" value="2" type="radio" name="ch1"><small>&nbsp;C.Resultats Financier</small></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% endblock %}
+
+{% block print_bar %}
+<div style="border-bottom:1px solid #ddd;">
+    <div class="text-secondary">
+        <label style="padding:10px;"><a class="text-secondary" href="#"> Filtrer</a></label>
+        <label style="padding:10px;color:#ccc;"> Evaluer</label>
+        <label class="d-none d-md-inline" style="padding:10px;cursor:pointer;" data-toggle='modal' data-target="#tree_pdfModal"> Imprimer</label>
+    </div>
+    <div id='print_check' class="d-flex justify-content-between flex-wrap">
+
+    </div>
+  <a href="#" id="print_link" style="display:none;"></a>
+</div>
+
+{% endblock %}
+
+{% block sup_header %}{% endblock %}
+
+{% block extra_header %}{% endblock %}
+
+{% block search_doc %}{% endblock %}
+
+{% block search_filters %}
+
+<h1 style="font-size:25px;" class=" title_div"> Chaîne de Résultat </h1>
+{% endblock %}
+
+{% block table %}
+<!-- <div class='d-flex'> <input class="col-lg-6 mr-3 form-control" type="search" id="mySearch" onkeypress="if (event.keyCode === 13) searchDiagram()"> <button onclick="searchDiagram()">Rechercher </button> </div> -->
+<div id="ImgBlock">
+  
+</div>
+<div style="display:flex;" id="allSampleContent" class="p-4 w-full">
+    <!-- <div style='width:12%;' class="pr-2"> 
+        <div>
+            <div><b><img style="width:30px;height:30px;border-radius:100%;" src="{{actual_institution.img.url}}">&nbsp;{{actual_institution}}</b></div>
+        </div>
+        <ul>
+            {% for top in top_entities %}
+            <li><small> {{top}} </small></li>
+            {% empty %}
+            <div> <small>Vide</small> </div>
+            {% endfor %}
+        </ul>
+    </div> -->
+    <div id="sample" style="font-family:Ubuntu;width:100%;position: relative;">
+      <div id="myDiagramDiv" style="font-family:Ubuntu;background-color: rgb(242, 242, 242); border: 1px solid black; width: 100%; height: 200px; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0); cursor: auto;"><canvas tabindex="0" width="1229" height="681" style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1229px; height: 681px; cursor: auto;">This text is displayed if your browser does not support the Canvas HTML element.</canvas><div style="position: absolute; overflow: auto; width: 1246px; height: 698px; z-index: 1;"><div style="position: absolute; width: 1621.95px; height: 778.214px;"></div></div></div> 
+
+      <div id="localDiagram"  style="margin-top:30px;font-family:Ubuntu;background-color: rgb(242, 242, 242); border: 1px solid black; width: 100%; height: 500px; position: relative;"> </div>
+    </div>
+
+
+    {% endblock %}
+{% block modals %}
+    <div class="modal fade" id="tree_pdfModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            
+            <div class="d-flex justify-content-center py-4">
+              <div class="h4"> Imprimer la Chaîne de Résultats </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-between">
+              <div>
+                <div style="cursor: pointer;"  onclick="printTree(0)" class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Chaine de Resultat Global - A4 </b>
+                </div>
+                <div style="cursor: pointer;"  onclick="printTree(1)" class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Chaine de Resultat Global - A3 </b>
+                </div>
+                <div style="cursor: pointer;"  onclick="printTree(2)" class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Chaine de Resultat Global - A2 </b>
+                </div>
+                <div style="cursor: pointer;"  onclick="printTree(3)" class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Chaine de Resultat Global - A1 </b>
+                </div>
+                <div style="cursor: pointer;"  onclick="printTree(4)" class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Chaine de Resultat Global - A0 </b>
+                </div>
+                <div style="cursor: pointer;" onclick="printTree(5)"  class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Chaine de Résultat Locale</b>
+                </div>
+                <!--
+                {% for subperiode in actual_institution.default_subperiod.decoup_desc_slip %}
+                <div style="cursor: pointer;" onclick="launchPDF()"  class="mb-3">
+                  <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                  <b>Micro Plan {{actual_institution.default_periode}} / {{subperiode}} </b>
+                </div>
+                {% endfor %}
+                -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div>
+{% endblock %}
+
+    {% block script %}
+
+    <script src="https://unpkg.com/gojs@2.2.14/release/go.js"></script>
+    <script id="code">
+      ImgBlock = document.getElementById("ImgBlock");
+      var img_absol;
+    function init() {
+
+      // Since 2.2 you can also author concise templates with method chaining instead of GraphObject.make
+      // For details, see https://gojs.net/latest/intro/buildingObjects.html
+      const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    function nodeClicked(e, obj) {  // executed by click and doubleclick handlers
+      /*var evt = e.copy();
+      var node = obj.part;
+      var type = evt.clickCount === 2 ? "Double-Clicked: " : "Clicked: ";
+      var msg = type + node.data.key + ". ";
+      */
+      var evt = e.copy();
+
+      //ocument.getElementById("myStatus").textContent = msg;
+    }
+
+      myFullDiagram =
+        $(go.Diagram, "myDiagramDiv",  // each diagram refers to its DIV HTML element by id
+          {
+            initialAutoScale: go.Diagram.UniformToFill,  // automatically scale down to show whole tree
+            maxScale: 0.3,
+            allowZoom:true,
+            contentAlignment: go.Spot.Center,  // center the tree in the viewport
+            isReadOnly: true,  // don't allow user to change the diagram
+            "animationManager.isEnabled": false,
+            layout: $(go.TreeLayout,
+              { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            maxSelectionCount: 1,  // only one node may be selected at a time in each diagram
+            // when the selection changes, update the myLocalDiagram view
+            "ChangedSelection": showLocalOnFullClick
+          });
+
+      myLocalDiagram =  // this is very similar to the full Diagram
+        $(go.Diagram, "localDiagram",
+          {
+            autoScale: go.Diagram.UniformToFill,
+            contentAlignment: go.Spot.Center,
+            isReadOnly: true,
+            layout: $(go.TreeLayout,
+              { angle: 90, sorting: go.TreeLayout.SortingAscending }),
+            "LayoutCompleted": e => {
+              var sel = e.diagram.selection.first();
+              if (sel !== null) myLocalDiagram.scrollToRect(sel.actualBounds);
+            },
+            maxSelectionCount: 1,
+            // when the selection changes, update the contents of the myLocalDiagram
+            "ChangedSelection": showLocalOnLocalClick
+          });
+
+      // Define a node template that is shared by both diagrams
+ var myNodeTemplate2 =
+        $(go.Node, "Auto",
+          {maxSize: new go.Size(260, 50) },
+          { locationSpot: go.Spot.Center },
+          new go.Binding("text", "key", go.Binding.toString),  // for sorting
+          $(go.Shape, "RoundedRectangle",
+            new go.Binding("fill", "color"),
+            { stroke: null }),
+          /*$(go.TextBlock,
+            { margin: 5 },
+            new go.Binding("text", "name", k => k)),*/
+  $(go.Panel, "Vertical",
+    { position: new go.Point(0, 0)},
+    $(go.TextBlock, { margin: 5 }, new go.Binding("text", "name", k => k), { font: "12px Ubuntu", stroke: "white" }),
+    $(go.TextBlock,  new go.Binding("text", "objectif", k => k), { alignment: go.Spot.Center }, { font: "15px Ubuntu", stroke: "white" }),
+  ));
+
+      var myNodeTemplate =
+        $(go.Node, "Auto",
+          { 
+           //click: nodeClicked,
+          locationSpot: go.Spot.Center },
+          new go.Binding("text", "key", go.Binding.toString),  // for sorting
+          $(go.Shape, "RoundedRectangle",
+            new go.Binding("fill", "color"),
+            { stroke: null }),
+          /*$(go.TextBlock,
+            { margin: 5 },
+            new go.Binding("text", "name", k => k)),*/
+  $(go.Panel, "Vertical",
+    { position: new go.Point(0, 0)},
+      {maxSize: new go.Size(260, 250) },
+    $(go.TextBlock, { margin: 5 }, new go.Binding("text", "name", k => k), { font: "11px Ubuntu", stroke: "white" }),
+    $(go.TextBlock,  { margin: 5 }, new go.Binding("text", "objectif", k => k), { alignment: go.Spot.Center }, { font: "18px Ubuntu", stroke: "white" }, {overflow:go.TextBlock.OverflowEllipsis}),
+     $(go.TextBlock,  { margin: 5 }, new go.Binding("text", "l", k => ""), { alignment: go.Spot.Center }, { font: "12px Ubuntu", stroke: "white" }),
+    $(go.TextBlock,  { margin: 5 },  {cursor: "pointer"}, {click: function(e, obj) {alert  (new go.Binding("text", "key", go.Binding.toString));document.location=(obj.part.data.link);} },  new go.Binding("text", "indi1",function(k){return " * " +"Voir les Fiches d'Indicateurs"+ " * ";}), { alignment: go.Spot.Center }, { font: "16px Ubuntu", stroke: "white", isUnderline:"underline" }, new go.Binding("isUnderline", "underline"),
+             { margin: 4 },)
+  ));
+      myFullDiagram.nodeTemplate = myNodeTemplate2;
+      myLocalDiagram.nodeTemplate = myNodeTemplate;
+
+
+      // Define a basic link template, not selectable, shared by both diagrams
+      var myLinkTemplate =
+        $(go.Link,
+          { routing: go.Link.Normal, selectable: false },
+          $(go.Shape,
+            { strokeWidth: 1 })
+        );
+      myFullDiagram.linkTemplate = myLinkTemplate;
+      myLocalDiagram.linkTemplate = myLinkTemplate;
+
+      // Create the full tree diagram
+      setupDiagram();
+
+      // Create a part in the background of the full diagram to highlight the selected node
+      highlighter =
+        $(go.Part, "Auto",
+          {
+            layerName: "Background",
+            selectable: true,
+            isInDocumentBounds: false,
+            locationSpot: go.Spot.Center
+          },
+          $(go.Shape, "Ellipse",
+            {
+              fill: $(go.Brush, "Radial", { 0.0: "orange", 1.0: "white" }),
+              stroke: null,
+              desiredSize: new go.Size(200, 200)
+            })
+        );
+      myFullDiagram.add(highlighter);
+
+      // Start by focusing the diagrams on the node at the top of the tree.
+      // Wait until the tree has been laid out before selecting the root node.
+      myFullDiagram.addDiagramListener("InitialLayoutCompleted", e => {
+        var node0 = myFullDiagram.findPartForKey(0);
+        if (node0 !== null) node0.isSelected = true;
+        showLocalOnFullClick();
+      });
+
+    myFullDiagram.commitTransaction("highlight search");
+    //myFullDiagram.makeImage();
+    img_absol = myFullDiagram.makeImage({
+             scale: 1,
+             background: "AntiqueWhite"
+          });
+
+
+
+    //ImgBlock.innerHTML += "<img src='"+img_absol.src+"'> ";
+
+    }
+
+    // Make the corresponding node in the full diagram to that selected in the local diagram selected,
+    // then call showLocalOnFullClick to update the local diagram.
+    function showLocalOnLocalClick() {
+      var selectedLocal = myLocalDiagram.selection.first();
+      if (selectedLocal !== null) {
+        // there are two separate Nodes, one for each Diagram, but they share the same key value
+        myFullDiagram.select(myFullDiagram.findPartForKey(selectedLocal.data.key));
+      }
+    }
+
+    function showLocalOnFullClick() {
+      var node = myFullDiagram.selection.first();
+
+      if (node !== null) {
+        // make sure the selected node is in the viewport
+        myFullDiagram.scrollToRect(node.actualBounds);
+        // move the large yellow node behind the selected node to highlight it
+        highlighter.location = node.location;
+        // create a new model for the local Diagram
+        var model = new go.TreeModel();
+        // add the selected node and its children and grandchildren to the local diagram
+        var nearby = node.findTreeParts(3);  // three levels of the (sub)tree
+        // add parent and grandparent
+        var parent = node.findTreeParentNode();
+        if (parent !== null) {
+          nearby.add(parent);
+          var grandparent = parent.findTreeParentNode();
+          if (grandparent !== null) {
+            nearby.add(grandparent);
+          }
+        }
+        // create the model using the same node data as in myFullDiagram's model
+        nearby.each(n => {
+          if (n instanceof go.Node) model.addNodeData(n.data);
+        });
+        myLocalDiagram.model = model;
+        // select the node at the diagram's focus
+        var selectedLocal = myLocalDiagram.findPartForKey(node.data.key);
+        if (selectedLocal !== null) selectedLocal.isSelected = true;
+      }
+    }
+
+    // Create the tree model containing TOTAL nodes, with each node having a variable number of children
+    function setupDiagram(total) {
+      if (total === undefined) total = {{this_entities.count}};  // default to 100 nodes
+      var nodeDataArray = [];
+      var colors = [];
+      var color_i = 0;
+      nodeDataArray.push({
+          key: 0,
+          color: "gray",
+          name:"{{actual_institution}}".replace("&#x27;","' "),
+          objectif:'{{actual_institution.nom}}'.replace("&#x27;","' ")
+      });
+
+      colors.push("#49c903");colors.push("#0073b0");colors.push("#00c340");colors.push("#c02300");colors.push("#f98903");
+      colors.push("#0f68a3");colors.push("brown");
+      {% for enti in this_entities %}
+      i_color = ({{forloop.counter}} % colors.length);
+      {% for line in enti.m_entity_type.lines %}
+        nodeDataArray.push({
+          key: {{line.id}},
+          color: {% if line.progression < 26 %} "#a42508" {% elif line.progression < 71 %} "orange" {% else %} "green" {% endif %},
+          name:"{{line.get_name}}".replace("&#x27;","' "),
+          link:"/indic/{{line.id}}",
+          {% if line.get_objectif != None %}objectif:"Objectif : {{line.get_objectif}}".replace("&#x27;","' ") + "\n"+"Progression : {{line.progression}} %",{% else %}objectif:"Progression : {{line.progression}} %",{% endif %}
+          {% for indi in line.get_indicateurs %}
+          indi{{forloop.counter}}:"{{indi}}",
+          {% endfor %}
+          {% if line.sup_entity != None %} parent:{{line.sup_entity.id}} {% else %} parent:0 {% endif %}
+        });
+      {% endfor %}
+      var j = 0;
+      for (var i = 1; i < total; i++) {
+        var data = nodeDataArray[i];
+        //data.parent = j;
+        if (Math.random() < 0.3) j++;  // this controls the likelihood that there are enough children
+      }
+      {% endfor %}
+      
+      myFullDiagram.model = new go.TreeModel(nodeDataArray);
+
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+
+    // the Search functionality highlights all of the nodes that have at least one data property match a RegExp
+    function searchDiagram() {
+      //alert("dfd")
+      
+      // called by button
+      var input = document.getElementById("mySearch");
+      if (!input) return;
+      console.log(myFullDiagram.findNodesByExample({name:function(n){return n == input.value;}}))
+      myFullDiagram.focus();
+
+      myFullDiagram.startTransaction("highlight search");
+
+      if (input.value) {
+        // search four different data properties for the string, any of which may match for success
+        // create a case insensitive RegExp from what the user typed
+        var safe = input.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var regex = new RegExp(safe, "i");
+        var results = myFullDiagram.findNodesByExample({ text: regex },
+          { nation: regex },
+          { title: regex },
+          { headOf: regex },
+          { objectif: regex});
+        myFullDiagram.highlightCollection(results);
+        // try to center the diagram at the first node that was found
+        if (results.count > 0) myFullDiagram.centerRect(results.first().actualBounds);
+      } else {  // empty string only clears highlighteds collection
+        myFullDiagram.clearHighlighteds();
+    }
+
+
+
+}
+
+
+
+function printTree(num,prec="#"){
+      a = document.getElementById("print_link")
+      a.style = "display: none";
+      a.href = img_absol.src;
+      a.download = "Chaine de Resultats";
+      a.click();
+}
+
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+
+{% endblock %}
+

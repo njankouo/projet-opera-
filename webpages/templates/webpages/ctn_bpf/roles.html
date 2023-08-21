@@ -1,0 +1,704 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block generate_docs %}
+<div class="col-lg-3" style="display:flex;">
+	<label class='btn btn-info' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+	<input type='text' class='chercher form-control' style='border-radius:0px;border:0px;' placeholder="Recherche  ..."> 
+</div>
+
+{% endblock %}
+
+{% block search_filters %}
+<div>
+	
+</div>
+<div class="d-flex col-lg-12 mt-3">
+	<h4 class="card-title"><a class="{% if g_vs == 'u2' %} btn btn-info text-white {% else %} btn btn-light {% endif %}" href="/users_simples/">Simples</a></h4>
+	<h4 class="ml-2 card-title"><a class="{% if g_vs == 'p2' %} btn btn-info text-white {% else %} btn btn-light {% endif %}" href="/personnels/">Personnel</a></h4>
+	<h4 class="ml-2 card-title"><a class="{% if g_vs == 'r2' %} btn btn-info text-white {% else %} btn btn-light {% endif %}" href="/roles/">Roles</a></h4>
+
+</div>
+{% if entity is not None %}<h2> {{entity}}s </h2>{% endif %}
+
+<form method="POST" action="/filter_perso/0/0/" style="display:flex;justify-content: space-between;flex-wrap: wrap;">
+	{% csrf_token %}
+	<div class="row col-md-12" >
+		{% for search in searches %}
+		<div class="col-md-2">
+			<div class="form-group">
+
+				<label for="exampleFormControlSelect1">{{search.label}}</label>
+				{% if search.values != None %}
+				<select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+					<option value="0">Tous</option>
+					{% for v in search.values %}<option value="{{v.id}}">{{v}}</option>{% endfor %}
+				</select>
+				{% endif %}
+			</div>
+		</div>
+		{% endfor %}
+		{% if searches != None %}
+		<div class="col-sm-1">
+			<div class="form-group" style="margin-top: 30px;">
+				<button type="submit" class="btn btn-success waves-effect waves-light">Filtrer</button>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</form>
+<div class="d-flex pl-3 col-lg-12 justify-content-between mb-3">
+	{% if g_vs == 'p2' %}
+
+	<div class="d-inline">
+		{% if entity != None %}
+		<a href="#addActionModal"  onclick='restoreAdd()' data-toggle='modal' class="btn btn-success"> Ajouter du {{entity}} </a>
+		<a href="/personnels_raci/" class='btn btn-danger text-white' style="cursor: pointer;"> Repartition RACI </a>
+		{% endif %}
+		{% block repartition_lines %} {% endblock %}
+	</div>
+	{% else %}
+	{% if g_vs != 'u2' %}
+	<div>
+		<span data-target="#addActionModal" onclick='restoreAdd()'  data-toggle="modal" class='btn btn-success' style="cursor: pointer;"> Ajouter {{entity}} </span>
+		<!-- <a href="#" class='btn btn-danger text-white' style="cursor: pointer;"> Repartition RACI </a> -->
+	</div>
+	{% else %}
+	<div>
+		<span data-target="#addSimpUser"  data-toggle="modal" class='btn btn-success' style="cursor: pointer;"> Nouvel Utilisateur </span>
+	</div>
+	{% endif %}
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block search_doc %}
+<div style='display:flex;justify-content:flex-end;' class="col-lg-6"> 
+	<form method="POST"  action="/search2/{{g_v}}/" class="col-lg-6 d-flex"> <!-- <label> Search </label> --> 
+		{% csrf_token %}
+		<label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+		<input type='text' name='search' class='form-control' style='border-radius:0px;' placeholder="Recherche {% if g_v == 'r' %} Rôle {% else %} Personnel {% endif %}"> 
+	</form>
+                                    <!--<div class="col-lg-6 d-flex">
+                                        <label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+                                        <input type='text' class='form-control' style='border-radius:0px;' placeholder="Recherche Role..."> 
+                                    </div>-->
+                                </div>
+
+                                {% endblock %}
+
+                                {% block table %}
+<!--
+<table class="table my-3">
+	<thead>
+		<td>Personnel</td>
+		<td>Entite</td>
+		<td>Responsable</td>
+		<td>Accountable</td>
+		<td>Consulted</td>
+		<td>Informed</td>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Ngaba Franck</td>
+			<td><span class="btn btn-light">6e </span></td>
+			<td><input type="checkbox" name=""></td>
+			<td><input type="checkbox" name=""></td>
+			<td><input type="checkbox" name=""></td>
+			<td><input type="checkbox" name=""></td>
+		</tr>
+	</tbody>
+</table>
+-->
+                                		<table style="" class="table table-hover table-responsive">
+                                			<tr class=" ">
+                                				{% for field in fields %}
+                                				<th>{{field}}</th>
+                                				{% endfor %}
+                                				<!-- <th></th> -->
+                                				<th>Champs Suppl.</th>
+                                				<th> Actions </th>
+                                			</tr>
+                                			{% if g_vs == 'p2' %}
+                                			{% for line in pages_o %}
+                                			<tr style="cursor:pointer;">
+                                				<td onclick="document.location='/perso/{{line.id}}/'"><img src="{{line.photo.url}}" style="border-radius:100%;width:50px;height:50px;"></td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'">{{line.nom}}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'">{{line.prenom}}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'">{{line.tel}}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'">{{line.mail}}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'" class="line_func" {% if line.get_function != None %} data-id="{{line.get_function.m_role.id}}" {% endif %}>{% if line.get_function == None %}<span data-nom="{{line.prenom}} {{line.nom}}" class="text-success">Auun Rôle Défini</span>{% else %}<b class="text-success">{{line.get_function}}</b>{% endif %}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'" class="line_struc" data-id="{{line.get_structure.m_structure.id}}">{{line.get_structure.m_structure}}</td>
+                                				<td><button class="btn btn-success" data-id="{{line.id}}" class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+                                				</button> <button class="btn btn-danger delete-btn" onclick='merde(this);' data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button></td>				
+                                			</tr>
+                                			{% endfor %}
+                                			{% else %}
+                                			{% for line in lines %}
+                                			{% if line.permissions >= 0 %}
+                                			<tr>
+                                				<td>{{line.nom}}</td>
+                                				<td>{{line.description}}</td>
+                                				{% if line.m_nature == "1" %}
+                                				<td data-id=''><b>Responsable</b></td>
+                                				<td>{% if line.m_simple_auth != None %} {{line.m_simple_auth}} {% endif %}</td>
+                                				{% else %}
+                                				<td data-id=''><b>{{line.permission}}</b></td>
+                                				<td></td>
+                                				{% endif %}
+
+                                				<td>{% for e in line.get_fields1 %} <div>
+                                					<span class="badge">{{e.field}}</span>&nbsp;<span class="badge badge-primary">{{e.type}}</span>
+                                				</div>{% endfor %}</td>
+                                				<td><button class="btn btn-success" data-id="{{line.id}}" class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+                                				</button> <button class="btn btn-danger delete-btn" onclick='merde(this);' data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button></td>
+                                			</tr>
+                                			{% elif g_vs == 'u2' %}
+                                			<tr class="">
+                                				<td></td>
+                                				<td>{{line.nom}}</td>
+                                				<td>{{line.description}}</td>
+                                				<td><span class="btn btn-primary">{{line.m_simple_auth}}</span>&nbsp;</td>
+                                				<td><button class="btn btn-success" data-id="{{line.id}}" class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+                                				</button> <button class="btn btn-danger delete-btn" onclick='merde(this);' data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button></td>
+                                			</tr>
+                                			<tr>
+                                				<div class="table-stripped table-responsive table" style="max-height:450px;overflow-y:auto;">
+
+                                					<div style="background:blue;">
+                                						<td class="text-info"><small>Photo</small></td>
+                                						<td class="text-info"><small>Nom</small></td>
+                                						<td class="text-info"><small>Prénom</small></td>
+                                						<td class="text-info"><small>Adresse Mail</small></td>
+                                						<td class="text-info"><small>Entité</small></td>
+                                					</div>
+                                					<tbody>
+                                						{% for p in line.persos %}
+                                						<tr class="text-secondary">
+                                							<td><img src="{{p.m_personnel.photo.url}}" style="border-radius:100%; width:40px;height:40px;"></td>
+                                							<td>{{p.m_personnel.nom}}</td>
+                                							<td>{{p.m_personnel.prenom}}</td>
+                                							<td>{{p.m_personnel.mail}}</td>
+                                							<td><span class="badge badge-light text-info">{{p.m_entity}}</span></td>
+                                						</tr>
+                                						{% endfor %}
+
+                                					</tbody>
+                                				</div>
+                                			</tr>
+                                			{% endif %}
+                                			{% endfor %}	
+                                			{% endif %}
+                                		</table>
+                                					{% if num_pages > 1 %}
+			<nav>
+				<ul class="pagination">
+					<li>
+						{% if pages.number > 1 %}
+						<a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+						</a>
+						{% endif %}
+					</li>
+					{% for num in page_range %}
+					<li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+					{% endfor %}
+					<li>
+						{% if pages.number < num_pages %}
+						<a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+						{% endif %}
+					</li>
+				</ul>
+			</nav>
+			{% endif %}
+                                	</div>
+	<!--<div class="col-lg-5">
+		<h4 class="card-title">Rôles</h4>
+		<table class="col-lg-12">
+			<tr class="bg-success text-white">
+				{% for field in fields2 %}
+				<th style="font-size:13px;">{{field}}</th>
+				{% endfor %}
+				<th></th>
+			</tr>
+			{% for line in roles %}
+			<tr>
+                <td>{{line.nom}}</td>
+                <td>{{line.description}}</td>
+                <td><b>{{line.permissions}}</b></td>
+                <td>
+    			<button class="btn btn-success mb-1" onclick="editAction(333)"><i class="fas fa-pencil-alt"></i>
+    			</button>
+    			<button class="btn btn-danger" onclick="deleteAction(333)"><i class="fas fa-trash-alt"></i></button>
+    			</td>				
+			</tr>
+			{% endfor %}
+		</table>
+	</div> -->
+</div>
+
+{% endblock %}
+
+{% block add_modal %}
+{% if g_v != 'p2' %}
+<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div style='max-width:450px;' class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header">
+				<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+				<h4 class="modal-title">Ajouter un Rôle </h4>
+				<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+
+			<div class="modal-body">
+				<form class="form-horizontal bordered-row" action="/save_gestion/" onsubmit="saveRoles()" id="addFormAction" data-toggle="validator" role="form" method="post">
+					{% csrf_token %}
+					<input type="hidden" id="edit_or_create" value="c" name="edit_or_create">
+					<input type="hidden" id="edit_id" name="edit_id" value="">
+					<input type='hidden' name='generator' value='r'>
+					<input type="hidden" value="{{actual_institution.id}}" name="institution">
+					<div class="row">
+
+						<div class="col-sm-12">
+							<div class="form-group">
+								Nom
+								<input type="text" class="form-control" name="nom" id="nomAct" required="">
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								Description
+								<textarea class="form-control" name="description"></textarea>
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div>
+								<div><small> Champs Supplementaires</small></div>
+								<div></div>
+							</div>
+							<div class=" form-group">
+								Permissions
+								<div class="d-flex mb-3">
+									<div class="px-1"><span data-elt='0' class="ros_btn btn btn-success">Générique</span></div>
+									<div class="px-1"><span data-elt='1' class="ros_btn btn btn-light">Spécifique</span></div>
+									<div class="px-1"><span data-elt='2' class="ros_btn btn btn-light">Utilisateur Simple</span></div>
+									<input type="hidden" name="ros_click" id="ros_click">
+								</div>
+								<div class="ros_div">
+									<select class="form-control" name="permission">
+										<option value='-1'><span class="text-success">Operant :</span> Chargé d'Executer les Taches </option>
+
+																				   	<!--
+																				   	<option value='1'>Superviseur de Tâches : Supervise les Taches  </option>
+																				   -->
+																				   {% for role in actual_institution.get_entities.reverse %}
+																				   <option  value="{{role.m_hierachie}}"> Chargé {{role}} : Supervise L'Evolution {{role}}</option>
+																				   {% endfor %}
+																				   <option value='99'> Administrateur : Aide à l'Administration de l'Institution </option>
+																				</select>
+																			</div>
+
+																			<input type="hidden" name="entity_administr" id="entity_administr">
+																			<div class="ros_div" style="display:none;">
+																				<div>Supervise</div>
+																				<div>
+																					<select id="entiRole_select" class="form-control" name="permission_entity">
+
+																						{% for role in actual_institution.get_entities.reverse %}
+																						<option value="{{role.id}}"> {{role}}</option>
+																						{% endfor %}
+																					</select>
+
+																					<div class="p-4">
+																						<ul style="max-height:100px;overflow-y:auto;" class="list-group" id="rol_list">
+
+																						</ul>
+
+																					</div>
+																				</div>
+																			</div>
+																			<div class="ros_div" style="display:none;">
+																				<div>
+																					<small>Relier à une entité</small>
+																				</div>
+																				<div>
+																					<select name="user_simple_entity" class="form-control">
+																						{% for simp in actual_institution.get_entities.reverse %}
+																						<option  value="{{simp.m_entity_type.id}}"> {{simp}}</option>
+																						{% endfor %}
+																					</select>
+																				</div>
+																			</div>
+																			<!-- <div><small class="text-success">Ajouter Role</small></div> -->
+																		</div>
+																	</div>
+
+                                                                            <!--{% for search in searches %}
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                <label for="exampleFormControlSelect1">{{search.label}}</label>
+                                                                                {% if search.values != None %}
+                                                                                <select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+                                                                                    {% for v in search.values %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+                                                                                </select>
+                                                                                {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endfor %}-->
+
+
+
+                                                                        </div>
+                                                                        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                                                    </form>
+                                                                </div>
+												<!--div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
+												</div-->
+
+											</div>
+										</div>
+									</div>
+									{% else %}
+									<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+										<div style='max-width:450px;' class="modal-dialog modal-xl">
+											<div class="modal-content">
+												<div class="modal-header">
+													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+													<h4 class="modal-title" id='modify_title'>Ajouter du Personnel</h4>
+													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">×</span>
+													</button>
+												</div>
+
+												<div class="modal-body">
+													<form class="form-horizontal bordered-row" action="/save_gestion/" id="addFormPerso" enctype="multipart/form-data" data-toggle="validator" role="form" method="post">
+														{% csrf_token %}
+														<input type="hidden" name="edit_or_create" id="edit_or_create">
+														<input type='hidden' name='generator' value='p2'>
+														<input type="hidden" name="edit_id" id="edit_id">
+														<div class="row">
+															<div class="col-sm-12">
+																<div class="form-group">
+																	Photo
+																	<input type="file" name="photo" class="form-control" >
+																</div>
+															</div>
+															<div class="col-sm-6">
+																<div class="form-group">
+																	Nom
+																	<input type="text" class="form-control" name="nom" id="codeAct" required="">
+																</div>
+															</div>
+															<div class="col-sm-6">
+																<div class="form-group">
+																	Prenom
+																	<input type="text" class="form-control" name="prenom" id="nomAct" required="">
+																</div>
+															</div>
+															<div class="col-sm-12">
+																<div class="form-group">
+																	Numéro Téléphone
+																	<input type="text" name="tel" class="form-control" >
+																</div>
+															</div>
+															<div class="col-sm-12">
+																<div class="form-group">
+																	Adresse Mail
+																	<input type="text" name="mail" class="form-control" >
+																</div>
+															</div>
+
+															{% for search in searches %}
+															<div class="col-sm-12">
+																<div class="form-group">
+																	<label for="exampleFormControlSelect1">{{search.label}}</label>
+																	{% if search.values != None %}
+																	<select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+																		{% for v in search.values %}<option value="{{v.id}}">{{v}}</option>{% endfor %}
+																	</select>
+																	{% endif %}
+																</div>
+															</div>
+															{% endfor %}
+
+
+
+
+														</div>
+														<button type="submit" class="btn btn-primary">Enregistrer
+														</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+									{% endif %}
+									<div class="modal fade" id="addSimpUser" tabindex="-1" role="dialog" aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<form class="form-horizontal bordered-row" action="/save_gestion/" id="tooMUCHFormAction" method="post">
+													{% csrf_token %}
+													<input type="hidden" name="generator" value="p2">
+													<input type="hidden" name="edit_or_create" value="c">
+
+													<div class="modal-body">
+														<div class="text-center mb-4">
+															Ajouter un Nouvel Utilisateur Simple
+														</div>
+														{% if lines.count > 0 %}
+														<div>
+															<div>
+																<label>Compte</label>
+																<select name="Fonction" id="account_roles_lines" class="form-control">
+																	{% for r in lines %}
+																	<option value="{{r.id}}">{{r}}</option>
+																	{% endfor %}
+																</select>
+															</div>
+															<div class="my-2">
+																<label>Entité :</label>
+																<div class="d-flex flex-wrap" id="entities_roles_desc"> 
+
+																</div>
+															</div>
+															<div class="d-flex">
+																<div class="px-1">
+																	<label>Prénom</label>
+																	<input type="text" class="form-control" name="prenom">
+																</div>
+																<div class="px-1">
+																	<label>Nom</label>
+																	<input type="text" class="form-control" name="nom">
+																</div>
+															</div>
+															<div class="py-2">
+																<label>Adresse Mail</label>
+																<input type="text" class="form-control" name="mail">
+															</div>
+															<div class="py-2">
+																<label>Telephone</label>
+																<input type="text" class="form-control" name="tel">
+															</div>
+															<input type="hidden" name="simple_user" id="simple_user" value="1">
+															<div>
+																<input type="submit" class="btn btn-success" value="Enregistrer l'Utilisateur" name="">
+															</div>
+														</div>
+														{% else %}
+														<div class="text-center">
+															Aucun Role defini, veuillez au prealable en creer <a href="/roles/">ici</a>
+														</div>
+														{% endif %}
+													</div>
+													<div class="modal-footer">
+														<div class="px-2">
+															<span> 2022 © BeinInfo. </span>
+														</div>
+													</div>
+												</form>
+
+											</div>
+										</div>
+									</div>
+
+									<div class="modal fade bd-example-modal-xl" id="modifyRole" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+										<div style='max-width:450px;' class="modal-dialog modal-xl">
+											<div class="modal-content">
+												<div class="modal-header">
+													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+													<h4 class="modal-title">Attribuer un Rôle </h4>
+													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">×</span>
+													</button>
+												</div>
+
+												<div class="modal-body">
+													<form class="form-horizontal bordered-row" action="/modify/rol_emp/" id="addFormPerso" enctype="multipart/form-data" data-toggle="validator" role="form" method="post">
+														{% csrf_token %}
+														<input type='hidden' id="add_val" name='personnel' value=''>
+														<input type="hidden" name="institution" value="{{actual_institution.id}}">
+														<div class="row">
+															<div id='add_nom' class="h3 col-sm-12 text-success">
+																Ngaba Franck
+															</div>
+															<div class="col-sm-12">
+																<div class="form-group">
+																	<select class="form-control" name="role" >
+																		{% for v in roles %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+																	</select>
+																</div>
+															</div>
+														</div>
+														<button type="submit" class="btn btn-primary">Enregistrer
+														</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+									{% endblock %}
+
+									{% block script %}
+
+									{% if perso_saved == True %}
+									<div class="modal fade" id="alreadySave" tabindex="-1" role="dialog" aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<form class="form-horizontal bordered-row" action="/delete/" id="tooMUCHFormAction" method="post">
+													{% csrf_token %}
+													<div class="modal-body">
+														<div class="text-center mb-4">
+															<img src="{{perso_get.photo.url}}" style="width:85px;height:85px;border-radius:100%;">
+														</div>
+														<div class="text-center">
+															<b>{{perso_get}}</b> [ {{perso_get.mail}} ] a déja un compte au sein d'Opera, ses informations ont juste été conservées.
+														</div>
+													</div>
+													<div class="modal-footer">
+														<div class="px-2">
+															<span> 2022 © BeinInfo. </span>
+														</div>
+													</div>
+												</form>
+
+											</div>
+										</div>
+									</div>
+									<script type="text/javascript">
+										$("#alreadySave").modal('show')
+									</script>
+									{% endif %}
+
+									<script type="text/javascript">
+										ros_btn = document.getElementsByClassName("ros_btn");
+										ros_click = 0
+										for (var i=0;i<ros_btn.length;i++){
+											ros_btn[i].onclick = function(){
+												$(".ros_btn").removeClass("btn-success");
+												$(".ros_btn").addClass("btn-light");
+												this.className = "ros_btn btn btn-success";
+
+												id_div = parseInt(this.getAttribute('data-elt'));
+												ros_div = document.getElementsByClassName("ros_div");
+												ros_click = id_div;
+												$(ros_div).slideUp(function(){
+
+												});
+												$(ros_div[id_div]).slideDown('slow');
+
+											}
+										}
+
+										$(".renseigner").click(function(){
+											$("#add_nom").text($(this).attr('data-nom'));
+											$("#add_val").val($(this).attr('data-id'));
+										});
+										line_func = document.getElementsByClassName('line_func');
+										line_struc = document.getElementsByClassName('line_struc');
+	//alert(line_struc.length)
+	i=0;
+	{% for f in actual_institution.functions %}
+	//line_func[i].textContent = "{{f}}";
+	line_func[i].setAttribute('data-id',{{f.id}});
+	i++;
+	{% endfor %}
+
+	i=0;
+	{% if g_vs == 'p2' %}
+	{% for f in actual_institution.structures %}
+		//line_struc[i].textContent = "{{f}}";
+		//line_struc[i].setAttribute('data-id',{{f.id}});
+		i++;
+		{% endfor %}
+		{% elif g_vs == 'u2' %}
+		function type_users(role){
+			$.ajax({
+				url: '/get_elements_hierachy/',
+				data: {
+					'institution':{{actual_institution.id}},
+					'nature':-100,
+					'type_entity':role
+				},
+				dataType: 'json',
+				success: function (data) {
+					entities_roles_desc = document.getElementById("entities_roles_desc");
+					entities_roles_desc.innerHTML = ""
+					for (var i=0;i<data.lines.length;i++){
+						entities_roles_desc.innerHTML += "<div class='p-2'> <span data-value='"+data.ids[i]+"' class='border-success entity_rolD btn'>"+data.lines[i]+"</span></div>";
+					}
+					$(".entity_rolD").click(function(){
+						$(".entity_rolD").removeClass("btn-success");
+						$(this).addClass("btn-success")
+						simple_user = document.getElementById("simple_user");
+						simple_user.value = $(this).attr('data-value')
+					})
+				},
+				error: function(data) {}
+			});		
+		}
+		account_roles_lines = document.getElementById("account_roles_lines");
+		account_roles_lines.onchange = function(){
+			type_users(this.value);
+		}
+		type_users(account_roles_lines.value);//.getElementsByTagName("option")[0]
+		{% endif %}
+		function list_elts(hierachie){
+		/*
+		$.ajax({
+			url: '/get_elements_hierachy/',
+			data: {
+				'institution':{{actual_institution.id}},
+				'nature':hierachie,
+			},
+			dataType: 'json',
+			success: function (data) {
+				rol_list = document.getElementById('rol_list');
+				tmp = "";
+				for (var i=0;i<data.lines.length;i++){
+					tmp += "<li class='list-group-item'> <input class='list_value' id=cie"+data.ids[i]+" value="+data.ids[i]+" type='checkbox'>&nbsp;<label for='cie"+data.ids[i]+"'>"+data.lines[i]+"</label></li>";
+				}
+				try{
+					rol_list.innerHTML = tmp;
+				}
+				catch(error){
+
+				}
+			},
+			error: function(data){
+			}
+		}); 
+		*/
+	}
+
+	list_elts(-1);
+	{% if g_v != 'p2' %}
+	entiRole_select = document.getElementById("entiRole_select")
+	entiRole_select.onchange = function(){
+		list_elts(this.value)
+	}
+	{% endif %}
+
+	function saveRoles(){
+		ros_click_input = document.getElementById("ros_click");
+		ros_click_input.value = ros_click;
+		if (ros_click == 1){
+			entity_administr = document.getElementById("entity_administr");
+			list_value = document.getElementsByClassName("list_value");
+			tmp = "";
+			for (var i=0;i<list_value.length;i++){
+				if (list_value[i].checked == true){
+					tmp += list_value[i].value+"#";
+				}
+			}
+			entity_administr.value = tmp;
+		}
+	}
+
+</script>
+{% endblock %}

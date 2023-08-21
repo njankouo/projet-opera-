@@ -1,0 +1,40 @@
+{% extends './history.html' %}
+{% load static %}
+{% block add_title %} 
+Archives et Historique
+{% endblock %}
+
+{% block table_content %}
+<div>
+{% for tache in pages_o %}
+<div class="mb-5">
+	<div class="h4 my-2">{{tache}}</div>
+	<table class="table table-responsive">
+		<thead class="bg-info text-white">
+			<td></td>
+			<th class="bg-light text-primary">{{actual_institution.operations_name}}</th>
+			{% for agg in tache.aggregates2 %}
+			<th>{{agg}}</th>
+			{% endfor %}
+			<td>Date d'Enregistrement</td>
+		</thead>
+		<tbody>
+			{% for ope in tache.operations %}
+			{% for li in ope.get_operation_details %}
+			<tr>
+					<td> {% if li.etat == "2" %} <i class="text-success fas fa-check"></i> {% elif li.etat == "3" %} <i class="text-danger fas fa-times"></i>{% else %}<i class="text-danger fas fa-exclamation-triangle"></i>{% endif %}</td>
+					<td>{{ope}}</td>
+					{% for th in li.values_spl2 %}
+					<td class="value_liner replace_n">{{th}}</td>
+					{% endfor %}
+					<td>{{li.date_created}}</td>
+			</tr>
+				{% endfor %}
+
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endfor %}	
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+						<div class="text-white "><a href="/" style="color:#fff;{% if menu == 'i' %}font-weight: bold;text-decoration:underline;  {% else %} text-white {% endif %}"  >Tableau de Bord</a></div>
+						{% if permissions > 0 %} 
+						<div class="text-white ml-4" style="z-index:200;">
+							
+							<a class="dropdown-toggle arrow-none"  href="#" id="topnav-components" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:#fff;{% if menu == 'g' %}font-weight: bold;text-decoration:underline; {% else %} text-white {% endif %}" >
+								Gestionnaire
+							</a>
+							<div style="z-index:9999;" class="dropdown-menu" aria-labelledby="topnav-components">
+								{% for  niveau in actual_institution.get_entities %}
+								<a style="z-index:9999;"  href="/gestionnaire/{{niveau.m_hierachie}}/" class="{% if gest_val == niveau.m_hierachie %} text-success {% endif %} dropdown-item">{{niveau}}</a> 
+								{% endfor %}
+								<!-- <a href="/gestionnaire/100/" class="{% if g_v == 't' %} text-success {% endif %} dropdown-item">Taches</a> -->
+								<a style='border-top:1px solid #ddd;' href="/structures/" class="{% if g_v == 's' %} text-success {% endif %} dropdown-item">Structures</a>
+								<a href="/personnels/"class="{% if g_v == 'p2' %} text-success {% endif %} dropdown-item">Personnel</a>
+							</div>
+						</div>
+							{% endif %}
+						<div class="text-white ml-4 ">
+							<a href="/chaine_indicateurs/" style="color:#fff;{% if menu == 'l' %}font-weight: bold;text-decoration:underline;  {% else %} text-white {% endif %}">Chaîne de Résultat</a>
+						</div>
+						<div class="text-white ml-4 "> <a style="color:#fff;{% if menu == 'h' %}font-weight: bold;text-decoration:underline;  {% else %} text-white {% endif %}" href="/history/">Archives</a></div>
+						{% if permissions > 0 %} 
+						<div class="text-white ml-4"><a style="color:#fff;{% if menu == 'c' %}font-weight: bold;text-decoration:underline;  {% else %} text-white {% endif %}" href="/configurations/"> Configuration </a></div>
+						{% endif %}

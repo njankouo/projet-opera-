@@ -1,0 +1,191 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block add_title %} 
+Notifications
+{% endblock %}
+
+{% block content %}
+<div>
+	{% if report == 0 %}
+	<div class="h2 text-center text-secondary"> <i class="fas fa-bell h2"></i> Notifications </div>
+	<div class="text-center p-1">
+		<small>Liste des {{operations_name}} a effectuer</small>
+	</div>
+	{% elif report == 1 %}
+	<div class="h2 text-center text-secondary"> <i class="fas fa-check h2"></i> Validations </div>
+	<div class="text-center text-secondary p-1">
+		<span>Rapports - {{operations_name}} a Valider </span>
+	</div>
+	{% elif report == 2 %}
+	<div class="h2 text-center text-secondary"> <i class="fas fa-star h2"></i> Consultations </div>	
+	<div class="text-center p-1">
+		<span class="text-secondary">Apportez vos Avis</span>
+	</div>	
+	{% elif report == 3 %}
+	<div class="h2 text-center text-secondary"> <i class="fas fa-bell h2"></i> Notifications </div>
+	<div class="text-center text-secondary p-1">
+		<span>Infos : {{operations_name}} </span>
+	</div>
+	{% else %}
+	<div class="h2 text-center text-secondary"> <i class="fas fa-envelope h2"></i> Messages </div>
+	<div class="text-center p-1">
+		<small class="text-success">Liste des {{operations_name}} a valider</small>
+	</div>
+	{% endif %}
+	<div class="container">
+
+		<div class="col-lg-5 mb-4">
+			<form action="/search2/{{menu}}/" method="POST">
+			{% csrf_token %}
+			<div class="d-flex">
+				<div><input type='text' name='search' class='chercher form-control' style='border:0px;border-radius:0px;' placeholder="Recherche..."> </div>
+
+				<div><input type="submit" class="btn btn-success" value="Ok"></div>
+			</div>
+			</form>
+		</div>
+		<div class="d-flex flex-wrap col-12">
+			<form action="/alert_notifs/1/{{report}}/" method="POST" onsubmit="entFiller()" class="col-md-3 mb-4">
+				{% csrf_token %}
+
+				{% for es in get_entities %}
+				<select data-hierachy="{{es.m_hierachie}}" onchange="get_subsent(this);" class="mb-2 entChanger form-control">
+					<option value="0">Tous</option>
+					{% for e in es.m_entity_type.lines %}
+					<option value="{{e.id}}">{{e}}</option>
+					{% endfor %}
+				</select>
+				{% endfor %}
+				<input type="hidden" id="entHidden" name="entHidden">
+				{% if n > 0 %}
+				<div><input type="submit" class="btn btn-success" value="Filtrer" name=""></div>
+				{% endif %}
+			</form>
+			<div class="pl-3 col-md-9">
+				{% if report != 1 and report != 2 %}
+					{% for line in lines %}
+					<div class="mb-4 flex-wrap  col-12  h4">
+						<div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+							<div  class="mr-3 "><img src="{{line.institution.img.url}}" style="width:30px;height:30px;border-radius:100%;"></div>
+							<p class=""> <a href="/operations/{{line.id}}" class="text-success">{{line.nom}}</a> 
+								<small>{{line.date_creation}}</small>
+							</p>
+						</div>
+						<div class="">
+							<a class="d-block my-3" href="/operations/{{o.id}}" >  </a>
+						</div>
+					</div>
+					{% empty %}
+					<div class="text-center h1 w-100">
+						Aucune {{operations_name}} de prevu
+					</div>
+					<div class="text-center py-3">
+						<a href="/messengers/" style="background-color:pink;" class="text-dark btn"> <i class="fas fa-envelope"></i> Messagerie Personnel</a>
+					</div>
+					{% endfor %}
+				{% else %}
+					{% for line in lines %}
+					
+					<div class="mb-4 flex-wrap justify-content-between col-12  h4">
+						<div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+							<div  class="mr-3 "><img src="{{line.m_institution.img.url}}" style="width:30px;height:30px;border-radius:100%;"></div>
+							<p class=""> <a class="text-success d-block" href="/decision/o/{{line.id}}/"><i class="fas  fa-envelope "></i>&nbsp;{{line.nom}}</a>
+								<small>{{line.date_creation}}</small>
+							</p>
+						</div>
+						<div><small>Rapport a Valider</small></div>
+					</div>
+					{% empty %}
+					<div class="text-center h1 w-100">
+						Aucun Rapport pour le Moment
+					</div>
+					{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if num_pages > 1 %}
+<nav>
+	<ul class="pagination">
+		<li>
+			{% if pages.number > 1 %}
+			<a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+			</a>
+			{% endif %}
+		</li>
+		{% for num in page_range %}
+		<li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+		{% endfor %}
+		<li>
+			{% if pages.number < num_pages %}
+			<a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+				<span aria-hidden="true">&raquo;</span>
+			</a>
+			{% endif %}
+		</li>
+	</ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+	entChanger = document.getElementsByClassName("entChanger");
+		
+	function get_subsent(elt){
+		hierachy = elt.getAttribute("data-hierachy")
+		val = elt.value;
+		
+		if ( hierachy != "0") {
+			pre_hierachy = entChanger[parseInt(hierachy)-1].value;
+		}
+		else{
+			pre_hierachy = -1;
+		}
+		$.ajax({
+			url: '/get_elements_subsequency/',
+			data: {
+				'nature':hierachy,
+				'entity':val,
+				'report':{{report}},
+				'pre_hierachy':pre_hierachy
+			},
+			dataType: 'json',
+			success: function (data) {
+				for (var i=0;i<data.data_ids.length;i++){
+
+					html = ""
+
+					tmp = data.data_ids[i];
+					tmp2 = data.data_names[i];
+					for (var j=0;j<tmp.length;j++){
+						html += "<option value='"+tmp[j]+"'>"+tmp2[j]+"</option>"; 
+					}
+					html += "<option value='0'>Tous</option>"
+					entChanger[(parseInt(hierachy)+i+1)].innerHTML = html ;
+				}
+			},
+			error: function(data){
+			}
+		});
+	}
+
+	function entFiller(){
+		entHidden = document.getElementById("entHidden");
+		tmp = "";
+		for(var i=0;i<entChanger.length;i++){
+			tmp += entChanger[i].value + "#";
+		}
+		entHidden.value = tmp
+	}
+
+	{% if entHidden != None %}
+	 {% for ent in entHidden %}
+	 	entChanger[parseInt({{forloop.counter}})-1].value = "{{ent}}"
+	 {% endfor %}
+	{% endif %}
+</script>
+{% endblock %}

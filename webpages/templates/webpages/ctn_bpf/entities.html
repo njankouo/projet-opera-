@@ -1,0 +1,1919 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block miniBigLeft %}
+{% if base_val != None %}
+<div class="mb-3">
+	<div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary mb-2">
+		<div class="btn text-primary">Tableau de Bord</div>
+		<div><i class="fas text-primary fa-angle-down"></i></div>
+	</div>
+	<div class="pl-2">
+		<div class="py-1"><input checked="" class="section_checkbox" value="0" type="checkbox" name=""><small>&nbsp;T.Bord Proccess</small></div>
+		<div class="py-1"><input class="section_checkbox" value="1" type="checkbox" name=""><small>&nbsp;T.Bord Technique</small></div>
+		{% if finan_options != None %}
+		<div class="py-1"><input class="section_checkbox" value="2" type="checkbox" name=""><small>&nbsp;T.Bord Financier</small></div>
+		{% endif %}
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block add_title %} 
+{% if base_val == None %}
+Gestionnaire - {{entity}}
+
+{% else %}
+{{base_val}}
+{% endif %}
+
+{% endblock %}
+
+{% block extra_header %}
+
+{% endblock %}
+
+
+{% block permissions_content %}
+
+{% if permissions > 0 or menu == 'i' or menu == 'h' or auto_simple == 1 or autoE == 1 or menu == 'x' %}
+
+{% block search_doc %}
+{% if base_val == None %}
+
+
+<h2 class="text-center title_div"> Gestionnaire {{entity}} </h2>
+{% endif %}
+<form action="/delete_mul/" method="POST" onsubmit="get_multi_values_del()">
+	{% csrf_token %}
+	<input type="hidden" value="{{g_v}}" name="g_v">
+	<input type="hidden" value="" name="multi_values" id="multi_values">
+	<input type="hidden" name="hierachy" value="{{hierachy}}">
+	{% if base_val != None %}
+	<input type="hidden" name="g_v_2" value="{{base_val.id}}">
+	{% endif %}
+	<div id="suppr_mul" style="display:none;" class="text-danger p-3">
+		<input type="submit" value="Supprimer" class="btn btn-danger">
+		{% block t_dup %}
+		{% endblock %}
+	</div>
+</form>
+
+<form {% if menu == 'i' %} action="/search2/{{menu}}/" {% else %}action="/gestionnaire_search/"{% endif %} style="width:100%;" method="POST">
+	{% csrf_token %}
+	<div style='display:flex;' class="col-lg-4 my-3"> <!-- <label> Search </label> -->
+		<button type='submit' class='btn btn-info' style='border-radius:0px;'><i class='fas fa-search'></i></button>
+		<input type="hidden" name="hierachy" {% if base_val != None %} value="{{gest_val}}" {% else %} value="{{hierachy}}" {% endif %}>
+		{% block specify_search %}<input type="hidden" name="generator" {% if g_v != None %} value="{{g_v}}" {% else %} value="0" {% endif %}>{% endblock %}	
+		<input type="hidden" name="gest" {% if base_val != None %} value="{{base_val.id}}" {% else %} value="0" {% endif %}>
+		<input type='text' name='search' class='chercher form-control' style='border:0px;border-radius:0px;' placeholder="Recherche..."> 
+	</div>
+</form>
+{% endblock %}
+
+{% block search_filters %}
+
+<!-- <div>
+	<input type='checkbox'><label>SSDS</label>
+</div> -->
+{% if base_val == None %}
+
+ 
+{% else %}
+{% block entity_head_title %}
+<div class="d-flex flex-wrap text-secondary"> 
+	{% for s in sup_hierachy %}
+	<div class="px-1"> <a class='tree_link' data-id="{{s.id}}" href="#"><small> {{s}} </small> <small class="text-secondary"> > </small> </a> </div>
+	{% endfor %}
+</div>
+
+<div class="mt-2 mb-5">
+	<div class="d-flex">
+		<div> <small class="badge">P : </small><small class="badge btn-success"> {{base_val.progression}} % </small> </div>
+		<div class="pl-3"><a {% if hierachie != None %} href="/evaluer_detail/{{base_val.id}}/" {% else %} href="/evaluer_detail/{{base_val.id}}/" {% endif %}><small class="badge btn-primary">Objectifs et Indicateurs</small></a></div>
+	</div>
+	<h2> <span class='h2 text-success'>{{entity}} : </span> <br><span class="replace_n h2">{{base_val.get_name}}</span></h2>
+</div>
+
+{% endblock %}
+{% block chartsub %}
+
+
+<div class="">
+	<div style="display:snone;"  class="proccess_section justify-content-center mt-4 row mb-5 px-2">
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Informations Générales - {{base_val}}</div>
+		<div style="" class="canver col-lg-4 pt-5 col-md-6 col-12">
+			{% if is_tache or is_sub_tache == True %}
+			<!-- <div class="mb-3 text-center">
+				<label> Période </label>
+				<div class="d-flex justify-content-center">
+					<select class="col-lg-6 form-control">
+						<option value="0"> Toutes les Périodes </option>
+						{% for per in default_period.decoup_slip %}
+						<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}">{{per}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div> -->
+			{% endif %}
+
+			<label style="width:100%;" class="text-center"> <a class="text-secondary" href="/gestionnaire/{{nature}}/{{p.id}}/">Evolution {{base_val}}</a></label> 
+			<canvas style="width:100%;" data-progression="{{base_val.progression}}" class="barometer"> </canvas>
+
+			<div class="d-md-flex flex-wrap justify-content-center col-lg-12 col-12">
+				<div class="text-center"><input id="cumul1" type="checkbox" name="">&nbsp;<label for="cumul1"> Obtenir la Progression cumulee</label></div>
+				<!-- <div class="text-center"><input id="cumul2" type="checkbox" name="">&nbsp;<label for="cumul2"> Globalite des {{operations_name}}</label></div> -->
+			</div>
+
+
+			<div class="d-flex flex-wrap col-lg-12 my-2 mb-4 col-12">
+				<div class="col-8 col-lg-8">
+					<label> De la Période du : </label>
+					<div class="d-flex justify-content-center">
+						<select id='period_select' class="col-lg-12 form-control">
+							<option value="0"> Toutes les Périodes </option>
+							{% for per in default_period.decoup_slip %}
+							<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}" class='week_plus'>{{per}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="col-4 col-lg-4">
+					<label for="typeperiode">Année</label>
+					<input type="number" id="year_plan" value=2022 class="form-control">
+
+				</div>	
+			</div>			
+			<!-- On va voir -->
+			<div class="d-flex w-100 justify-content-around flex-wrap">
+				<div class="d-flex mb-2"> 
+					<div class='' style="width:10px;height:10px;background:red"></div><div style="font-size:12px;">&nbsp;Critique</div>
+				</div>
+				<div class="d-flex mb-2">
+					<div style="width:10px;height:10px;background:orange"></div><div style="font-size:12px;"> &nbsp; Faible </div> 
+				</div>
+				<div class="d-flex mb-2">
+					<div style="width:10px;height:10px;background:#d06910;"></div><div style="font-size:12px;"> &nbsp;Moyen </div> 
+				</div>
+				<div class="d-flex mb-2"> 
+					<div style="width:10px;height:10px;background:#a0a345"></div><div style="font-size:12px;"> &nbsp;Bon </div> 
+				</div>
+				<div class="d-flex"> 
+					<div style="width:10px;height:10px;background:green"></div><div style="font-size:12px;">&nbsp;Excellent</div> 
+				</div>
+			</div>
+		</div>
+
+		{% if base_val != None %}
+		<div class="col-lg-3 py-5">
+			<div>
+				<div class="mb-2" style="border-bottom: 2px dotted #333;">
+					<label>Global  <span class="badge badge-primary">Proccess</span></label>
+				</div>
+				<div style="max-height:255px;overflow:auto;">
+					{% if g_v == 'o' %}
+					{% for e in lines %}
+
+					<div class="d-flex justify-content-between {% if e.etat == '2' %} text-success {% elif e.etat == '1' %} text-info {% else %} text-danger {% endif %}">
+						<label>{{e}}</label>
+						<label>&nbsp;</label>
+						<div class="">{{e.progression}} %</div>
+					</div>
+					{% endfor %}
+					{% else %}
+					{% for e in sub_entities %}
+
+					<a href="/gestionnaire/{{hierachy}}/{{e.id}}/" class="d-flex justify-content-between">
+						<label>{{e}}</label>
+						<label>&nbsp;</label>
+						<div class="progress_launcher" data-id="{{e.id}}"></div>
+					</a>
+					{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+			<!--
+			-->
+		</div>
+		{% endif %}
+		<div class="card col-lg-4 pt-5">
+			<div class="h4 text-center">{% if base_val.m_pic_represented != None and base_val.m_pic_represented != '' %} <img src="{{base_val.m_pic_represented.url}}" style="width:40px;height:40px;border-radius:100%;"> {% else %} {% endif %} {{base_val.get_name}}</div>
+			<div class="h6 text-center"> Rapport sur la Progression des {{sub_entity}}</div>
+			<div class="">
+				<label class="btn"> {{sub_entity}} : </label> <label class="btn text-secondary"> {{base_val.nb_sub}} </label>
+			</div>
+			<div>
+				<label class="btn"> Progression : </label> <label class="{% if base_val.progression < 25 %} text-danger {% elif base_val.progression < 75 %} text-warning {% else %} text-success {% endif %} btn progr_btn"> {{base_val.progression}}</label>  <small id="last_semaine"> &nbsp;Toutes les Periodes </small> </label>
+			</div>
+			<div>
+				<label class="btn"> {{sub_entity}} terminés : </label> <label class="btn text-secondary"> {{base_val.top_entities_full}} </label>
+			</div>
+			<div>
+				<label class="btn"> {{sub_entity}}  en bonne voie :  </label> <label class="btn text-secondary"> {{base_val.top_entities_half}} </label>
+			</div>
+			<div>
+				<label class="btn"> {{sub_entity}} en faible réalisation :  </label> <label class="btn text-secondary"> {{base_val.top_entities_lower}} </label>
+			</div>
+			{% if permissions >= nature %}<div> <a class="btn btn-success" href="/gestionnaire/{{nature}}">Gérer les {{type_entity}}</a></div>{% endif %}
+		</div>
+
+	</div>
+
+</div>
+
+{% if base_val.progression > 0 %}
+<div class=" mb-4 flex-wrap d-none">
+	<div class="col-lg-7">
+		<canvas style="width:100%;min-height:250px;" id='myChart5'></canvas>
+	</div>
+	<div class="col-lg-5">
+		<canvas style="width:100%;min-height:200px;" id='myChart_repaStru'></canvas>
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% endif %}
+
+
+{% if base_val == None %}
+{% if permissions > 0 %}
+<div class="d-flex flex-wrap pl-3" style=' padding-bottom:5px;'>
+	{% if not_add == None %}
+	<div type="button" onclick="restoreAdd()" class=" waves-effect waves-light pr-3" data-toggle="modal" data-target="#addActionModal">
+		<span class="btn btn-success fas fa-plus"></span>
+		<span class="btn btn-light text-success">Ajouter {{entity}}</span>
+
+	</div>
+	<div>&nbsp;</div>
+	{% endif %}
+	{% if is_tache or is_sub_tache == True %}
+				<!-- <div onclick="tacheTable(1,this)" class="pr-3 pl-3">
+					<span class="btn btn-info fas fa-table"></span>
+					<span class="TTB btn btn-info text-white">Généralités</span>
+				</div>
+				<div onclick="tacheTable(3,this)" class="pr-3">
+					<span class="btn btn-info fas fa-clock"></span>
+					<span class="TTB btn btn-light text-info">Chronogramme</span>
+				</div>-->
+				{% if permissions >= 0 %}
+				<!--
+				<div onclick="tacheTable(2,this)" class="pr-3">
+					<span class="btn btn-info fas fa-users"></span>
+					<span class="TTB btn btn-light text-info">Répartition</span>
+				</div>
+			-->
+			{% endif %}
+			{% endif %}
+		</div>
+		{% endif %}
+		{% else %}
+
+
+		{% if no_simple_user or permissions > 0 %}
+		<div class="technic_section" style="display:none;">
+			<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Performance Technique</div>
+			<div style="width:100%;" class=" py-3 col-lg-12 d-flex flex-wrap justify-content-center">
+				<div class="col-lg-5 col-12">
+					<canvas style="width:100%;" id="indi_chart"> </canvas>
+				</div>
+				{% if is_tache == False %}
+				<div id="indi_chart2DIV" class="col-lg-7 col-12">
+					<canvas style="width:100%;min-height:270px;" id="indi_chart2"></canvas>
+				</div>
+				{% endif %}		
+			</div>
+		</div>
+
+
+		{% if finan_options != None %}
+		{% if permissions > 0 or entity_manage != None %}
+		<div class="budget_section" style="display: none;">
+			<div class="h5 title_div"  id="title2" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;"> Execution Budget </div>
+			<div style="width:100%;" class=" py-3 col-lg-12 d-flex flex-wrap justify-content-center">
+				<div class="col-lg-6">
+					<canvas style="width:100%;max-height:270px;" id="budget_chart"> </canvas> 	
+				</div>
+				{% if is_tache == False %}
+				<div class="col-lg-6">
+					<canvas style="width:100%;max-height:270px;" id="budget_chart2"> </canvas> 	
+				</div>
+				{% endif %}
+			</div>
+		</div>
+		{% endif %}
+		{% endif %}
+
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Fiche d'Informations  </div>
+		<div class="mb-3 col-12">
+			<div class="mb-2 d-flex"> 
+				<!-- <div class="px-3 text-success"> <a href="/gestionnaire/{{gest_val}}/">Modifier</a> </div> -->
+				<!-- <div class="text-secondary text-center" style="cursor:pointer;" onclick="printInfos()"> Imprimer</div> -->
+			</div>
+			<div id="fichwInfo" style="width:100%;" class="d-flex flex-wrap">
+				<table style="width:100%;max-width:600px; min-width:300px;border:1px solid blue:" class="table table-responsive">
+					<thead class="bg-info text-white">
+
+						<td style="background:green;width:150px;">Champs</td>
+						<td>Informations</td>
+					</thead>
+					<tbody>
+						{% for elt in base_val.global_values %}
+						<tr>
+							<th>{{elt.name}}</th>
+							<td class="t_cell replace_n value_liner">{{elt.value}}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% block semaines_operations %}
+
+				{% endblock %}
+			</div>
+		</div>
+
+		{% endif %}
+
+		<div class="h5  title_div" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;"> Liste des {{sub_entity}}s </div>
+		<div class="mt-3">
+			<div style='display:flex;flex-wrap:wrap;'>
+				{% for d in desc %}
+				<div class="col-md-6  mb-3">
+					<label style="text-transform: uppercase;">{{d.label}}</label>
+					<div class="text-success">{{d.value}}</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		<div style=' padding-bottom:5px;'>
+			{% if permissions > 0 %}
+			{% endif %}
+		</div>
+		<div class="d-flex flex-wrap" style=' padding-bottom:5px;'>
+			{% if not_add == None and permissions > 0 %}
+			<div type="button"  onclick="restoreAdd({% if is_tache %}'Opération','0'{% endif %});" class=" waves-effect waves-light " data-toggle="modal" data-target="#addActionModal">
+				<span class="btn btn-success fas fa-plus"></span>
+				<span class="btn btn-light text-success">Ajouter {{sub_entity}}</span>
+			</div>
+			{% endif %}
+			{% if is_tache or is_sub_tache == True %}
+				<!-- <div onclick="tacheTable(1,this)" class="pr-3">
+					<span class="btn btn-info fas fa-table"></span>
+					<span class="TTB btn btn-info text-white">Généralités</span>
+				</div>
+				<div onclick="tacheTable(3,this)" class="pr-3">
+					<span class="btn btn-info fas fa-clock"></span>
+					<span class="TTB btn btn-light text-info">Chronogramme</span>
+				</div> -->
+				{% if permissions >= 0 %}
+				<!--
+				<div onclick="tacheTable(2,this)" class="pr-3">
+					<span class="btn btn-info fas fa-users"></span>
+					<span class="TTB btn btn-light text-info">Répartition</span>
+				</div>
+			-->
+			{% endif %}
+
+			{% endif %}
+		</div>
+		{% endif %}
+		<form action="/filter_entity/" method="POST">
+			{% csrf_token %}
+			<input type="hidden" name="institution" value="{{actual_institution.id}}">
+			<input type="hidden" name="hierachie" value="{{hierachy}}">
+			<input type="hidden" name="sub_value" value="{% if base_val == None %}0{% else %}1{% endif %}">
+			<div style="display:flex;justify-content: space-between;flex-wrap: wrap;">
+				<div class="row col-12 p-0">
+
+					{% for search in searches %}
+					{% if search.m_entity_type != None and search.m_entity_type.lines.count > 0 %}
+					<div class="searchaa col-md-4">
+						<div class="form-group">
+							<label for="exampleFormControlSelect1">{{search.m_entity_type}}</label>
+							{% if search.m_entity_type.lines.count > 0 %} 
+							<select data-code='{{search.code}}' name="{{search.m_entity_type}}" class="form-control searcher">
+								<option value="0">Tous</option> 
+								{% for v in search.m_entity_type.lines %}<option {% if v.id == base_val.id %} selected {% endif %} value="{{v.id}}">{{v.get_name}}</option>{% endfor %}
+							</select>
+							{% endif %}
+						</div>
+					</div>
+					{% elif search.m_entity_type == None %}
+					<div class="searchbb col-md-4">
+						<div class="form-group">
+							<label for="exampleFormControlSelect1">{{search.label}}</label>
+							{% if search.values.count > 0 or search.not_filter == True %}
+							<select data-code='{{search.code}}' name="{{search.label}}" class="form-control searcher">
+								<option value="0">Tous</option> 
+								{% for v in search.values %}<option {% if v.id == base_val.id %} selected {% endif %} value="{{v.id}}">{{v}}</option>{% endfor %}
+							</select>
+							{% else %}
+							<div> </div>
+							{% endif %}
+
+						</div>
+					</div>
+					{% endif %}
+					{% endfor %}
+
+					{% if actu_entity.enum_fields.nb > 0 %}
+					{% for e in actu_entity.enum_fields.result %}
+					<div class="col-sm-3 searchbb">
+						<div class="form-group" >
+							<label for="exampleFormControlSelect1" style="text-transform:capitalize;">{{e.name}}</label>
+							<select name="enum_{{e.name}}" data-code='{{search.code}}' class="form-control searcher">
+								<option value="0">Tous</option> 
+								{% for l in e.lines %}
+								<option value="{{forloop.counter}}">{{l}}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+			<div>
+
+			</div>
+			{%  if none_search != True %}
+			<input type="hidden" name="tache_filter_1" >
+			<div class="">
+				<div class="form-group" >
+					<button type="submit" class="filter-btn btn btn-info waves-effect waves-light">Filtrer</button>
+				</div>
+			</div>
+			{% endif %}
+		</form>
+
+		{% endblock %}
+
+		{% block table %}
+		{% if menu != 'g' or is_tache or is_sub_tache   %}
+		{% block div_bar %}
+		<div class="mb-4" style="border-bottom:1px solid #ddd;">
+			<div class="d-md-block text-secondary">
+				<label style="padding:10px;" class="text-secondary"> {% if gest_val != None %}<label style="padding:10px;"><a class="text-secondary" href="#" onclick="tacheTable(1,this)" > Généralités</a></label>{% endif %} </label>
+				<label style="padding:10px;" onclick="tacheTable(3,this)"><a class="text-secondary" href="#">Chronogramme</a></label>
+				<!-- <label style="padding:10px;"> Trier</label> -->
+				{% if menu == 'g' %}<label style="padding:10px;"><a class="text-secondary" href="/evaluer/{{gest_val}}/{% if gest_id != None %}{{gest_id}}/{% endif %}"> Objectifs</a></label>{% endif %}
+				<label  onclick="showFilters()" class="text-secondary" style="padding:10px;color:#ccc;cursor:pointer;"> Filtres</label>
+				<label class="d-none d-md-inline" style="padding:10px;"> <a style="color:#ccc;" href="#">Analyser</a></label>
+				<label class="d-none d-md-inline" style="padding:10px;"> <a style="color:#ccc;" data-toggle='modal' href="#evaluateModal">Evaluer</a> </label>
+				{% if menu != 'o' and g_v != 'i2' %}
+				<label class="d-none d-md-inline" style="padding:10px;cursor:pointer;" onclick="printTaches();"> Imprimer </label>
+				{% elif g_v == 'i2' %}
+				<label>  </label>
+				{% elif menu == 'o' %}
+				<label class="d-none d-md-inline" style="padding:10px;cursor:pointer;" data-toggle='modal' data-target="#pdfModal"> Imprimer</label>
+				{% endif %}
+			</div>
+
+			<div id='print_check' style="display:none;" class="my-3 justify-content-between flex-wrap">
+
+			</div>
+		</div>
+		{% endblock %}
+
+		<table class="main-table table table-hover display dataTable no-footer" id="tache" style="max-width:100%;overflow:auto;" role="grid" aria-describedby="datatable_info">
+			<thead id="thead_tache">
+				{% block fields %}
+				<tr role="row">
+					<td style="width:25px;" class="no_print"> </td>
+					{% if entity.is_pic_represented %}<th>Illustration</th>{% endif %}
+					{% for th in fields %}
+					<th class="t_cell sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+						{{th}}
+					</th>
+					{% endfor %}
+					{% if actual_institution.finan_options != None and is_tache or actual_institution.finan_options != None and is_sub_tache %}
+					<th>Montant Alloue</th>
+					{% endif %}
+
+					{% if permissions > 0 and not_add != 1 %}
+					<th class="t_cell text-success no_print">Options</th>
+					{% endif %}
+					<th class="t_cell">Progression </th>
+					<th class="t_cell">Derniere Modification</th>
+					<!-- {% if is_tache or is_sub_tache == True %}<th>Plannification</th>{% endif %} -->
+				</tr>
+				{% endblock %}
+			</thead>
+			<tbody class="" id='tbody_tache'>
+				{% block lines_table %}
+				{% for line in pages_o %}
+				<tr role="row" style="cursor:pointer;" class="tr_bod even">
+					<!-- <td  onclick="document.location='/gestionnaire/{{g_v}}/{{line.id}}/';" style="width:100px;">{% if line.image.url != None %} <img src="{{line.image.url}}" style="width:50px;height:50px;"> {% else %} <i class="fas fa-3x fa-image text-success"></i> {% endif %}</td> -->
+					<th style="width:25px;" class="no_print">{% if permissions > 0 %}<input type="checkbox" class="entity_chbox" value="{{line.id}}" name="">{% endif %}</th>
+					{% if entity.is_pic_represented == True and line.m_pic_represented.url != None %}<td class="no_print t_cell"><img src="{{line.m_pic_represented.url}}" style="width:40px;height:40px;border-radius:100%;"></td>
+					{% elif entity.is_pic_represented == True %}<td class="t_cell no_print"> Aucune Image définie</td>
+					{% else %}
+					{% endif %}
+
+
+					{% for val in line.values %}
+					<td class="replace_n t_cell value_liner" onclick="{% if is_sub_tache == None or is_sub_tache == False %}document.location='/gestionnaire/{{hierachy}}/{{line.id}}/'{% else %}document.location='/taches/{{line.id}}/'{% endif %};">{{val}}</td>
+					{% endfor %} 
+
+
+					{% if finan_options != None %}
+					{% if line.montant != None %}
+					<td>{{line.montant}} {{finan_options}}</td>
+					{% else %}
+					<td> Aucun Montant Prevu</td>
+					{% endif %}
+					{% endif %}
+					<!-- -->                                                     
+					{% if permissions > 0 and not_add != 1 %}<td class="t_cell no_print"><button data-id="{{line.id}}" class="btn btn-success edit-btn" {% if is_tache == True or is_sub_tache == True %} data-structs="{{line.structures_get}}" data-plan="{{line.plannification.m_planify}}" 
+						{% endif %} data-period="{% for month in line.plan_months %}{{month}},{% endfor %}"onclick="editBTN(this,'addActionModal','#','#',1);" {% if line.sup_entity != None %}  data-sup="{{line.sup_entity.id}}" {% endif %} data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+
+
+					</button> <button class="btn btn-danger delete-btn" data-target="#deleteModal" onclick='merde(this);' data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button> <button class=" btn btn-info dup_btn" data-name="{{line}}" data-target="#dupliqModal" data-toggle='modal' data-id="{{line.id}}"><i class="fas fa-copy"></i></button><div class="py-1"><button  data-target="#configOptionsModal" data-id="{{line.id}}" onclick="cogOptions(this)" data-name="{{line}}" data-toggle="modal" class="btn btn-warning"><i class="fas fa-cog"></i></button></div>
+				</td>
+				{% endif %}
+				<td  onclick="{% if is_sub_tache == None or is_sub_tache == False %}document.location='/gestionnaire/{{hierachy}}/{{line.id}}/'{% else %}document.location='/taches/{{line.id}}/'{% endif %};" class="{% if line.progression < 25 %} text-danger {% else %} text-success {% endif %} t_cell"><b>{{line.progression}} % </b></td>
+				<td class="t_cell" onclick="{% if is_sub_tache == None or is_sub_tache == False %}document.location='/gestionnaire/{{hierachy}}/{{line.id}}/'{% else %}document.location='/taches/{{line.id}}/'{% endif %};" >{{line.m_date_modif}}</td>
+				{% if is_tache or is_sub_tache == True %}
+
+				{% endif %}
+			</tr>
+			{% endfor %}
+			{% endblock %}
+		</tbody>
+	</table>
+	{% else %}
+	<div class="col-lg-12 d-flex flex-wrap justify-content-between">
+		{% for entity in pages_o %}
+		<div class=" mb-3 d-flex flex-wrap justify-content-center col-lg-6" style="">
+			<div class="d-block col-md-6 col-sm-12 text-secondary">
+				<div class="col-12">
+					<input type="checkbox" class="entity_chbox" value="{{entity.id}}" name="">
+					<center><img src="{% if entity.m_type_entity.is_pic_represented %} {% if entity.m_pic_represented.url != None %} {{entity.m_pic_represented.url}}" style="max-width:120px;height:120px;border-radius:100%;"   {% else %}  {{actual_institution.img.url}}" style="max-width:120px;height:120px;border-radius:100%;"  {% endif %} {% else %}  {{base_img_val}}" style="max-width:120px;height:120px;border-radius:100%;"  {% endif %} class="top_img card-img-top" alt="..."></center>
+					<div class="card-body">
+						<p class="col-lg-12 card-text p-0 m-0">
+							<a class="text-center h5 text-primary d-block" href="/gestionnaire/{{hierachy}}/{{entity.id}}">{{entity}}</a>
+							{% if entity.name_sub != None %}<div class="text-center">Total {{entity.name_sub}} : {{entity.nb_sub}}</div>{% endif %}
+							<!-- <div class="text-center">Progression :  %</div> -->
+							<div  class="d-flex justify-content-center">						
+								<div class="p-2" data-id="{{entity.id}}" onclick="editBTN(this,'addActionModal','#','a');" {% if line.sup_entity != None %}  data-sup="{{line.sup_entity.id}}" {% endif %} data-toggle="modal" data-target="#addActionModal">
+
+									{% if entity.m_type_entity.is_pic_represented == True %}
+									<div class="d-none">
+										{% if entity.m_pic_represented.url != None %}
+										<img src="{{entity.m_pic_represented.url}}" style="width:40px;height:40px;border-radius:100%;">
+										{% else %}
+										Image par Défaut
+										{% endif %}
+									</div>
+									{% elif entity.is_pic_represented == True %}
+									<div class="d-none">Aucune Image définie</div>
+									{% else %}
+									{% endif %}
+									{% for val in entity.values %}<div class="d-none">{{val}}</div>{% endfor %}
+									<div class="d-none" data-id='{{entity.sup_entity.id}}'>{{entity.sup_entity.id}}</div>
+
+									<span class=" btn btn-success"><i class="fas fa-pen"></i></span>
+								</div>
+								<div data-target="#dupliqModal" data-toggle='modal' class="p-2">
+									<span class=" btn btn-info dup_btn" data-name="{{entity}}" data-id="{{entity.id}}"><i class="fas fa-copy"></i></span>
+								</div>
+								<div data-target="#deleteModal" data-toggle='modal' onclick='merde(this);' data-id="{{entity.id}}" class="p-2">
+									<span class=" btn btn-danger"><i class="fas fa-trash-alt"></i></span>
+								</div>
+							</div>
+						</p>
+					</div>
+				</div>
+			</div>
+			{% block programm_content %}
+			<div class="col-md-6 col-sm-12 mb-3 card py-3" style="max-height:365px;overflow:auto;background:#fff;">
+				<div class="entityDIV">
+					{% for tache in entity.sub_entities %}
+					<div>
+						<div style="border-bottom:2px dotted #777;" class="justify-content-between pt-4"> 
+							<div> <a href="/gestionnaire/{{next_hierachy}}/{{tache.id}}/">{{tache}}</a> </div>
+							<div class="progress_launcher" data-id="{{tache.id}}"></div>
+						</div>
+					</div>
+					{% empty %}
+					<div> Aucune entité n'a encore été déclarée </div>
+					{% endfor %}
+				</div>
+			</div>
+			{% endblock %}
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+
+	{% if is_tache or is_sub_tache == True %}
+	<table style="display:none;max-width:100%;overflow:auto;" class="main-table table">
+		<thead class="table_head_1">
+			<th class="t_cell">
+				{{entity}}
+			</th>
+			{% for struc in insti_structures %}
+			<th class="t_cell">{{struc}}</th>
+			{% endfor %}
+		</thead>
+		<tbody class="table_body_1">
+			{% for tache in pages_o %}
+			<tr class="tr_bod">
+				<td style="cursor:pointer;" onclick="document.location='/taches/{{tache.id}}/'"  class="replace_n t_cell text-success">{{tache}}</td>
+
+
+				{% for r in insti_structures %}
+				{% if r in tache.structures_names %}
+				{% for t in tache.structures.filter %}
+				{% if t.m_structure == r %}
+				<td  style="cursor:pointer;" onclick="document.location='/taches/{{tache.id}}/'" class="replace_n t_cell">{% for s in t.clean_roles %}<span class="btn text-white" style="background:{{s.color}}">{{s.letter}}</span>&nbsp;&nbsp;{% endfor %}</td>
+				{% endif %}
+				{% endfor %}
+				{% else %}
+				<td style="cursor:pointer;" onclick="document.location='/taches/{{tache.id}}/'" class="replace_n t_cell"></td>
+				{% endif %}
+				{% endfor %}
+
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<!-- Chronogramme des Différentes Taches -->
+	<table style="display:none;max-width:100%;overflow:auto;" class="main-table table">
+		<thead class="table_head_2">
+			<th class="t_cell ">
+				{{entity}}
+			</th>
+			<th class="t_cell text-center">Plannification</th>
+		</thead>
+		<tbody class="table_body_2">
+			{% for tache in pages_o %}
+			<tr class="tr_bod"> <!-- Get the index -->
+				<td class="t_cell text-success" style="cursor:pointer;" onclick="document.location='/taches/{{tache.id}}/'">{{tache}} </td0>
+					<td class="d-flex justify-content-center flex-wrap" style="cursor:pointer;" onclick="document.location='/taches/{{tache.id}}/'"><div>{% for t in tache.plan_months %} <i class="fas fa-clock"></i> <span class="">{{t}}</span> <div>{% endfor %}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+			{% endif %}
+
+			{% endblock %}
+			{% if num_pages > 1 %}
+			<nav>
+				<ul class="pagination">
+					<li>
+						{% if pages.number > 1 %}
+						<a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+						</a>
+						{% endif %}
+					</li>
+					{% for num in page_range %}
+					<li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+					{% endfor %}
+					<li>
+						{% if pages.number < num_pages %}
+						<a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+						{% endif %}
+					</li>
+				</ul>
+			</nav>
+			{% endif %}
+			<!--div class="modal fade bd-example-modal-xl" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" -->
+
+			{% else %}
+			<div class="p-5">
+				<div class="h2 text-center"> Vous n'avez pas encore les permissions requises </div>
+				<div class="text-center d-flex justify-content-center"><a style="width:270px;" class="p-2 text-center text-white card bg-success btn-rounded rounded" href="/"> Retourner au Tableau de Bord </a></div>
+			</div>
+			{% endif %}
+
+			{% endblock %}
+
+			{% block modals %}
+            <div class="modal fade" id="configOptionsModal">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title"> Configuration des Champs et Libelles </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <div > <small class="btn btn-success" id="configOp_name"></small>&nbsp;  <small class="btn btn-primary"> {{actual_institution.operations_name}} </small></div>
+                                <div ></div>
+                                <form method="POST" action="/save_gestion/">
+                                	{% csrf_token %}
+                                	<input type="hidden" id="configOp_id" name="configOp_id">
+                                	<input type="hidden" name="generator" value="cOi">
+                                	<input type="hidden" name="edit_or_create" value="c">
+                                    <div class="pt-4">
+                                        {% if actual_institution.default_options == False %}
+                                        <div class="mb-2"> Champs d'Informations </div>
+                                        {% for th in actual_institution.operations_modules.fields %}
+                                        <div class="d-flex justify-content-around">
+                                            <div style="">
+                                                <div><label> Actuel Champs </label></div>
+                                               <div class="form-control">{{th}}</div>
+
+                                            </div>
+                                            <div>
+                                                <label>Nouveau Nom</label>
+                                                <div>
+                                                    <input type="text" class="form-control" name="fiel1{{forloop.counter}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="my-2 text-primary"> Champs a Recolter</div>
+                                    <div class="text-primary py-2">
+                                        
+                                        <div>
+                                           {% for th in actual_institution.operations_modules.fill_fields_rapp %}
+                                           <div class="d-flex justify-content-around">
+                                            <div class="" style="">
+                                                <label> Actuel Champs </label>
+                                                <input type="text" class="form-control" readonly="" name="" value="{{th.field}}">
+                                            </div>
+                                            <div>
+                                                <label>Nouveau Nom</label>
+                                                <div>
+                                                    <input type="text" class="form-control" name="fiel2{{forloop.counter}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="py-4">
+                                            <input type="submit" class="btn btn-success" value="Enregistrer" name="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+			<div class="modal fade" id="dupliqModal" tabindex="-1" role="dialog" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<form class="form-horizontal bordered-row" action="/duplicate/"  method="POST">
+							{% csrf_token %}
+							<div class="modal-body">
+								<input type="hidden" name="generator_d" {% if g_v == 'o' %} value="o" {% else %} value="e" {% endif %}>
+								<input type="hidden" class="entity_id form-control">
+								<input type="hidden" name="hierachy" value="{{hierachy}}">
+								<h5 style="text-transform:uppercase;">Dupliquer <span class="dup_name text-primary h5"></span>?  </h5>
+								<div> <input type="checkbox" value="0" data-show="0" id="rename_dup" name="new_dup"> <label for="rename_dup"> Dupliquer mais renommer ?</label>  </div>
+								<div class="my-2" style="display:none;" id="rename_div"> <input placeholder="Nouveau Nom" type="text" class="form-control" name="nom_dup"></div>
+								{% if g_v != 'o' %}
+								<div> <input type="checkbox" value="1" data-show="0" id="relogic_dup" name="relogic_dup"> <label for="relogic_dup"> Dupliquer et Conserver la Logique </label>  </div>
+								{% else %}
+								<div> <input type="checkbox" value="1" onchange="showRACI_dup(this)" data-show="0" id="reraci_dup" name="reraci_dup"> <label for="reraci_dup"> Dupliquer mais modifier le RACI</label>  </div>
+								<div id="raci_block_dup" style="display:none;">
+									<div>
+										<div class="assiDIV form-group">
+											Principal Responsable
+											<select name="perso" class="form-control">
+												{% for perso in personnels %}
+												<option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
+												{% endfor %}
+												<option value="0">Non Défini</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										Accountable
+										<div class="justify-content-around">
+											<select name="accountable" class="form-control">
+												<option value="0">Non Défini</option>
+												{% for perso in personnels %}
+												<option value="{{perso.id}}">{{perso}}</option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										Consulted
+										<div class="justify-content-around">
+											<select name="consulted" class="form-control">
+												<option value="0">Non Défini</option>
+												{% for perso in personnels %}
+												<option value="{{perso.id}}">{{perso}}</option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										Informed
+										<div class="justify-content-around">
+											<select name="informed" class="form-control">
+												<option value="0">Non Défini</option>
+												{% for perso in personnels %}
+												<option value="{{perso.id}}">{{perso}}</option>
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+								</div>							
+								{% endif %}
+							</div>
+							<div class="modal-footer">
+								<input type="hidden" class="dup_id" name="dup_id">
+								<input type="hidden" name="link" value="{{request.path}}">
+								<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+								<button type="submit" class="btn btn-primary"> Confirmer</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+			{% block add_modals %}
+
+			{% endblock %}
+
+			{% block add_modal %}
+			<div class="modal fade bd-example-modal-lg" id="evaluateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							Evaluation
+						</div>
+						<div>
+							<canvas id='evaluate_canvas'>
+
+							</canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal fade bd-example-modal-lg" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+							<h4 id='modify_title' class="modal-title">Ajouter  {% if base_val == None %} {{entity}} {% else %} {{sub_entity}} {% endif %} </h4>
+							<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">×</span>
+							</button>
+						</div>
+
+						<div id='addEntityBody' class="modal-body">
+							<form class="form-horizontal bordered-row" action="/save_entity_value/" id="addFormAction" onsubmit='return getFieldValues(this);' data-toggle="validator" enctype="multipart/form-data" role="form" method="post">
+								{% csrf_token %}
+								<input type="hidden" name="base_val" {% if base_val != None %} value="{{base_val.id}}{% else %}0{% endif %}">
+
+								<input type="hidden" name="edit_or_create" id="edit_or_create" value="c">
+								<input type="hidden" name="edit_id" id="edit_id">
+								<input type='hidden' name='generator' value='p'>
+								<input type='hidden' name='institution' value='{{actual_institution.id}}'>
+								<input type='hidden' name='hierachie' value='{{hierachy}}'>
+								<input type='hidden' value='{% if is_tache == True or is_sub_tache == True %}True{% else %}False{% endif %}' name='is_tache'>
+								<input type='hidden' id='fields' required name='fields' value=''>
+								{% if is_tache or is_sub_tache %}
+								<div class="d-flex py-1">
+									<div class="px-2"><div class="badge badge-primary">Infos Generales</div></div>
+									<div class="px-2"><div class="badge">Repartition des Roles et Structures</div></div>
+									<div class="px-2"><div class="badge ">Plannification </div></div>
+									
+								</div>
+								{% endif %}
+								<div class="" id="main_infos_section">
+								<div class="row d-flex justify-content-center">
+									{% if sub_entity == None %}
+									{% if entity.is_pic_represented %}
+									<div class="col-sm-6 col-10 col-md-9 mb-3">
+										<label> Image de Couverture </label>
+										<input type="file" name="cover_img" class="form-control">
+
+									</div>
+									{% endif %}
+									{% else %}
+									{% if sub_entity.is_pic_represented %}
+									<div class="col-sm-6 col-10 col-md-9 mb-3">
+										<label> Image de Couverture </label>
+										<input type="file" class="form-control" name="cover_img">
+									</div>
+									{% endif %}
+									{% endif %}
+
+									{% for field in objects_field %}
+									{% if forloop.counter not in calculates_field %}
+									<div class="col-sm-6 col-10 col-md-9">
+										<div class="form-group">
+											{{field.label}}
+											{% if field.type == 'string' or field.type == 'char' %}
+											<input type='text'  class='fields_value form-control'>
+											{% elif field.type == 'int' or field.type == 'time' %}
+											<input type='number'  class='fields_value form-control'>	
+											{% elif field.type == 'date' %}
+											<input type='date' class='fields_value form-control'> 																				
+											{% elif field.type == 'text' %}
+											<textarea   class=' fields_value form-control'></textarea>
+											{% elif field.type == 'image' or field.type == 'file' %} 
+											<input type="file"  class='fields_value form-control' name="{{field.label}}">
+											{% elif field.type == 'enum' %}
+											{% for fi in actu_entity.enum_fields.result %}
+											{% if fi.name == field.label %}
+											<select name="s_enum_2" class="fields_value form-control">
+												{% for li in fi.lines %}
+												<option value="{{li}}">{{li}}</option>
+												{% endfor %}
+											</select>
+											{% endif %}
+											{% endfor %}
+											{% endif %}
+										</div>
+									</div>
+									{% else %}
+									<div>
+										<input type="hidden" class="fields_value" value="-1">
+									</div>
+									{% endif %}
+									{% endfor %}
+
+									{% if actual_institution.finan_options != None and is_tache or actual_institution.finan_options != None and is_sub_tache %}
+									<div class="col-sm-6 col-10 col-md-9 mb-2">
+										<label class="text-success">Montant Alloue</label>
+										<input type="number" class="form-control" name="finances">
+									</div>
+									{% endif %}
+
+									{% for search in searches %}
+									{% if search.m_entity_type != None %}
+									<div class="col-sm-9">
+										<div class="form-group">
+											<label for="exampleFormControlSelect1">{{search.m_entity_type}}</label>
+											<select required data-code='{{search.code}}' id='search{{forloop.counter}}' name='sup_entity' class="form-control searcher supesea" value="{{base_val.id}}">
+												{% for v in search.m_entity_type.lines %}<option {% if v.id == base_val.id %} selected="true" {% endif %} value="{{v.id}}">{{v}}</option>{% endfor %}
+											</select>
+										</div>
+									</div>
+									{% endif %}
+									{% endfor %}
+									<!-- Try Div Cutter -->
+									</div>
+								</div>
+								<div id="structures_main_section">
+									{% if is_tache or is_sub_tache == True %}
+									<input type="hidden" required name="structures_list" id="structures_list">
+									<input type="hidden" required name="structures_roles" id="structures_roles">
+
+									<div class="d-flex flex-wrap justify-content-between col-sm-12">
+										<div id='struc_grp_div' class="col-sm-12 d-flex flex-wrap">
+											<div class="col-sm-6 col-md-4 form-group">
+												<label for="exampleFormControlSelect1">{{actual_institution.default_struc_name}}</label>
+												<select onchange="getStruc_lines()" name='Structure' class="form-control searcher stru_cho">
+													{% for v in actual_institution.structures %}<option value="{{v.id}}">{{v}}</option>{% endfor %}
+												</select>
+											</div>
+										</div>
+										<div class="col-sm-11 d-flex flex-wrap mb-3">
+											<div onclick="addStructure_Gp();" style="cursor:pointer;"><i style="cursor:pointer;" class="fas fa-plus text-success"></i> <span>Ajouter {{actual_institution.default_struc_name}}</span></div>
+											<div class="pl-4" onclick="rmvStructure_Gp();" style="cursor:pointer;"><i style="cursor:pointer;" class="fas fa-times text-danger"></i> <span>Enlever {{actual_institution.default_struc_name}}</span></div>
+										</div>
+										<div class="col-sm-12 d-flex">
+											<table class="table table-responsive" >
+												<thead>
+													<td> Rôle </td>
+													{% for rol in actual_institution.structures_split %}
+													<td class="text-info"> {{rol}} </td>
+													{% endfor %}
+												</thead>
+												<tbody id='structures_lines'>
+												</tbody>
+											</table>
+										</div>
+
+									</div>
+								</div>
+								<!-- Section Cutter -->
+								<div id="periods_main_section">
+									<div class="d-none">
+										<div class="text-left">
+											<input type="checkbox" name="">
+											<label class="">Dupliquer pour chaque {{actual_institution.default_period}}</label>
+										</div>
+									</div>
+									<div class="text-center col-12 d-flex justify-content-center h6 my-3">
+										<div>Organisation {{entity}} : </div>
+										<div class="px-3 text-danger">Configuration Annuelle</div>
+									</div>
+									<div class="col-12 col-md-4 pl-3 d-flex">
+										<div class="p-2"><label>Année </label></div>
+										<div><input id='year_plan' type="number" class="form-control" name=""></div>
+									</div>
+									<div class="col-lg-12 d-flex flex-wrap">
+										<div class="col-lg-7" data-period="{{actual_institution.default_period.m_logic_type}}" id='calendar_modals' style="max-height: 150px;min-height:80px;display: flex;flex-wrap: wrap;overflow:auto;">	  	
+											{% for card in default_period.decoup_slip %}
+											<div class='p-2 col-lg-6' style=''>
+												<div data-selected='0' data-num='{{card}}'  class="text-dark card calendar_card ">
+													<div style='text-align:center;font-weight:bold;font-size:12px;'>{{card}}</div>
+													<div class="text-center"><small class='week_card week_detail'>Du </small></div>
+												</div>
+											</div>										
+											{% endfor %}
+										</div>
+										<div class="px-1 col-lg-5" style="max-height:250px;overflow:auto;">
+											<div class="text-center mb-2"> Périodes Choisies </div>
+											<div data-period="" id='choosen_period' class="d-flex justify-content-center flex-wrap">
+												
+											</div>
+										</div>
+									</div>
+									<input type="hidden" required name="calendar_selected" id='calendar_selected'>
+									<input type="hidden" name="calendar_periode" value="{{actual_institution.default_period.id}}">
+									{% endif %}
+
+								</div>
+
+								<div class="p-4">
+								<input type="hidden" name="detail_g_v" {% if detail_g_v == True %} value="{{base_val.id}}" {% else %} value="-1" {% endif %}>
+								<button type="submit" id='despBTN2' class="submitBTN btn btn-primary">Enregistrer
+								</button>
+								</div>
+							</form>
+							{% endblock %}
+
+						</div>
+												<!--div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
+												</div-->
+
+											</div>
+										</div>
+									</div>
+
+									<div class="modal fade " id="editActionModal" tabindex="-1" role="dialog" aria-hidden="true">
+										<div style='max-width:450px;' class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+													<h4 class="modal-title">Modifications</h4>
+													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">×</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<form onsubmit='disableSubmit(this);' class="form-horizontal bordered-row" action="/modify/" id="editFormAction" data-toggle="validator" role="form" method="post">
+														{% csrf_token %}
+														<input type='hidden' name='generator' value='{{g_v}}'>
+
+														<div class="row">
+															<div class="col-sm-12">
+																<div class="form-group">
+																	Nom
+																	<input type="text" class="form-control" name="nom"  required="">
+																</div>
+															</div>
+															<div class="col-sm-12">
+																<div class="form-group">
+																	Désignation
+																	<input type="text" class="form-control" name="designation" irequired="">
+																</div>
+															</div>
+															{% for s in searches %}
+															<div class="col-sm-12">
+																<div class="form-group">
+																	{{s.label}}
+																	<select name="{{s.label}}" class="form-control">
+																		{% for val in s.values %}
+																		<option value="{{val.id}}">{{val}}</option>
+																		{% endfor %}}
+																	</select>
+																</div>
+															</div>
+															{% endfor %}
+														</div>
+														<button type="submit" class="submitBTN btn btn-primary">Enregistrer
+														</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+
+
+									{% endblock %}
+
+
+								</div>
+
+							</div>
+						</div>
+
+
+
+					</div> <!-- container-fluid -->
+				</div>
+				<!-- End Page-content AZ -->
+
+
+				{% block script %}
+				<script type="text/javascript">
+	function cogOptions(element){
+		$("#configOp_name").text(element.getAttribute("data-name"));
+		$("#configOp_id").val(element.getAttribute("data-id"));
+	}
+
+	year_plan = document.getElementById("year_plan");
+	year_plan.value = new Date().getFullYear();
+	year_plan.onchange = function(){
+		//launch_dataPeriod();
+		actual_periode_last(document.getElementById("period_select"));
+	}
+	period_select = document.getElementById("period_select")
+	period_select.onchange = function(){
+		//$(".progr_btn").text("Calcul de la Progression en cours...")
+		{% if actual_institution.default_period.m_logic_type == 3 %}
+		actual_periode_last(this);
+		{% endif %}
+	}
+	{% if actual_institution.default_period.m_logic_type == 3 %}
+	actual_periode_last(period_select);
+	{% endif %}
+					section_checkbox = document.getElementsByClassName("section_checkbox");
+					for (var i=0;i<section_checkbox.length;i++){
+						section_checkbox[i].onchange = function(){
+							index_section = parseInt(this.value)
+							sections = ["proccess_section","technic_section","budget_section"]
+							if (this.checked){
+								$("."+sections[index_section]).show("slow")
+							}
+							else{
+								$("."+sections[index_section]).hide("slow")							
+							}
+						}
+					}
+					$.ajax({
+						url: '/count_indic/',
+						data:{
+							'institution':{{actual_institution.id}},
+							'actual_year':new Date().getFullYear(),
+							'id_entity':{{base_val.id}}
+						},
+						dataType: 'json',
+						success: function(data){
+							ind_faibles = 0;
+							ind_forts = 0;
+							for (var i=0;i<data.cibles.length;i++){
+								if (data.indicateurs_values[i]<data.cibles[i]){
+									ind_faibles += 1;
+								}
+								else{
+									ind_forts +=1
+								}	
+							}
+							new Chart("indi_chart", {
+								type:"pie",
+								data: {
+									labels: ["Indicateurs non acheves", "Indicateurs dont la cible a ete atteinte"],
+									datasets: [{
+										label: 'Gestion Bugetaire',
+										data: [ind_faibles,ind_forts],
+										backgroundColor:["red","green"]
+									}]
+								},
+								options: {
+									plugins: {
+										legend: {
+											display: false
+										}
+									}
+								}
+							})
+							if (data.nb_renseignes == 0){
+								$(".indi_renseignes").text(0)
+								$(".indi_faibles").text(0) 
+								$(".indi_forts").text(0)
+							}
+							else{
+								$(".indi_renseignes").text((data.nb_renseignes/data.all)*100)
+								$(".indi_faibles").text((ind_faibles/data.nb_renseignes)*100) 
+								$(".indi_forts").text((ind_forts/data.nb_renseignes)*100)						
+							}
+						}
+					});
+					$.ajax({
+						url: '/count_indic/',
+						data:{
+							'institution':{{actual_institution.id}},
+							'actual_year':new Date().getFullYear(),
+							'id_entity':{{base_val.id}},
+							{% if actual_institution.top_entity != None %}
+							'entity_type':{{actual_institution.top_entity.id}},
+							'entity_id':0,
+							'type_indic':'T'
+							{% endif %}
+						},
+						dataType: 'json',
+						success: function(data){
+							barColors = ["green","red"]
+							x_labels = ["indicateurs - cibles atteintes","indicateurs - non acheves"]
+							x_axes = new Array()
+							data_tmps = [data.list_ens_good,data.list_ens_bad]
+						//alert(data_tmps)
+						if (data.list_ens_good > 0 || data.list_ens_bad){
+							for (var x=0; x<2; x++){
+								the_tmp = new Array()
+								for (var y=0; y<data.entities.length; y++){
+									the_tmp.push(parseInt(data_tmps[x][y])) 
+								}
+								x_axes[x]={
+									label: x_labels[x],
+									backgroundColor: barColors[x],
+									data: the_tmp
+								}
+							}
+							new Chart("indi_chart2", {
+								type: "bar",
+								data: {
+									  labels:data.entities_id, //["Damn","Desdsd","DWWWWW"], //Sous-entité
+									  datasets: x_axes
+									},
+									options: {
+										responsive: true,
+										maintainAspectRatio: false,
+										barValueSpacing : 20,
+										plugins: {
+											legend: {
+												display: true,
+												labels: {
+													color: 'rgb(255, 99, 132)'
+												}
+											}
+										},
+										indexAxis: 'y',
+										scales: {
+											yAxes: [{
+												ticks: {
+													beginAtZero: true
+												}
+											}],
+											xAxes: [{
+												ticks: {
+													beginAtZero: true
+												},
+												callback: function(t) {
+													var maxLabelLength = 3;
+													if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+													else return t;
+												}
+											}],
+											x: {
+												beginAtZero: true
+											}
+										},
+										tooltips: {
+										 /*callbacks: {
+											title: function(t, d) {
+											   return tasks_names[t[0].index];
+											}
+										}*/
+									}
+								},				
+							});
+						}
+						else{
+							indi_chart2DIV = document.getElementById("indi_chart2DIV");
+							indi_chart2DIV.innerHTML = "<div class='text-center'> Aucune Entite declaree pour le moment </div>";
+						}
+					}
+				});
+
+					new Chart("budget_chart", {
+						type:"horizontalBar",
+						data: {
+							labels: ["Budget Alloue", "Budget Execute"],
+							datasets: [{
+								label: 'Gestion Bugetaire',
+								data: [parseInt({{finances}}), parseInt({{depenses_eff}})],
+								backgroundColor:["blue","orange"],
+								borderColor: 'pink'
+							}]
+						},
+						options: {
+							plugins: {
+								legend: {
+									display: false
+								}
+							}
+						}
+					});
+
+					$.ajax({
+						url: '/count_indic/',
+						data:{
+							'institution':{{actual_institution.id}},
+							'actual_year':new Date().getFullYear(),
+							'id_entity':{{base_val.id}},
+							{% if actual_institution.top_entity != None %}
+							'entity_type':{{actual_institution.top_entity.id}},
+							'entity_id':0,
+							'type_indic':'F'
+							{% endif %}
+						},
+						dataType: 'json',
+						success: function(data){
+							x_axes = new Array()
+							x_labels = ["Budget Alloue", "Budget Execute"]
+							barColors = ["blue","orange"]
+							data_tmps = [data.list_montant1,data.list_montant2]
+							for (var x=0; x<2; x++){
+								the_tmp = new Array()
+								for (var y=0; y<data.entities.length; y++){
+									the_tmp.push(parseInt(data_tmps[x][y])) 
+								}
+								x_axes[x]={
+									label: x_labels[x],
+									backgroundColor: barColors[x],
+									data: the_tmp
+								}
+							}
+							new Chart("budget_chart2", {
+								type:"horizontalBar",
+								data: {
+									labels:data.entities_id,
+									datasets: x_axes
+								},
+								options: {
+									responsive: true,
+									maintainAspectRatio: false,
+									barValueSpacing : 20,
+									plugins: {
+										legend: {
+											labels: {
+												color: 'rgb(255, 99, 132)'
+											}
+										}
+									},
+									indexAxis: 'y',
+									scales: {
+										yAxes: [{
+											ticks: {
+												beginAtZero: true
+											}
+										}],
+										xAxes: [{
+											ticks: {
+												beginAtZero: true
+											},
+											callback: function(t) {
+												var maxLabelLength = 3;
+												if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+												else return t;
+											}
+										}],
+										x: {
+											beginAtZero: true
+										}
+									},
+									tooltips: {
+						 /*callbacks: {
+							title: function(t, d) {
+							   return tasks_names[t[0].index];
+							}
+						}*/
+					}
+				},				
+			})
+						}
+					})
+
+				</script>
+				<script>
+					$(".dup_btn").click(function(){
+						data_id = this.getAttribute('data-id');
+						data_name = this.getAttribute('data-name');
+						$('.dup_id').val(data_id);
+						$('.dup_name').text(data_name);
+					});
+
+					rename_dup = document.getElementById("rename_dup");
+
+					$(".entity_chbox").click(function(){
+	//alert("dfdf");
+	entity_chbox = document.getElementsByClassName("entity_chbox");
+	to_check = 0;
+	for (var i=0;i<entity_chbox.length;i++){
+		if (entity_chbox[i].checked == true){
+			to_check = 1;
+			break;
+		}
+	}	
+	if (to_check == 1 ){
+		$("#suppr_mul").show('slow');
+	}
+	else{
+		$("#suppr_mul").hide('slow');
+	}
+})
+
+					function get_multi_values_del(){
+						multi_values = document.getElementById("multi_values");
+
+						entity_chbox = document.getElementsByClassName("entity_chbox");
+						tmp = " ";
+						for (var i=0;i<entity_chbox.length;i++){
+							if (entity_chbox[i].checked == true){
+								tmp += entity_chbox[i].value + "#"
+							}
+						}
+						multi_values.value = tmp;	
+
+					}
+
+					relogic_dup = document.getElementById("relogic_dup");
+					{% if g_v != 'o' %}
+					relogic_dup.onchange = function(){
+						data_show = this.getAttribute('data-show');
+						show = 1 - parseInt(data_show);
+						this.setAttribute('data-show',show);
+						this.setAttribute('value',show);	
+					} 
+					{% endif %}
+
+					rename_dup.onchange = function(){
+						data_show = this.getAttribute('data-show');
+						show = 1 - parseInt(data_show);
+						this.setAttribute('data-show',show);
+						this.setAttribute('value',show);
+
+						rename_div = document.getElementById("rename_div");
+						if (show  == 1){
+							$(rename_div).show('slow')
+						}
+						else{
+							$(rename_div).hide('slow')
+						}
+					}
+
+					{% if base_val != None %}
+					function printInfos(){
+						var doc = new jsPDF({
+							orientation:'portrait',
+						});
+						doc.setFontSize(10);
+						doc.text("{{actual_institution}}",30,10);
+						doc.text("{{actual_institution.nom}}",30,20);
+						var img = new Image;
+						img.crossOrigin = "";  
+						img.src = "{{actual_institution.img.url}}";
+
+						img.onload = function () {
+							doc.addImage(img, "JPG", 260, 10, 20, 20)
+							doc.setFontSize(20);
+						}
+						doc.text("Fiche - {{base_val}}",50,20)
+						doc.fromHTML(document.getElementById("fichwInfo"))
+					/*tmp=[{% for elt in base_val.global_values %}["{{elt.name}}","{{elt.value}}"]{% endfor %}]
+					doc.autoTable({  
+						head:["Champs","Informations"],
+						body:tmp,
+						startY: 90,  
+						styles:{font:"Ubuntu"},
+						theme:'grid',
+						columnStyles: {                       
+						},  
+						styles: {  
+						minCellHeight: 10  
+						}  
+					});*/
+					doc.save("Fiche - {{base_val}}");
+				}
+				{% endif %}
+
+				{% if is_tache or is_sub_tache == True %}
+				calendar_modals= document.getElementById('calendar_modals');
+				data_period = calendar_modals.getAttribute('data-period');
+				week_detail = document.getElementsByClassName('week_detail');
+				months = ["Jan","Fev","Mars","Avr","Mai","Jui","Jul","Aou","Sep","Oct","Nov","Dec"]
+				actual_month = new Date().getMonth();
+				the_weeks = [" "," "," "," "," "]
+
+				function printTaches(){
+					var doc = new jsPDF({
+						orientation:'landscape',
+					});
+					doc.setFontSize(10);
+					doc.text("{{actual_institution}}",30,10);
+					doc.text("{{actual_institution.nom}}",30,20);
+					var img = new Image;
+					img.crossOrigin = "";  
+					img.src = "{{actual_institution.img.url}}";
+
+					img.onload = function () {
+						doc.addImage(img, "JPG", 260, 10, 20, 20)
+						doc.setFontSize(20);
+						//doc.text(' {{ base_val}} : {{actual_institution.operations_name}}', 30, 45);
+						doc.text(' Gestionnaire : {{entity}}', 30, 45);
+						doc.setFontSize(10);
+						$.ajax({
+							url: '/print_pdf/',
+							data: {
+								'ind':4
+							},
+							dataType: 'json',
+							success: function (data) {
+								tmp_head = new Array();	
+
+								{% for sup in sup_hierachy %}
+								tmp_head.push("{{sup}}");
+								{% endfor %}
+
+								{% for th in fields %}
+								tmp_head.push("{{th}}");
+								{% endfor %}
+
+								tmp_head.push("Progression")
+								tmp_head.push("Derniere Modification")
+
+								tmp_body = new Array()
+								for (var i=0;i<data.lines.length;i++){
+									tmp2 = data.lines[i].split("§");
+									tmp3 = new Array()
+									for (var j=0; j<tmp2.length; j++){
+										tmp3.push(tmp2[j]);
+									}
+									tmp_body.push(tmp3);	
+								}
+
+								doc.autoTable({  
+									head:[tmp_head],
+									body:tmp_body,
+									startY: 70,  
+									styles:{font:"Ubuntu"},
+									theme:'grid',
+									columnStyles: {                       
+									},  
+									styles: {  
+										minCellHeight: 10  
+									}  
+								});
+								doc.save();
+							}
+						});
+					}
+
+				}
+
+				function tacheTable(index,element=null){
+					tables = document.getElementsByClassName("main-table");
+					$(tables).hide(function(){
+						tab = tables[(index-1)];
+						$(tab).show();
+					})
+
+						//update_printCheck((index-1))
+						
+						/*
+						TTB = document.getElementsByClassName("TTB")
+						TTB_O = element.getElementsByClassName("TTB")[0];
+						for (var i=0; i<TTB.length; i++){
+							TTB[i].setAttribute('class','TTB btn btn-light text-info'); 
+						}
+						TTB_O.setAttribute('class','TTB btn btn-info'); 
+						*/
+					}
+
+					struc_grp_div = document.getElementById('struc_grp_div');
+					function attribute_selected(selec){
+						var opt;
+						for (var i=0; i<selec.options.length; i++){
+							opt = selec.options[i];
+							if (opt.selected == true){
+								break;
+							}
+						}
+						return opt.text
+					}
+					function getStruc_lines(first_step="#",roles="#"){
+						structures_lines = document.getElementById("structures_lines");
+						stru_cho = document.getElementsByClassName('stru_cho');
+						values = new Array();
+						for (var i=0; i<stru_cho.length; i++){
+							is_there = false;
+							for (var j=0; j<values.length; j++){
+								if(values[j] == attribute_selected(stru_cho[i])){
+									is_there = true; 
+									break;
+								}
+							}
+							if (is_there == false){
+								values.push(attribute_selected(stru_cho[i]));
+								values.sort()
+							}
+						}
+						structures_lines.innerHTML = " ";
+						if (roles == "#"){
+							for (var j=0; j<values.length; j++){
+								structures_lines.innerHTML += "<tr><td>"+values[j]+"</td> {% for rol in actual_institution.structures_split %} <td><input type='checkbox'></td> {% endfor %}</tr>";
+							}	
+						}
+						else{ 
+							nb_split = 0;
+							{% for rol in actual_institution.structures_split %}
+							nb_split ++;
+							{% endfor %}
+							for (var j=0;j<roles.length;j++){
+								la_roles = roles[j].split("|");
+								console.log(la_roles)
+								tmp_tr = "<tr><td>"+values[j]+"</td>";
+								{% for rol in actual_institution.structures_split %}
+
+
+								td ="<td><input type='checkbox' ";
+								for (var k=0;k<la_roles.length-1;k++){
+									tap = la_roles[k] % nb_split;
+									if ( tap  == {{forloop.counter}}-1 )
+									{
+										td += " checked";
+									}
+									
+								}
+								td += "></td>"
+								tmp_tr += td;
+								{% endfor %}
+								tmp_tr += "</tr>";
+								structures_lines.innerHTML += tmp_tr;
+							}
+						} 
+					}
+
+					getStruc_lines(0);
+
+					function addStructure_Gp(){
+						tmp = document.createElement("div");
+						tmp.setAttribute('class','col-sm-4 form-group');
+						tmp.innerHTML = "<label for='exampleFormControlSelect1'>Structure</label>";
+						tmp.innerHTML += "<select onchange='getStruc_lines()' name='Structure' class='form-control searcher stru_cho'>{% for v in structures %}<option value='{{v.id}}'>{{v}}</option>{% endfor %}</select></div>";
+						struc_grp_div.appendChild(tmp);
+						getStruc_lines();
+					}
+
+					function rmvStructure_Gp(){
+						tmp = struc_grp_div.getElementsByClassName("col-sm-4"); 
+						if (tmp.length > 1){
+							struc_grp_div.removeChild(tmp[0]);
+							getStruc_lines();
+						}
+						else{
+							alert ( "Il faut au moins une {{actual_institution.default_struc_name}}")
+						}
+					}
+
+
+
+	//alert(data_period)
+	year_plan = document.getElementById("year_plan");
+	year_plan.value = new Date().getFullYear();
+
+	function launch_dataPeriod(){
+		actual_year = parseInt(year_plan.value);
+		if (data_period == 2){
+			the_weeks = new Array()
+			first_day = new Date(actual_year,0,1);
+			tmp_shit = first_day.getUTCDay();
+			if ( tmp_shit != 0){
+				first_day  = new Date((actual_year-1),11,(32-tmp_shit));
+				last_day = new Date((actual_year-1),11,6+first_day.getDate());
+			}
+			else{
+				last_day = new Date((actual_year),0,7);
+			}
+			tmp_i = 0;
+			for (var k=0;k<53;k++){
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks.push("Semaine du "+tmp_first+" au "+tmp_last)
+				actual_month = last_day.getMonth()
+				first_day = new Date(actual_year,actual_month,1+last_day.getDate());
+				actual_month = first_day.getMonth()
+				last_day = new Date(actual_year,actual_month,6+first_day.getDate());
+				tmp_i += 7;
+			}
+			tmp = ""
+			week_detail = document.getElementsByClassName('week_detail');
+
+			week_card = document.getElementsByClassName("week_card");
+			for (var k=0;k<week_card.length;k++){
+				//alert(the_weeks[k])	
+				week_card[k].textContent = the_weeks[k];
+			}
+			week_plus = document.getElementsByClassName("week_plus");
+			for (var k=0;k<week_plus.length;k++){
+				//alert(the_weeks[k])	
+				week_plus[k].textContent = the_weeks[k];
+			}
+		}
+		else if (data_period == 3){
+			for (var k=0;k<12;k++){
+				first_day = new Date(actual_year,k,0);
+				first_day = new Date(actual_year,k,1);
+				last_day = new Date(actual_year,(k+1),0);
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+			}
+			for (var k=0;k<week_detail.length;k++){
+				week_detail[k].innerHTML = the_weeks[k%12]
+			}
+		}
+		else if (data_period == 6){
+			for (var k=0;k<2;k++){
+				first_day = new Date(actual_year,k*6,1);
+				last_day = new Date(actual_year,6*(k+1),0);
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+			}
+			for (var k=0;k<week_detail.length;k++){
+				week_detail[k].innerHTML = the_weeks[k%4]
+			}
+		}
+		else if (data_period == 9){
+			for (var k=0;k<4;k++){
+				first_day = new Date(actual_year,k*3,1);
+				last_day = new Date(actual_year,3*(k+1),0);
+				tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+				tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+				the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+			}
+			for (var k=0;k<week_detail.length;k++){
+
+				week_detail[k].innerHTML = the_weeks[k%4]
+			}
+		}
+	}
+
+	launch_dataPeriod();
+	year_plan.onchange = function(){launch_dataPeriod();}
+	{% endif %}
+	searchaa = document.getElementsByClassName("searchaa");
+
+	if (searchaa.length == 0){
+		searchbb = document.getElementsByClassName("searchbb");
+	/*if (searchbb.length == 0){
+		filter_block1 = document.getElementById("filter_block1");
+		filter_block1.innerHTML = "";
+	}*/
+}
+else{
+
+}
+supesea = document.getElementsByClassName("supesea");
+if (supesea.length > 0){
+	nb_supesea = supesea[0].getElementsByTagName('option').length;
+	if (nb_supesea == 0){
+		addEntityBody = document.getElementById("addEntityBody");
+		back_hie = parseInt({{gest_val}}) - 1; 
+		addEntityBody.innerHTML = "<div> Veuillez renseigner au préalable un <a class='text-primary' href='/gestionnaire/"+back_hie+"/'>{{sup_zone}}</a></div>"
+	}
+}
+
+//alert("dfdd");
+function getFieldValues(){
+	fields_value = document.getElementsByClassName('fields_value');
+	fields = document.getElementById('fields');
+	for (var i=0;i<fields_value.length;i++){
+		fields.value += fields_value[i].value + "|";
+	}
+	{% if is_tache == True or is_sub_tache == True %}
+
+	result = get_hidden1();
+
+	return result;
+	{% endif %}
+}
+
+{% if base_val != None and is_tache == True or g_v == 'o' %}
+graph_modal_div = document.getElementById("graph_modal_div");
+
+grapher_evolution(graph_modal_div);
+{% endif %}
+</script>
+
+{% block add_script %}
+
+{% endblock %}
+
+{% block add_script2 %}
+<script type="text/javascript">
+	i_str=0;
+	structures = new Array();
+	yValues2 = new Array();
+	yValues1 = new Array();
+	{% for structure in structures_not_null  %} 
+	structures[i_str]="{{structure}}";
+	yValues1[i_str] = {{structure.nb_taches}}
+	yValues2[i_str] = {{structure.progression}};
+	i_str++;
+	{% endfor %}
+
+	{% if base_val != None %}
+	new Chart("myChart_repaStru", {
+		type: "pie",
+		data: {
+			labels: structures,
+			datasets: [{
+				backgroundColor: barColors,
+				data: yValues1
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: "Repartition des {{actual_institution.default_struc_name}}s"
+			}
+		}
+	});
+
+
+	new Chart("myChart5", {
+		type: "bar",
+		data: {
+			labels: [" {{actual_institution.default_struc_name}}s"],
+			datasets: [{% for v in actual_institution.structures_not_null %} {
+				label: '{{v}}'.replace('&#x27;',"'"),
+
+
+				fill:'origin',
+				backgroundColor: barColors[({{forloop.counter}}-1)],
+				data: [yValues2[({{forloop.counter}}-1)]]
+			},{% endfor %}]
+		},
+		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			plugins: {
+				legend: {
+					display: true,
+					labels: {
+						color: 'rgb(255, 99, 132)'
+					}
+				}
+			},
+			indexAxis: 'y',
+			title: {
+				display: true,
+				text: "Progression par {{actual_institution.default_struc_name}} ( en % )".replace('&#x27;',"'")
+			},
+			tooltips: {
+				 /*callbacks: {
+						title: function(t, d) {
+							 return tasks_names[t[0].index];
+						}
+					}*/
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true,
+							suggestedMax: 100
+						}
+					}],
+					xAxes: [{
+						ticks: {
+							beginAtZero: true,
+							suggestedMax: 100
+						},
+						callback: function(t) {
+							var maxLabelLength = 3;
+							if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+							else return t;
+						}
+					}],
+					x: {
+						beginAtZero: true
+					}
+				}
+			}
+		});
+	{% endif %}
+//ajax_grapher("evaluate_canvas","t");
+
+</script>
+
+{% endblock %}
+{% block script_structures %}
+
+{% endblock %}
+
+{% block script_operation %}
+
+{% endblock %}
+
+{% endblock %}

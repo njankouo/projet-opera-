@@ -1,0 +1,283 @@
+{% extends './login.html' %}
+{% load static %}
+
+{% block super_log %}
+
+{% endblock %}
+
+{% block content %}
+<section style="background-image:url({% static 'webpages/map.jpg' %});background-attachment: fixed;width:100vw;background-size:cover;background-position:center;"  class="features section">
+    <div class="container-fluid" style="padding:0px;background-color:rgba(250,250,250,0.8);">
+     <div class="features-inner section-inner has-bottom-divider" style="padding-top:0px;padding:0px;">
+      <div class="features-header text-center" style="padding-top:0px;padding:0px;">
+        <div style="height:100vh;" class="d-flex justify-content-between flex-column">
+            <div>
+                <div style="max-height:80px;">
+                    <div class="bg-primary text-center text-white">
+                        <small> <i class="fas fa-code"> </i> Version Actuelle : <b>Opera+ 1.9</b></small>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between">
+                        <div class="col-lg-3 col-6 d-flex pt-2 px-2">
+                            <div><img style="width: 45px;height:45px;border-radius:100%; " src="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+                           </div>
+                           <div class="pl-2 pt-2"> <b> OPERA + </b></div>
+                        </div>
+                        <!-- Logo Opera+ -->
+                        <div style="font-weight:bold;" class="d-none d-lg-flex col-lg-6 pt-2  justify-content-between">   
+                        {% if personnel_opera %}
+                        <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">Site Web</a></div>
+                        <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">Ressources </a></div>
+                        <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">Framework</a></div>
+                        <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">A Propos</a></div>
+                        <div class="px-1"><a style="color:orange;text-decoration:none;font-size:15px;" href="/website/"> Applis&nbsp; <i class="fas fa-angle-down"></i> </a></div>
+
+                        {% else %}
+                        <div class="px-2 "><a class="button button-success btn-primary my-2" type='submit' style='width:200px;' href="/main/1/"><span style='color:white;'><i class="fas fa-fork"></i> Opera+ Framework </span></a></div>
+                        <div class="px-2 "><a class="button button-success btn-primary my-2" type='submit' style='width:200px;' href="/main/2/"><span style='color:white;'><i class="fas fa-fork"></i> A Propos d'Opera+ </span></a></div>
+                        {% endif %}
+                        </div>
+                        <div class="col-lg-3 col-3">
+                            <div class="d-none d-lg-flex justify-content-center"><a class="d-block button button-warning btn-warning my-2" type='submit' style='width:200px;' href="/log_account/"><span style='color:white;'>Version d'Essai</span></a></div>
+                            <div class="pt-2 d-lg-none">
+                                <span class="fas fa-th fa-2x"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h1 class="d-none d-lg-block section-title mt-0" style='font-size:6em; font-weight:bold;color:orange;'>OPERA + </h1>
+                <h1 class="d-lg-none section-title mt-0" style='font-weight:bold;color:orange;'>OPERA + </h1>
+                <h4 class=' text-primary' style="font-weight:bold;"> Framework de Suivi-Evaluation </h4>
+
+                {% if personnel_opera %}
+                <h6 class=" justify-content-center d-flex">
+
+                    <div style="font-weight:bold;background-color:orange;" class="badge"> {{actual_institution_name}}</div>
+                </h6>
+                {% endif %}
+                <div class="d-sm-flex flex-wrap justify-content-center  w-100 ">
+                    <div class=" d-flex justify-content-center"><a class="d-block button button-warning btn-warning my-2" type='submit' style='width:200px;' href="/log_account/"><span style='color:white;'>Se Connecter</span></a></div>
+                    <div class="px-2 "><a class="button button-success btn-primary my-2" type='submit' style='width:200px;' href="/main/2/"><span style='color:white;'><i class="fas fa-fork"></i> <!-- Licence Opera+ --> Documentation </span></a></div>
+                </div>
+                <p class="section-paragraph d-none d-md-block">Fini les retards et manquements, Voici la Plateforme de Suivi et d'Evaluation de vos travaux au détail près.</p>
+                <p class="section-paragraph d-md-none " style="font-size:12px;">Fini les retards et manquements, La Plateforme de Suivi et Evaluation au détail près.</p>
+            </div>
+            <div> 
+
+            </div>
+<!-- Pic of Apps -->
+<div class="d-none flex-wrap justify-content-around">
+
+    <div class="d-none d-md-flex flex-wrap justify-content-around">
+
+        <div class="col-lg-3 col-sm-6 col-12  features-image">
+            <img class="features-illustration asset-dark" src="{% static 'webpages/dist/images/features-illustration-top-dark.svg' %}" alt="Feature illustration top">
+            <img class="features-illustration asset-light" src="{% static 'webpages/dist/images/features-illustration-light.svg' %}" alt="Feature illustration">
+            <img class="features-box asset-light" src="{% static 'webpages/main_pic2.png' %}" style="height: 200px;width:300px; " alt="Feature box">
+        </div>
+
+        <div class="col-lg-3 col-sm-6 col-12  features-image">
+            <img class="features-illustration asset-dark" src="{% static 'webpages/dist/images/features-illustration-top-dark.svg' %}" alt="Feature illustration top">
+            <img class="features-illustration asset-light" src="{% static 'webpages/dist/images/features-illustration-light.svg' %}" alt="Feature illustration">
+            <img class="features-box asset-light" src="{% static 'webpages/main_pic1.png' %}" style="height: 200px;width:300px; " alt="Feature box">
+        </div>
+        <div class="col-lg-3 col-sm-6 col-12  features-image">
+            <img class="features-box asset-dark" src="{% static 'webpages/dist/images/features-box-dark.svg' %}" alt="Feature box">
+            <img class="features-illustration asset-dark" src="{% static 'webpages/dist/images/features-illustration-top-dark.svg' %}" alt="Feature illustration top">
+            <img class="features-illustration asset-light" src="{% static 'webpages/dist/images/features-illustration-light.svg' %}" alt="Feature illustration">
+            <img class="features-box asset-light" src="{% static 'webpages/dist/images/features-box-light_m7.png' %}" alt="Feature box">
+        </div>
+
+
+        <div class="col-lg-3 col-sm-6 col-12 features-image">
+            <img class="features-box asset-dark" src="{% static 'webpages/dist/images/features-box-dark.svg' %}" alt="Feature box">
+            <img class="features-illustration asset-dark" src="{% static 'webpages/dist/images/features-illustration-top-dark.svg' %}" alt="Feature illustration top">
+            <img class="features-illustration asset-light" src="{% static 'webpages/dist/images/features-illustration-light.svg' %}" alt="Feature illustration">
+            <img class="features-box asset-light" src="{% static 'webpages/dist/images/features-box-light_m2.png' %}" alt="Feature box">
+        </div>
+
+    </div>
+</div>
+</div>
+<!-- <div class="text-center  d-md-block mb-5"> Si vous vous êtes déja posés ces questions, il vous faut<span style="color:orange;"> Opera+ </span></div> -->
+<div class="is-revealing d-block col-lg-12 d-md-flex flex-wrap features-wrap">
+
+ <div class="feature col-lg-6 d-flex justify-content-center ">
+    <div class=" feature-inner col-lg-12">
+        <div  class="feature-icon" style='width:150px;'>
+          <img style="width:120px;height:120px;" class="asset-light" src="{% static 'webpages/dist/images/feature-03-light.svg' %}" alt="Feature 01">
+      </div>
+      <div class="feature-content">
+         <h3 class="feature-title mt-0"> <span class="h3 text-warning">Quoi</span> Faire ? </h3>
+         <p class="text-sm mb-0">Permettre à tous les collaborateurs de savoir avec exactitude les Taches à réaliser.</p>
+     </div>
+ </div>
+</div>
+<div class="feature col-lg-6 d-flex justify-content-center">
+    <div class="feature-inner col-lg-12">
+
+        <div  class="feature-icon" style='width:150px;'>
+            <img style="width:120px;height:120px;" class=" asset-light" src="{% static 'webpages/dist/images/feature-02-light.svg' %}" alt="Feature 02">
+        </div>
+        <div class="feature-content">
+         <h3 class="feature-title mt-0"><span class="h3 text-warning">Qui</span> a fait Quoi ?</h3>
+         <p class="text-sm mb-0"> Suivre l'évolution des Collaborateurs et avoir des traces sur l'activité de Chacun.</p>
+     </div>
+ </div>
+</div>
+<div class="feature col-lg-6 d-flex justify-content-center">
+    <div class="feature-inner col-lg-12">
+        <div  class="feature-icon" style='width:150px;'>
+          <img  style="width:120px;height:120px;" class="asset-light" src="{% static 'webpages/dist/images/feature-01-light.svg' %}" alt="Feature 03">
+
+      </div>
+      <div class="feature-content">
+         <h3 class="feature-title mt-0"><span class="h3 text-warning">Comment</span> les Choses ont été faite ?</h3>
+         <p class="text-sm mb-0"> Un Système de Rapports qui présente les détails sur l'évolution d'une Opération, Tache ...</p>
+     </div>
+ </div>
+</div>
+<div class="feature col-lg-6 d-flex justify-content-center">
+    <div class="feature-inner col-lg-12">
+
+        <div  class="feature-icon" style='width:150px;'>
+            <img style="width:120px;height:120px;" class="  asset-light" src="{% static 'webpages/dist/images/feature-01-light.svg' %}" alt="Feature 02">
+        </div>
+        <div class="feature-content">
+         <h3 class="feature-title mt-0">Les Travaux évoluent-ils <span class="h3 text-warning">Bien</span> ?</h3>
+         <p class="text-sm mb-0"> Des Outils d'analyse et d'évolution pour se rassurer que les plans d'action évaluent conformement.</p>
+     </div>
+ </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+
+<section  class="pt-4" style="max-width:100vw;">
+    <div class=" ">
+        <div class="cta-inner section-inner">
+            <div class="cta-header text-center">
+                <h2 class="section-title mt-0">Utilisez Opera pour votre Institution</h2>
+                <p class="section-paragraph">Vous désirez utiliser Opera + pour la gestion de vos plans d'action ? </p>
+                <div class="justify-content-center d-flex flex-wrap">
+                    <div class="p-2"><a style="font-family: Ubuntu;" class=" button btn-primary text-white" href="/log_account/">Renseigner une Institution</a></div>
+                   <div class=" d-flex justify-content-center"><a class="d-block button button-warning btn-warning my-2" type='submit' style='width:200px;' href="/log_account/"><span style='color:white;'>Version d'Essai</span></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="pt-4">
+
+    <div class="d-flex pt-3" style="width: 100%;">
+        {% for temoignage in temoignages %}
+        <div class="col-lg-4">
+            <div class="mr-1 col-lg-12 text-center" style="display:flex;justify-content:center;"> 
+                <img style="width: 65px;height:65px;border-radius:100%;" src="{{temoignage.m_picture.url}}">
+            </div>
+            <div class="card col-lg-12" style="border:none;max-height:160px;overflow-y:hidden;">
+                <div class="card-body">
+                    <p><b>{{temoignage.m_name}}</b>, <i>{{temoignage.m_poste}}</i></p>
+                    <p>{{temoignage.m_description}}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<section>
+
+    <section>
+        <div class="text-center"> Les Chiffres d'<b style="color:orange;"> Opera + </b></div>
+        <div class="d-flex justify-content-between flex-wrap">
+            <div class="col-lg-3 col-md-3 col-sm-6 d-flex justify-content-center p-2">
+                <div>
+                    <div class="border border-success d-flex   flex-column" style="width:140px;height:140px;border-radius:100%;"> 
+                        <div class="text-center text-success h2">{{institution_count}}</div>
+                    </div>
+                    <div class="text-center text-success"> Institutions </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 d-flex justify-content-center p-2">
+                <div>
+                    <div class="border border-info d-flex   flex-column" style="width:140px;height:140px;border-radius:100%;"> 
+                        <div class="text-center text-info h2">{{projet_count}}</div>
+                    </div>
+                    <div class="text-center text-info"> Projets </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 d-flex justify-content-center p-2">
+                <div>
+                    <div class="border border-warning d-flex   flex-column" style="width:140px;height:140px;border-radius:100%;"> 
+                        <div class="text-center text-warning h2">{{operations_count}}</div>
+                    </div>
+                    <div class="text-center text-warning"> Travaux Realises</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-6 d-flex justify-content-center p-2">
+                <div>
+                    <div class="border border-primary d-flex   flex-column" style="width:140px;height:140px;border-radius:100%;"> 
+                        <div class="text-center text-primary h2">{{personnel_count}}</div>
+                    </div>
+                    <div class="text-center text-primary">Utilisateurs</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</section>
+<footer class="site-footer has-top-divider" style="background-color:#fff;">
+    <div class="container">
+        <div class="site-footer-inner">
+            <div class="brand footer-brand">
+               <a href="http://beininfoplus.com">
+                <img style="display: inline-block;" class="header-logo-image asset-light" src="{% static 'webpages/dist/images/logo-light.svg' %}" alt="Logo">
+                <img style="display: inline-block;width:100px;" class="header-logo-image" src="{% static 'webpages/dist/beinLogo.png' %}" alt="Logo">
+            </a>
+        </div>
+        <ul class="footer-links list-reset">
+            <li>
+                <a href="http://beininfoplus.com">Contact</a>
+            </li>
+            <li>
+                <a href="#">A Propos</a>
+            </li>
+            <li>
+                <a href="http://beininfoplus.com">BeinInfo+</a>
+            </li>
+        </ul>
+        <ul class="footer-social-links list-reset">
+            <li>
+                <a href="#">
+                    <span class="screen-reader-text">Facebook</span>
+                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6.023 16L6 9H3V6h3V4c0-2.7 1.672-4 4.08-4 1.153 0 2.144.086 2.433.124v2.821h-1.67c-1.31 0-1.563.623-1.563 1.536V6H13l-1 3H9.28v7H6.023z" fill="#FFF"/>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="screen-reader-text">Twitter</span>
+                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 3c-.6.3-1.2.4-1.9.5.7-.4 1.2-1 1.4-1.8-.6.4-1.3.6-2.1.8-.6-.6-1.5-1-2.4-1-1.7 0-3.2 1.5-3.2 3.3 0 .3 0 .5.1.7-2.7-.1-5.2-1.4-6.8-3.4-.3.5-.4 1-.4 1.7 0 1.1.6 2.1 1.5 2.7-.5 0-1-.2-1.5-.4C.7 7.7 1.8 9 3.3 9.3c-.3.1-.6.1-.9.1-.2 0-.4 0-.6-.1.4 1.3 1.6 2.3 3.1 2.3-1.1.9-2.5 1.4-4.1 1.4H0c1.5.9 3.2 1.5 5 1.5 6 0 9.3-5 9.3-9.3v-.4C15 4.3 15.6 3.7 16 3z" fill="#FFF"/>
+                    </svg>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="screen-reader-text">Google</span>
+                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.9 7v2.4H12c-.2 1-1.2 3-4 3-2.4 0-4.3-2-4.3-4.4 0-2.4 2-4.4 4.3-4.4 1.4 0 2.3.6 2.8 1.1l1.9-1.8C11.5 1.7 9.9 1 8 1 4.1 1 1 4.1 1 8s3.1 7 7 7c4 0 6.7-2.8 6.7-6.8 0-.5 0-.8-.1-1.2H7.9z" fill="#FFF"/>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+        <div class="footer-copyright">&copy; 2022 BeinInfo+, all rights reserved</div>
+    </div>
+</div>
+</footer>
+{% endblock %}

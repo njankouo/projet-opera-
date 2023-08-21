@@ -1,0 +1,115 @@
+{% extends './evaluer.html' %}
+{% load static %}
+
+
+{% block search_filters %}
+
+{% if base_val == None %}
+<h3> Liste des Indicateurs - {{entity}} </h3>
+{% endif %}
+{% endblock %}
+
+{% block table %}
+<div class="my-3">
+	<a href="/chaine_indicateurs/"> Retourner à la Chaine de Résultats </a>
+</div>
+<div>
+	<div class="mb-3">
+		<div class="h4"></div>
+		<div>
+			<b>Objectif : {{entity.get_objectif}}</b>
+		</div>
+	</div>
+
+
+	<div>
+		{% for indi in entity.get_indicateurs %}
+			<div class="d-flex flex-wrap justify-content-center col-lg-12 mb-4">
+					<div class="card col-lg-7">
+						<div class="card-body">
+							<h5 style="text-transform:uppercase;"><b>Fiche d'Indicateur : {{indi}}</b></h5>
+							<div id='indicaBody{{forloop.counter}}'>
+
+							</div>
+							<div>
+								<div class="py-1 border-bottom border-primary TEXT6PRIMARY"> RENSEIGNEMENT INDICATEUR </div>
+								<div id='indicaBody{{forloop.counter}}_indiSources'>
+
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+		{% endfor %}
+	</div>
+
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+function getIndi(index,the_div){
+	$.ajax({
+		url: '/get_indicateur_value/',
+		data: {
+			'id_indicateur':index,
+		},
+		dataType: 'json',
+		success: function (data) {
+			indicaBody = document.getElementById(the_div);
+			tmp = "<table class='table table-bordered '><tbody>";
+			tmp += "<tr> <td> Nature de l'Indicateur </td><td>"+data.indicateur+"</td></tr>" 
+
+			fields = data.fields.split("#")
+			for (var i=0; i<fields.length-1; i++){
+				actu_fields = fields[i].split("|")
+				tmp += "<tr>"
+				for (var j=0;j<2;j++){
+					tmp += "<td>"+actu_fields[j]+"</td>";
+				}
+				tmp += "</tr>";
+			}
+			tmp += "<tr> <td> Périodicité </td><td>"+data.periodicite+"</td></tr>";
+			tmp_fc = data.final_cible.split("|");
+			if (data.final_cible != ""){
+				tmp += "<tr> <td> Dernier résultat connu </td><td class='d-flex'><div class='pr-4'>"+(tmp_fc[0].split("#")[0] + " "+tmp_fc[0].split("#")[1] )+"</div><div class='px-4' style='border-left:1px solid #aaa;'> Valeur : <b>"+tmp_fc[1]+"</b> </div></td></tr>";
+
+			}
+			tmp_cibles = data.cibles.split("$");
+			tmp += "<tr> <td> Cibles par Périodes </td> <td>";
+			for (var i=0;i<tmp_cibles.length-1;i++){
+				tmp_fc = tmp_cibles[i].split("|");
+				tmp += "<div class='d-flex mb-2'><div class='pr-4'>"+(tmp_fc[0].split("#")[0] + " "+tmp_fc[0].split("#")[1] )+"</div><div class='px-4' style='border-left:1px solid #aaa;'> Valeur : <b>"+tmp_fc[1]+"</b> </div></div>";
+			}
+			tmp += "</tbody></table>"
+			indicaBody.innerHTML = tmp;
+			tmp = "<table class='table'>";
+			indiSources = document.getElementById(the_div+"_indiSources");
+			indiSources.innerHTML = "";
+			tmp_sources = data.sources_data.split('\n');
+			for (var i=0; i<tmp_sources.length-1; i++){
+				list_tmp = tmp_sources[i].split("#")
+				tmp += "<tr>"
+				tmp += "<td>"+list_tmp[0]+"</td>";
+				tmp += "<td>"+list_tmp[1]+"</td>";
+				tmp += "</tr>"
+			}
+
+			if (i <= 1){
+				tmp += "<tr> <td>Aucune source de Donnée déclarée</td> </tr>";
+			}
+			tmp += "</table>"
+			indiSources.innerHTML += tmp;
+		},
+		error: function(data){
+
+		}
+	});        
+}
+
+{% for indi in entity.get_indicateurs %}
+getIndi({{indi.id}},"indicaBody{{forloop.counter}}");
+{% endfor %}
+
+</script>
+{% endblock %}

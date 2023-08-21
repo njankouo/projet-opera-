@@ -1,0 +1,17 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if error == 404 %}
+<div class="h3 text-center">
+	Désolée mais aucune page ne correspond à votre Recherche.
+</div>
+{% else %}
+<div class="h3 text-center">
+	Désolée, une erreur Serveur rencontrée, <span class="h3 text-danger"> Veuillez contacter l'Administrateur</span>
+</div>
+{% endif %}
+
+	<div class="text-center mt-3"><a href="/" class="btn btn-success"> Retourner à l'Accueil </a></div>
+{% endblock %}

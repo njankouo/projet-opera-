@@ -1,0 +1,212 @@
+{% extends './operations_home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content" style='padding:0px;margin:0px;'>
+	<div class=" "  style='padding:0px;margin:0px;'>
+		<div class="row"  style='padding:0px;margin:0px;'>
+
+		</div>
+		<div style='width:100%;margin:0px;padding:12px;'>
+			<div class="row" style='width:100%;padding:0px;'>
+				<div class="col-12">
+					<div class="card" style='border:none; width:100%;height:100%;'>
+						<div class="card-body" >
+							<!--h4 class="card-title">Menu à la carte</h4-->
+							<form data-toggle="validator" role="form" action="/filter_op/" method="POST">
+								{% csrf_token %}
+								<div class="row" style='border-bottom:2px solid #eee;'>
+									<div class="col-sm-12">
+										<div class="form-group" style="">
+											<div class="text-center replace_n" style="text-transform:uppercase;"><a class="text-success" href="/taches/{{tache.id}}/">{{tache}}</a></div>
+										</div>
+									</div>
+
+								</div>
+							</form>
+							<div class="row px-3" style='display:flex;justify-content:space-between;margin-top:10px;'>
+
+								<div class="w-100 d-flex justify-content-center">
+									<div class="text-center" style="font-size: 25px;text-transform:uppercase;"><b><span class="text-success">{{actual_institution.operations_name}} :</span> {{operation}}</b></div>
+								</div>
+								{% if operation.montant > 0%}	
+								<div>
+									<div class="btn"> Montant Alloué</div>
+									<div class="btn btn-success" style="font-weight:normal;">{{operation.montant}} XAF</div>
+								</div>
+								{% endif %}
+							</div>
+
+							{% if actual_institution.default_options == True and operation.piece_jointe != None %}
+							<div>
+								<label> Piece Jointe liée</label>
+								<div><a href="{{operation.piece_jointe.url}}">{{operation.piece_jointe}}</a></div>
+							</div>
+							{% endif %}
+							<form enctype="multipart/form-data" onsubmit="checkFieldsRapport()" action="/save_rapport/" class="form-horizontal form-chrono-file bordered-row"  method="post">
+								{% csrf_token %}
+
+								<div class="row col-lg-12 col-12 d-flex justify-content-around flex-wrap">
+									<div class="card col-md-8 col-12 p-2">
+										{% if finan_options != None %}
+										<div class="mb-2"> 
+											<div class="p-2 btn-success text-white">
+												<div> Confirmer Réalisation Budgetaire</div>
+											</div>
+											<div class="d-flex justify-content-center">
+												<div class="col-lg-8">  
+													<label><small>Montant Depense ( {{finan_options}} )</small></label>
+													<input type="number" class="form-control" name="finances">
+												</div>
+											</div>
+										</div>
+										{% endif %}
+										<div class="p-2 btn-info text-white">
+											<div> Confirmer Réalisation Technique</div>
+										</div>
+										<div> 
+											<div class="row">
+												{% if actual_institution.default_options != True %}
+												{% for th in lines %}
+												<div class="col-sm-12 d-flex justify-content-center">
+													<div class='col-sm-8 col-12'>
+														<div class="form-group">
+															<input type="hidden" name="ex_choix" id="ex_choix">
+															<small>{{th.field}}</small>
+															{% if th.type == 'file' or th.type == 'image' %}<input type="file" name='file_r{{forloop.counter}}' class="form-control rappier" data-rap="0">
+															{% elif th.type == 'int' %}<input type="number" class="form-control rappier" data-rap="0">
+															{% elif th.type == 'string' or th.type == 'char' %}<input type="text" class="form-control rappier" data-rap="0">
+															{% elif th.type == 'choix' %} 
+															<div class='rappier exDIV' data-name="{{th.field}}" data-rap="1">
+																{% for ex in th.extras %} 
+																<li class="list-group-item mb-2"><input type="checkbox" id="ex{{forloop.counter}}" class="ex_c " name="">&nbsp;<label class="value_liner pl-2" style="cursor:pointer;" for="ex{{forloop.counter}}">{{ex}}</label></li>
+																{% endfor %}
+															</div>
+															{% else %}<textarea class="form-control rappier" data-rap="0"></textarea>
+															{% endif %}
+															<input type="hidden" id='tache-id-op' class="form-control" name="operation_id">
+														</div>
+													</div>
+												</div>
+												{% endfor %}
+												{% else %}
+												<div class="col-sm-12 d-flex justify-content-center">
+													<div class='col-sm-8'>
+														<div class="form-group">
+															<small>FICHIER</small>
+															<input type="file" class="form-control" name="operation_fichier" id="fichier"> <!-- required -->
+															<input type="hidden" id='tache-id-op' class="form-control" name="operation_id">
+														</div>
+													</div>
+												</div>
+												{% endif %}
+												<div class="col-lg-12 d-flex justify-content-center">
+													<div class='col-sm-9 col-12'>
+														<legend>Compte Rendu</legend>
+														<div class="">
+															<textarea name="operation_comm" class="form-control" style="width:100%;" rows=4></textarea>
+														</div>
+														<div class="mt-4"><input class="btn btn-info" type="submit" value="Valider" name=""></div>
+													</div>
+												</div>
+											</div>
+											<input type="hidden" id='rapport_values' name="rapport_values">
+											<input type="hidden" value='c' id="rapport_input" name="rapport_input">
+											<input type="hidden" name="operation_id" value="{{operation.id}}">
+										</div>
+
+
+
+									</div>
+									<div class="col-md-4 col-12 p-4">
+										<div><small> Rapports existant </small></div>
+										<div class="pt-3">
+											{% for line in operation.get_operation_details %}
+											<div class="py-2" style="border-bottom:1px solid #aaa;"><a href="/operation/decision/{{line.id}}/">  <i class="fas fa-file"></i>&nbsp;{{line}} </a> </div>
+											{% empty %}
+											<div>
+											<div class="text-danger"> Aucun Rapport pour l'instant </div>
+											{% endfor %}											
+										</div>
+									</div>
+
+									<input type="hidden" value='f' id="rapport_input" name="rapport_input">
+									<input type="hidden" name="operation_id" value="{{operation.id}}">
+								</form>
+							</div>
+
+
+
+						</div>
+
+					</div>
+					<div>
+
+					</div>
+					{% endblock %}
+
+					{% block script_rapport %}
+					<script type="text/javascript">
+						function checkFieldsRapport(){
+							rappier = document.getElementsByClassName('rappier');
+							rapport_values = document.getElementById('rapport_values');
+							tmp= ""
+							if (rappier.length <= 1){
+								if (rappier[i].value  == ""){
+									tmp +=  "#|";
+								}
+								else{
+									tmp += rappier[i].value + "|";
+								}
+							} 
+							else{
+								for (var i=0; i<rappier.length; i++){
+									dV = rappier[i].getAttribute('data-rap');
+
+									if (dV == '1'){
+										ex_c = rappier[i].getElementsByClassName("ex_c");
+										ex_tmp = "";
+										for (var j=0;j<ex_c.length;j++){
+											if (ex_c[j].checked == true){
+												ex_tmp += "1" + "-"
+											}
+											else{
+												ex_tmp += "0" + "-"
+											}
+										}
+										tmp += ex_tmp + "|";
+									}
+
+									else{
+										if (rappier[i].value  == "" ){
+											if ( rappier[i].type == "file"){
+												rappier[i].value = "";
+											}
+											else{
+												rappier[i].value = "#"; 
+											}
+										}
+										tmp += ( rappier[i].value + "|");        
+									}
+								}
+							}
+
+							rapport_values.value = tmp;
+							ex_choix = document.getElementById("ex_choix");
+							exDIV = document.getElementsByClassName("exDIV");
+							tmp_c = "";
+							for (var i=0;i<exDIV.length;i++){
+								ex_c = exDIV[i].getElementsByClassName("ex_c");
+								tmp_c += exDIV[i].getAttribute("data-name")+"#";
+								for (var j=0;j<ex_c.length;j++){
+									if (ex_c[j].checked == true){
+										tmp_c += "1"
+									}
+									tmp_c += '|'
+								}
+								tmp_c+='$';
+							}
+							ex_choix.value = tmp_c
+						}
+					</script>
+					{% endblock %}

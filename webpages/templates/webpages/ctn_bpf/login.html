@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" class="no-js">
+<head> 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Online Plateforme for M&E of the Work Plan" name="description">
+    <meta content="Ngaba Franck" name="author">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+    <title>OPERA+ Suivi et Evaluation des Plans d'Actions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Licorice&family=Ubuntu:wght@300&display=swap" rel="stylesheet">  
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">  
+    <link rel="stylesheet" href="{% static 'webpages/dist/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'webpages/dist/alertify.min.css' %}">
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+    <script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
+    <script>
+        Weglot.initialize({
+            api_key: 'wg_9cc833a14ce6887fc6ebf66eab7688169'
+        });
+    </script>
+    <style>
+        body *{
+            font-family:Ubuntu,Corbel,sans-serif;
+        }
+        .hero-paragraph b{
+            color:orange;
+        }
+        .modal-content *{
+            font-size: 16px;
+        }
+        .modal-content small,small{
+            font-size: 12px;
+        }
+        #eyePassw:hover{
+            text-decoration:underline;
+        }
+    </style>
+    {% block style %}
+
+    {% endblock %}
+</head>
+
+<body style="background:#fff; overflow-x:hidden;" class="is-boxed has-animations">
+    {% block super_log %}
+    <div style="max-height:80px;">
+        <div class="bg-primary text-center text-white">
+            <small> <i class="fas fa-code"> </i> Version Actuelle : <b>Opera+ 1.9</b></small>
+        </div>
+        <div class="col-12 d-flex justify-content-between">
+            <div class="col-lg-3 col-6 d-flex pt-2 px-2">
+                <div><img style="width: 45px;height:45px;border-radius:100%; " src="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+                </div>
+                <div class="pl-2 pt-2"> <b> OPERA + </b></div>
+            </div>
+            <!-- Logo Opera+ -->
+            <div style="font-weight:bold;" class="d-none d-lg-flex col-lg-6 pt-2  justify-content-between">   
+                {% if personnel_opera == None %}
+                <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">Site Web</a></div>
+                <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">Ressources </a></div>
+                <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">Framework</a></div>
+                <div class="px-1"><a class='text-primary' style="text-decoration:none;font-size:15px;" href="/website/">A Propos</a></div>
+                <div class="px-1"><a style="color:orange;text-decoration:none;font-size:15px;" href="/website/"> Applis&nbsp; <i class="fas fa-angle-down"></i> </a></div>
+
+                {% else %}
+                <div class="px-2 "><a class="button button-success btn-primary my-2" type='submit' style='width:200px;' href="/main/1/"><span style='color:white;'><i class="fas fa-fork"></i> Opera+ Framework </span></a></div>
+                <div class="px-2 "><a class="button button-success btn-primary my-2" type='submit' style='width:200px;' href="/main/2/"><span style='color:white;'><i class="fas fa-fork"></i> A Propos d'Opera+ </span></a></div>
+                {% endif %}
+            </div>
+            <div class="col-lg-3 col-3">
+                <div class="d-none d-lg-flex justify-content-center"><a class="d-block button button-warning btn-warning my-2" type='submit' style='width:200px;' href="/log_account/"><span style='color:white;'>Version d'Essai</span></a></div>
+                <div class="pt-2 d-lg-none">
+                    <span class="fas fa-th fa-2x"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    <div  class="">
+        {% block content %}
+
+        <main style="background-image:url({% static 'webpages/map.jpg' %}); width:100vw; padding:0px;background-size:cover;background-position:center;position: relative;top:90px;">
+
+
+            <section class="hero" style="background:rgba(250,250,250,0.8);">
+                <div class="container">
+                    <div style="" class="hero-inner">
+                        {% block present_hero %}
+                        <div style="" style="width:100%;" class="hero-copy">
+                            <h1 style='color:orange;font-weight:bold;'> OPERA + </h1>
+                            <h3 class="hero-title mt-0">Plateforme de <span style="color:orange;">Planification</span>, <span style="color:orange;">Suivi</span> et <span style="color:orange;">Evaluation</span> des Plans d'Actions</h3>
+                            <p class="hero-paragraph" ><form class="user col-lg-9" method="POST" action="/log/">
+                                {% csrf_token %}
+                                {% if bad_log == True %}
+                                <div class="text-center text-danger">Adresse Mail ou Mot de Passe incorrect</div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label><small>Adresse Mail</small></label>
+                                    <input type="text" name="email" value="" class="form-control form-control-user" required id="inputEmail" placeholder="Email Address">
+                                </div>
+                                <div class="form-group">
+                                    <label><small>Mot de Passe</small></label>
+                                    <div style="display: inline;" ><input  type="password" name="password" class="form-control form-control-user" id="inputPassword" placeholder="Password"></div>
+                                    <div style="display:inline;cursor:pointer;" id='eyePassw'><span  class="btn fas fa-eye text-secondary"></span> <small>Afficher le Mot de Passe</small> </div>
+                                    <div><b class="btn text-secondary"> > </b>  <small><a href="/bad_auth/" class="text-secondary"> Mot de Passe Oublié ? </a></small> </div>
+                                </div>
+                                <center class="hero-cta">
+                                    <button class="button button-warning" type='submit' style='width:100%;background:orange;' href="/"><span style='color:white;'>Se Connecter</span></button>
+
+                                <!--<div class="lights-toggle">
+                                    <a style="text-decoration:none;" ><label for="lights-toggle" style="color:#333display:inline-flex;font-family:'IBM Plex Sans', sans-serif;font-size:14px;letter-spacing:0px;font-weight:600;line-height:16px;text-decoration:none !important;text-transform:uppercase;background-color:#E9EDF3;color:#333 !important;border:none;border-radius:2px;cursor:pointer;justify-content:center;padding:16px 32px;height:48px;text-align:center;white-space:nowrap;" class="text-xs"><span>Institution</span></label></a>
+                                </div>--> <div data-target="#createAccountModal" data-toggle='modal' class="button button-primary"> <span>Mon Institution</span></div>
+                            </div>
+                            
+                        </form>
+                    </center>
+                    {% endblock %}
+                    <div class="hero-media">
+                        <div class="header-illustration">
+                            <img class="header-illustration-image asset-light" src="{% static 'webpages/dist/images/header-illustration-light.svg' %}" alt="Header illustration">
+                        </div>
+                        <div class="hero-media-illustration">
+                            <img class="hero-media-illustration-image asset-light" src="{% static 'webpages/dist/images/hero-media-illustration-light.svg' %}" alt="Hero media illustration">
+                        </div>
+                        <div class="hero-media-container">
+                            <img class="hero-media-image asset-light" src="{% static 'webpages/dist/images/features-box-light10.svg' %}" alt="Hero media">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="mt-4 d-none d-md-block" style="">
+                <div class="container">
+                    <div class="row">
+                        <div class="px-2">
+                            <span> 2022 © BeinInfo. </span>
+                        </div>
+                        <div style="border-left:1px solid #333;" class="px-2">
+                            <a href="/"> A Propos </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </section>
+
+
+    </main>
+    {% endblock %}
+
+</div>
+<div class="modal fade bd-example-modal-md" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="bg-primary text-white modal-header">
+                <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                <h4 class="modal-title" id='modify_title'>Resneigner une <b> Institution </b></h4>
+                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="text-center">
+                    <small style="font-size: ">Vous allez utiliser Opera pour gerer le travail collaboratif de vos Projets et Plan d'actions, <small class="text-primary"> Commencer l'Aventure</small></small>
+                </div>
+                <form class="pt-4 form-horizontal bordered-row" action="/save_institution/" id="addFormAction" enctype="multipart/form-data"  method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="edit_or_create">
+                    <input type="hidden" name="edit_id">
+                    <input type="hidden" name="calendar_selected" id='calendar_selected'>
+                    <input type="hidden" value="{{actual_period.m_periode.id}}" name="calendar_periode"> 
+                    <input type="hidden" name="redirect" {% if detail_g_v == True %} value="{{base_val.id}}" {% else %} value="-1" {% endif %}>
+
+                    <input type='hidden' name='generator' value='t'>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="text-primary form-group">
+                                <span>Entrez le Code de votre Licence Opera +</span><br>
+                                {% if new_user != 1 %}<small> Si vous n'avez pas encore acheté de Licence, vous auriez une version d'éssai de 30 Jours</small>
+                                {% else %}
+                                <b> Vous avez reçu un code d'activation via votre adresse mail </b>
+                                {% endif %}
+                                <input type="text" placeholder="{% if new_user == 1 %} Veuillez entrer le Code reçu {% endif %}" required name="app_code" class="form-control col-sm-12">
+                                {% if new_user != 1 %}
+                                <span style="cursor:pointer;"><a href="/log_plus/"><span style="font-weight:bold;color:orange;"> Je n'ai pas payé de code mais je voudrais utiliser l'application </span>  <span class="text-primary">Cliquez ici</span></a></span>
+                                {% endif %}
+                                <!-- onclick="launchRegiCode();" --> 
+                                
+                            </div> 
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <span>Sigle de Votre Institution ( Optionnel )</span><br>
+                                <small> Il s'agit ici d'un Anagramme par rapport à votre Institution</small>
+                                <input placeholder="ex : MINFI, ONU, Google" type="text" class="form-control" name="code"  >
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <span>Nom de Votre Institution</span><br>
+                                <small> Le Nom de votre Institution</small>
+                                <input type="text" class="form-control" name="nom"  required="">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <span>Votre institution a t'elle un Logo ? ( Optionnel )</span>
+                                <input type="file" class="form-control" value="0" name="file">
+                            </div>   
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <span>Une Petite Description ( Optionnel )</span>
+                                <textarea rows=3 name="desc" class="col-sm-12"></textarea>   
+                            </div> 
+                        </div>
+                    </div>
+                    <div>
+                        <input type="checkbox" id='check_mail' name="check_mail">
+                        <label for='check_mail'><small>Acceptez-vous de Recevoir des actualités d'Opera ?</small></label>
+                    </div>
+                    <button type="submit" style="font-weight:bold;background:orange;" class="btn text-white">Utiliser Opera + pour mon Institution
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="passForgotModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div> 
+                    <div class="text-primary">Récupération de Compte</div>
+                    <div class="my-3">
+                        <div>
+                            <label> Votre Adrese Mail </label>
+                            <input type="text" class="form-control" name="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Restaurer" name="">
+            </div>
+        </div>
+    </div>
+</div>
+<div id="noCodeModal" class="modal fade">
+    <div class="modal-dialog modal-md">
+        <div class="modal-body bg-primary">
+            <div class="modal-title text-white text-center"> Veuillez vous Identifiez pour lancer la Proccédure D'Essai </div>
+            <div class="d-flex">
+                <div class="text-center col-md-5">
+                    <label class="text-center "> Votre Nom </label>
+                    <input type="text" class="form-control bg-whote" name="">
+                </div>
+                <div class="text-center col-md-5">
+                    <label class="text-center "> Votre Prenom </label>
+                    <input type="text" class="form-control bg-whote" name="">
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>
+<div id='shit' style="display: none;">
+    <div> 
+        <div class='text-center'> <small> Vous n'avez pas encore de Code, pas grave vous pouvez néanmoins utiliser Opera + pour vos projets </small>
+        </div> 
+        <div>
+            <div class="d-flex flex-wrap">
+                <div class="text-center col-md-12">
+                    <label class="text-center "> Votre Nom </label>
+                    <input style="z-index:9999;" type="text" class="form-control" name="">
+                </div>
+                <div class="mt-2 text-center col-md-12">
+                    <label class="text-center "> Votre Prenom </label>
+                    <input type="text" style="z-index:999;" class="form-control" name="">
+                </div>
+            </div>
+            <div class="my-2 d-flex justify-content-center">
+                <div class="text-center col-md-12">
+                    <label class="text-center "> Votre Adresse Mail </label>
+                    <input type="text" class="form-control" name="">
+                </div>
+            </div>
+            <div>
+                <div> <small class="text-danger"> Important, veuillez déclarer un Mot de Passe </small></div>
+                <div class="col-md-12"> <input type="password" placeholder="Mot de Passe" class="form-control" name=""></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'webpages/dist/js/main.min.js' %}"></script>
+
+<script src="{% static 'webpages/dist/alertify.min.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript">
+    var password_show = 1;
+    $("#eyePassw").click(function(){
+        if ( password_show == 1){
+            $('#inputPassword').attr('type','text');
+            $(this).css('font-weight','bold');
+        }
+        else {
+            $('#inputPassword').attr('type','password');
+            $(this).css('font-weight','normal');
+        }
+        password_show = 1 - password_show;
+    })
+    function launchRegiCode(){
+        shit = document.getElementById('shit').innerHTML;
+        alertify.alert("Permettez nous de vous identifier svp",shit);
+    }
+    {% if new_user == 1 %}
+    $("#createAccountModal").modal('show');
+    {% endif %}
+    //launchRegiCode()
+    $('form').submit(function(){
+        $(this).find(':input[type=submit]').prop('disabled', true);
+    });
+</script>
+
+{% if too_much_ins == True %}
+<div class="modal fade" id="tooMUCHModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal bordered-row" action="/delete/" id="tooMUCHFormAction" method="post">
+                {% csrf_token %}
+                <div class="modal-header bg-danger text-white">
+                    Veuillez Obtenir un Code Valable
+                </div>
+                <div class="modal-body">
+                    Désolé, mais le Code utilisé ne vous permet pas de créer plus d'institutions au sein d'Opera,
+                    Pour renseigner plus d'institutions, veuillez renouveler <b> votre Formule </b>
+                </div>
+                <div class="modal-footer">
+                    <div class="px-2">
+                        <span> 2022 © BeinInfo. </span>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#tooMUCHModal").modal('show');
+
+</script>
+
+{% endif %}
+{% block special_script %}
+
+{% endblock %}
+</body>
+</html>
+
+<!--
+<div style="height:90vh;display:flex;flex-direction:column;justify-content: center;" id="layout-wrapper">
+    <div class="main-content ">
+    <div class="">
+        <div class="container">createAccountModal
+
+            <div class="row">
+   
+            -->

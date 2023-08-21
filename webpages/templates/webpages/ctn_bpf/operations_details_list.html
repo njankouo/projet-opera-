@@ -1,0 +1,69 @@
+{% extends './entities.html' %}
+{% load static %}
+
+
+
+{% block add_title %}
+{{actual_institution.operations_name}} : {{operation}}
+{% endblock %}
+
+{% block search_filters %}
+
+{% endblock %}
+
+{% block table %}
+<div class="d-flex flex-wrap text-secondary"> 
+	{% for s in operation.tache.sup_hierachie %}
+	<div class="px-1"> <a class='tree_link' data-id="{{s.id}}" href="#"><small> {{s}} </small> <small class="text-secondary"> > </small> </a> </div>
+	{% endfor %}
+	<div class="px-1"> <a class='' data-id="-1" href="/taches/{{operation.tache.id}}/"><small> {{operation.tache}} </small> <small class="text-secondary"> > </small> </a> </div>
+
+</div>
+
+<div>
+	<div class="h4 mb-3 text-success">{{actual_institution.operations_name}}</div>
+
+	<div class="h2">
+		{{operation}}
+	</div>
+
+	<div>
+		<div>Liste des Rapports produits</div>
+		<div class="my-4">
+			<div>
+				<table class="table table-responsive">
+					<thead>
+					<tr>
+						<th>
+						<th> Date enregistree </th>
+						<th> Soumis par </th>
+						{% for th in operation.tache.aggregates2 %}
+			            <th class="sorting text-primary" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style=" ">
+			                 {{th}}
+			            </th>
+		            	{% endfor %}
+		        	</tr>
+		        	</thead>
+		            <tbody>					
+					{% for line in operation.get_operation_details %}
+					<tr>
+						<td>{% if line.etat == '2' %}<i class="fas fa-check text-success"></i>{% else %}<i class="fas fa-exclamation-triangle text-danger"></i>{% endif %}</td>
+						<td>{{line.date_created}}</td>
+						<td>{{line.personnel}}</td>
+							{% for val in line.values_spl2 %}
+                            <td class="t_cell value_liner">{{val}}</td>
+                            {% endfor %}
+                     </tr>
+					{% empty %}
+					</tbody>
+				</table>
+
+
+			</div>
+			<div>
+			<div class="text-danger"> Aucun Rapport pour l'instant </div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+{% endblock %}

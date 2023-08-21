@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)http://localhost/business-plan/public/login -->
+<html lang="en"><!-- Mirrored from myrathemes.com/xeloro/layouts/vertical/index.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 27 Feb 2020 14:18:28 GMT --><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <title> Business Plan - Admin &amp; Dashboard Template</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta content="Premium Multipurpose Admin &amp; Dashboard Template" name="description">
+        <meta content="MyraStudio" name="author">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="http://localhost/business-plan/public/assets/images/favicon.ico">
+
+        <!-- App css -->
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/icons.min.css" rel="stylesheet" type="text/css">
+
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/dataTables.bootstrap4.css" rel="stylesheet" type="text/css">
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/responsive.bootstrap4.css" rel="stylesheet" type="text/css">
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/buttons.bootstrap4.css" rel="stylesheet" type="text/css">
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/select.bootstrap4.css" rel="stylesheet" type="text/css">
+        <link href="./Business Plan - Admin &amp; Dashboard Template_files/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" id="custom_css1-css" href="./Business Plan - Admin &amp; Dashboard Template_files/dataTables.checkboxes.css" type="text/css" media="all">
+		<link href="./Business Plan - Admin &amp; Dashboard Template_files/theme.min.css" rel="stylesheet" type="text/css">
+         <!--script src="http://localhost/business-plan/public/assets/js/bootstrap.bundle.min.js"></script>
+         <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script-->
+<style>
+td.details-control {
+    background: url('../public/icons/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../public/icons/details_close.png') no-repeat center center;
+}
+</style>
+    </head>
+
+    <body>
+
+        <!-- Begin page -->
+        <div id="layout-wrapper" class=''>
+             <div class="main-content ">
+
+              
+
+
+    <div class="bg-success">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex align-items-center min-vh-100">
+                        <div class="w-100 d-block bg-white shadow-lg rounded my-5">
+                            <div class="row">
+                                <div class="col-lg-5  bg-login rounded-left d-flex justify-content-center flex-column"><!-- d-none -->
+                               		<center><img style='width:90%;' src="./ONLC-2017.webp"></center>
+                               		    <div class="text-center">
+				                            <a href="http://51.68.84.221/business-plan/public" class="logo">
+				                                	<span style="color:orange;">
+				                                    OPERA+</span>
+				                            </a>
+				                            <div class='h4'></div>
+                                        </div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="p-5">
+
+                                        <div class="h4"><span>Online plateforme for M&E of the Work Plan</span></div>
+                                        <div class="h5 mt-4" style="font-weight:normal;">Bienvenue !</div>
+                                        <p class="text-muted mb-1">Entrez votre adresse mail et mot de passe pour vous connecter</p>
+                                        <form class="user col-lg-9" method="post" action="http://localhost/business-plan/public/dologin">
+											<input type="hidden" name="_token" value="hMqBsmw3MXrhGcxjHjBcvlpTXwcwhmpWNwer7I13">
+                                            <div class="form-group">
+                                            	<label><small>Adresse Mail</small></label>
+                                                <input type="text" name="email" value="admin" class="form-control form-control-user" id="exampleInputEmail" placeholder="Email Address">
+                                            </div>
+                                            <div class="form-group">
+                                            	<label><small>Mot de Passe</small></label>
+                                                <input type="password" name="password" value="admin" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password">
+                                                <small><a href="" class="text-danger"> Mot de Passe Oublié ? </a></small>
+                                            </div>
+                                            <div class='col-lg-12'>
+	                                            <button type="submit" class="col-lg-5 btn btn-success btn-block waves-effect waves-light"> Se Connecter </button>
+                                            </div>
+                                            
+                                        </form>
+
+                                      
+                                        <!-- end row -->
+                                    </div> <!-- end .padding-5 -->
+                                </div> <!-- end col -->
+                            </div> <!-- end row -->
+                        </div> <!-- end .w-100 -->
+                    </div> <!-- end .d-flex -->
+                </div> <!-- end col-->
+            </div> <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>
+    <!-- end page -->
+
+
+
+            </div>
+            <!-- end main content-->
+
+        </div>
+        <!-- END layout-wrapper -->
+
+
+        <!-- Overlay-->
+        <div class="menu-overlay"></div>
+         <footer class="footer" style="background-color:#fff;">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                2020 © Digital.
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="text-sm-right d-none d-sm-block">
+                                    Design &amp; Develop by Beinfos Plus
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+        <!-- jQuery  -->
+		<script src="./Business Plan - Admin &amp; Dashboard Template_files/jquery-latest.min.js"></script>
+        <!--script src="http://localhost/business-plan/public/assets/js/jquery.min.js"></script-->
+        <script src="./Business Plan - Admin &amp; Dashboard Template_files/bootstrap.bundle.min.js"></script>
+        <script src="./Business Plan - Admin &amp; Dashboard Template_files/metismenu.min.js"></script>
+        <script src="./Business Plan - Admin &amp; Dashboard Template_files/waves.js"></script>
+        <!--script src="http://localhost/business-plan/public/assets/js/simplebar.min.js"></script-->
+		<script type="text/javascript" charset="utf8" src="./Business Plan - Admin &amp; Dashboard Template_files/jquery.jeditable.js"></script>
+
+		<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script-->
+
+        <script src="./Business Plan - Admin &amp; Dashboard Template_files/jquery.dataTables.min.js"></script>
+		<script src="./Business Plan - Admin &amp; Dashboard Template_files/dataTables.responsive.min.js"></script>
+		<script src="./Business Plan - Admin &amp; Dashboard Template_files/dataTables.cellEdit.js"></script>
+		<script src="./Business Plan - Admin &amp; Dashboard Template_files/advanced.js"></script>
+	
+		<script src="./Business Plan - Admin &amp; Dashboard Template_files/jquery.chained.js"></script>
+
+       
+		<script type="text/javascript" src="./Business Plan - Admin &amp; Dashboard Template_files/dataTables.checkboxes.min.js"></script>
+
+		 <script>
+
+			var chronos;
+			var datatable;
+			var tache_id;
+			var periode_id;
+			var periode;
+			var base_url="http://localhost/business-plan/public/";
+			
+			
+			
+			/************CONFIGURATION JS *******************/
+			function addProgramme(){
+				// $("#addFormProgramme").reset();
+				document.getElementById("addFormProgramme").reset();
+			}
+			
+			function editProgramme(id){
+				href=base_url+"config/editProgramme?id="+id;
+				$.get(href, function(res){
+						console.log(res);
+						console.log(res.nom);
+						$("#nomProg").val(res.nom);
+						$("#impactProg").val(res.impact);
+						$("#indicateurProg").val(res.indicateur);
+						$("#idinstitutionProg").val(res.idinstitution);
+						$("#idProg").val(res.idprogramme);
+					
+				});
+				$('#addProgrammeModal').modal();
+			}
+			
+			function addAction(){
+				document.getElementById("addFormAction").reset();
+			}
+			
+			function editAction(id){
+				href=base_url+"config/editAction?id="+id;
+				$.get(href, function(res){
+						console.log(res);
+						console.log(res.nom);
+						$("#nomAct").val(res.nom);
+						$("#objectifsAct").val(res.objectifs);
+						$("#indicateurAct").val(res.indicateur);
+						$("#idprogrammeAct").val(res.idprogramme);
+						$("#idAct").val(res.idaction);
+					
+				});
+				$('#addActionModal').modal();
+			}
+			
+			function addActivite(){
+				document.getElementById("addFormActivite").reset();
+			}
+			
+			function editActivite(id){
+				href=base_url+"config/editActivite?id="+id;
+				$.get(href, function(res){
+						console.log(res);
+						console.log(res.nom);
+						$("#nomAct").val(res.nom);
+						$("#objectifAct").val(res.objectif);
+						$("#cumulextrantsAct").val(res.cumulextrants);
+						$("#cumulindicateursAct").val(res.cumulindicateurs);
+						$("#idactionAct").val(res.idaction);
+						$("#idAct").val(res.idactivite);
+					
+				});
+				$('#addActiviteModal').modal();
+			}
+			
+			function addTache(){
+				document.getElementById("addFormTache").reset();
+			}
+			
+			function editTache(id){
+				href=base_url+"config/editTache?id="+id;
+				$.get(href, function(res){
+						console.log(res);
+						console.log(res.nom);
+						$("#nomAct").val(res.nom);
+						$("#indicateurspoursuivisTache").val(res.indicateurspoursuivis);
+						$("#totalmontantaloueTache").val(res.totalmontantaloue);
+						$("#valeurattendueTache").val(res.valeurattendue);
+						$("#idactiviteTache").val(res.idactivite);
+						$("#indicateurresultTache").val(res.indicateurresult);
+						$("#idAct").val(res.idtache);
+					
+				});
+				$('#addTacheModal').modal();
+			}
+			
+		
+			/*************END CONFIGURATION JS*********************/
+			
+
+
+			// table= $('#example').DataTable( {});
+			function actCorr1(id, period){
+				href=base_url+"taches/activitescorrectrices?tache_id="+id+"&periode_id="+period;
+				tache_id=id;
+				periode_id=period;
+				$('#example').addClass("tab"+id);
+
+
+				$.get(href, function(task){
+					console.log(task.data);
+					chronos=task.data;
+					var columns=[{ data: 'id' },{ data: 'operation' },{ data: 'montant' }];
+
+					for(var i=0; i<task.periode.length;i++){
+						// columns.push({ data: " "+periode[i] });
+						columns.push({ data: " "+task.periode[i].data });
+					}
+					columns.push({ data: 'action' });
+
+					if(datatable!=undefined){
+						datatable.ajax.url( href ).load();
+					}
+
+					//if(chronos.length>0) {
+					if(chronos.length>0) {
+					chrono=chronos[0].chrono;
+					periode=chronos[0].periode;
+					}
+					var data;
+					// var columns=[{ data: 'id' },{ data: 'operation' },{ data: 'montant' }];
+
+
+
+					//if(datatable==undefined){
+						 datatable= $('.chronotable').DataTable( {
+						 // datatable= $(".tab"+id).DataTable( {
+						  "ajax": {
+							"type":"get",
+							"url":href,
+							"dataSrc": function(res) {
+								console.log(res);
+								chronos=res.data;
+
+								return res.data;
+							},
+						  },
+
+						  "columns": columns,
+						  "searching": false,
+						  "lengthChange":false,
+						  "bDestroy": true,
+						  "createdRow": function(row, data, dataIndex ) {
+								if (data.statut == 0 ) {
+								  $(row).addClass('table-danger');
+								}
+								if (data.statut == 1 ) {
+								  $(row).addClass('table-success');
+								}
+								
+						   }
+						});
+					// }
+
+					/*} else {
+						if(datatable==undefined){
+						  datatable=$('#example').DataTable({"columns": columns,
+							"searching": false, "lengthChange":false,});
+						}
+					}*/
+
+					$("#example").on('mousedown.edit', "i.fa.fa-pencil-alt", function(e) {
+						 //
+						// $(this).removeClass().addClass("fa fa-envelope-square");
+						const t = chronos.find(t => t.id == this.id);
+						console.log(t);
+						$('#form-chrono #operation').val(t.operation);
+						$('#form-chrono #montant').val(t.montant);
+						$('#form-chrono #id').val(t.id);
+						$('#form-chrono #tache_id').val(id);
+						$('#form-chrono #periode_id').val(periode_id);
+
+						if(chronos.length>0) {
+								periode=chronos[0].periode;
+						}
+						for(var i=0; i<periode.length;i++){
+							var v=" "+periode[i];
+						 if(t[v]!=""){
+						   $('#form-chrono #input-'+periode[i]).prop("checked", true);
+						   $('#form-chrono #hinput-'+periode[i]).val("1");
+						 } else {
+						   $('#form-chrono #input-'+periode[i]).prop("checked", false);
+						   $('#form-chrono #hinput-'+periode[i]).val("0");
+						 }
+
+						 console.log(t[v]);
+						// alert(eval(v));
+						}
+						// $("#detail").toggle();
+						console.log("t[v]");
+						$("#detail").toggle();
+
+					});
+
+					$(".form-chrono").find("checkbox").each(function(){
+						console.log("hello");
+						if ($(this).prop('checked')==true){
+							//do something
+							$(this).val("1");
+
+						} else {
+							$(this).val("0");
+						}
+					});
+
+
+
+
+
+				});
+				}
+				
+			 function actCorr(idtache,period){	
+				actCorr1(idtache, period);
+				$('#addModal').modal();
+
+
+				}
+
+
+		  function closeModal(){
+			  $('#example').removeClass("tab"+tache_id);
+		  }
+
+		   /*function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+				console.log(updatedRow);
+				console.log("The new value for the cell is: " + updatedCell.data());
+				console.log("The old value for that cell was: " + oldValue);
+				console.log("The values for each cell in that row are: " + updatedRow.data());
+				console.log(Array.from(updatedRow.data()));
+		  }*/
+
+             /** format for dataTache **/
+              function formatTache ( idtache, periodes ) {
+                // `d` is the original data object for the row
+				
+				var data='';
+				var period=$('#typeperiode').val();
+				/* console.log(d);*/
+				for(var i=0; i<periodes.length;i++){
+				data +='<th>'+periodes[i].libelle+'</th>';
+				// console.log(periodes[i]);
+				} 
+			
+				actCorr1(idtache, period);
+                return '<table data-paging="false" data-info="false" data-responsive="responsive" class=" chronotable table-bordered display     float-left " cellspacing="0" width="85%">'
+				+	'<thead><tr role="row"><th rowspan="2"  data-visible="false"></th>'
+				+'<th rowspan="2" >Opérations</th>'
+				+'<th rowspan="2">Montant</th>'
+				+'<th colspan="'+periodes.length+'" rowspan="1">Chronogramme de mise en oeuvres</th>'
+				+'<th rowspan="2" data-visible="false">Actions</th>'
+				+'</tr><tr role="row">'
+				+data
+				+'</tr>'
+                +'</thead></table>';			
+            }
+			
+			/** end format tache **/
+
+			/** format for dataActivite **/
+              function format ( d ) {
+                // `d` is the original data object for the row
+				
+				var data='';
+				var period=$('#typeperiode').val();
+				 console.log(d);
+				for(var i=0; i<d.length;i++){
+				data +='<tr>'+
+                        '<td>'+d[i].nom+'</td>'+
+                        '<td><button type="button" onclick="actCorr('+d[i].idtache+', '+period+')" class="btn btn-primary waves-effect waves-light">view</button></td>'+
+                     '</tr>';
+				} 
+				if(d.length==0){
+					data +='<tr>'+
+                        '<td rowspan="2">Aucune Tache pour cette période et cette activité.</td>'+
+						'</tr>';
+				}
+				
+                return '<table class="table" style="width:100%">'+
+                    '<thead><tr>'+
+                        '<td>Taches</td>'+
+                        '<td></td>'+
+                    '</tr></thead><tbody>'+data+'</tbody>'
+                '</table>';
+            }
+			
+			/** end format activite **/
+			
+			/** format for dataAction **/
+              function formatAction ( d ) {
+                // `d` is the original data object for the row
+				
+				var data='';
+				var period=$('#typeperiode').val();
+				 console.log(d);
+				for(var i=0; i<d.length;i++){
+				data +='<tr>'+
+                        '<td>'+d[i].activite_nom.nom+'</td>'+
+                        '<td>'+d[i].nom+'</td>'+
+                        '<td><button type="button" onclick="actCorr('+d[i].idtache+', '+period+')" class="btn btn-primary waves-effect waves-light">view</button></td>'+
+                     '</tr>';
+				} 
+				if(d.length==0){
+					data +='<tr>'+
+                        '<td rowspan="2">Aucune Tache pour cette période et cette activité.</td>'+
+						'</tr>';
+				}
+				
+                return '<table class="table" style="width:100%">'+
+                    '<thead><tr>'+
+                        '<td>Activites</td>'+
+                        '<td>Taches</td>'+
+                        '<td></td>'+
+                    '</tr></thead><tbody>'+data+'</tbody>'
+                '</table>';
+            }
+			
+			/** end format action **/
+			
+			
+			/** format for dataProgramme **/
+              function formatProgramme ( d ) {
+                // `d` is the original data object for the row
+				
+				var data='';
+				var period=$('#typeperiode').val();
+				 console.log(d);
+				for(var i=0; i<d.length;i++){
+				data +='<tr>'+
+                        '<td>'+d[i].action_nom.nom+'</td>'+
+                        '<td>'+d[i].activite_nom.nom+'</td>'+
+                        '<td>'+d[i].nom+'</td>'+
+                        '<td><button type="button" onclick="actCorr('+d[i].idtache+', '+period+')" class="btn btn-primary waves-effect waves-light">view</button></td>'+
+                     '</tr>';
+				} 
+				if(d.length==0){
+					data +='<tr>'+
+                        '<td rowspan="2">Aucune Tache pour cette période et cette activité.</td>'+
+						'</tr>';
+				}
+				
+                return '<table class="table" style="width:100%">'+
+                    '<thead><tr>'+
+                        '<td>Action</td>'+
+                        '<td>Activites</td>'+
+                        '<td>Taches</td>'+
+                        '<td></td>'+
+                    '</tr></thead><tbody>'+data+'</tbody>'
+                '</table>';
+            }
+			
+			/** end format programme **/
+
+
+		  	$(document).ready(function () {
+				
+					$("#idprogramme").chained("#idinstitution");
+					$("#idaction").chained("#idprogramme");
+					$("#idactivite").chained("#idaction");
+
+				
+					/**** Programme DATATABLE **/
+				   var tableprogramme= $('#programme').DataTable({ajax:{type:"get", data:{"typeperiode": $('#typeperiode').val(), "annee": $('#annee').val()},
+
+                    url: base_url+"programmes/filterprogrammesjson"},searching: true, "lengthChange":false,
+                    'columns': [
+                    {
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+                    { "data": "nom" },
+                    { "data": "objectifs" },
+
+                    { "data": "impact" },
+                    { "data": "impact" },
+                    { "data": "impact" },
+                    { "data": "impact" },
+                    { "data": "impact" },
+
+                    ],
+                    "order": [[1, 'asc']]
+                    });
+
+                    $('#programme tbody').on('click', 'td.details-control', function () {
+                        var tr = $(this).closest('tr');
+                        var row = tableprogramme.row( tr );
+
+                        if ( row.child.isShown() ) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+                        }
+                        else {
+                            // Open this row
+                            // console.log(row.data());
+                            row.child( formatProgramme(row.data().taches) ).show();
+
+
+                            tr.addClass('shown');
+                        }
+                    } );
+					
+					/** FIN PROGRAMME DATATABLE **/
+				
+					/**** ACTION DATATABLE **/
+				   var tableaction= $('#action').DataTable({ajax:{type:"get", data:{"typeperiode": $('#typeperiode').val(), "annee": $('#annee').val()},
+
+                    url: base_url+"actions/filteractionsjson"},searching: true, "lengthChange":false,
+                    'columns': [
+                    {
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+                    { "data": "programme_nom" },
+                    { "data": "nom" },
+
+                    { "data": "objectifs" },
+                    { "data": "effet" },
+                    { "data": "effet" },
+                    { "data": "effet" },
+                    { "data": "effet" },
+                    { "data": "effet" },
+
+                    ],
+                    "order": [[1, 'asc']]
+                    });
+
+                    $('#action tbody').on('click', 'td.details-control', function () {
+                        var tr = $(this).closest('tr');
+                        var row = tableaction.row( tr );
+
+                        if ( row.child.isShown() ) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+                        }
+                        else {
+                            // Open this row
+                            console.log(row.data())
+                            row.child( formatAction(row.data().taches) ).show();
+
+
+                            tr.addClass('shown');
+                        }
+                    } );
+					
+					/** FIN ACTION DATATABLE **/
+				
+				/**** ACTIVITE DATATABLE **/
+                  var tableactivite= $('#activite').DataTable({ajax:{type:"get", data:{"typeperiode": $('#typeperiode').val(), "annee": $('#annee').val()},
+
+                    url: base_url+"activites/filteractivitesjson"},searching: true, "lengthChange":false,
+                    'columns': [
+                    {
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+                    { "data": "action_nom" },
+                    { "data": "nom" },
+
+                    { "data": "justification" },
+                    { "data": "justification" },
+                    { "data": "justification" },
+                    { "data": "justification" },
+                    { "data": "justification" },
+
+                    ],
+                    "order": [[1, 'asc']]
+                    /*'columnDefs': [
+                        { targets: [-1, -3], className: 'dt-body-right' }
+                    ]*/});
+
+                    $('#activite tbody').on('click', 'td.details-control', function () {
+                        var tr = $(this).closest('tr');
+                        var row = tableactivite.row( tr );
+
+                        if ( row.child.isShown() ) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+                        }
+                        else {
+                            // Open this row
+                            console.log(row.data())
+                            row.child( format(row.data().taches) ).show();
+
+
+                            tr.addClass('shown');
+                        }
+                    } );
+				  
+				  /*** FIN ACTIVITE DATATABLE **/
+
+				  var tabletache= $('#tache').DataTable({
+				  ajax:{type:"get", data:{"typeperiode": $('#typeperiode').val(), "annee": $('#annee').val()},
+
+                  url: base_url+"taches/filtertachesjson"},
+				  searching: true, "lengthChange":false,
+				   'columns': [
+					 {
+                        "className":      'details-control',
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": ''
+                    },
+				   
+					{ "data": "activite" },
+					{ "data": "nom" },
+					{ "data": "indicateurspoursuivis" },
+					{ "data": "valeurattendue" },
+					{ "data": "valeurrealisee" },//fonction de la periode
+					{ "data": "gap" },
+					{ "data": "indicateurresult" },
+					
+					{ "data": "justification" },
+					{ "data": "budgetutilise" },
+					{ "data": "chronogramme" },
+
+					],
+					"order": [[1, 'asc']]
+					});
+					
+					
+				  $('#tache tbody').on('click', 'td.details-control', function () {
+                        var tr = $(this).closest('tr');
+                        var row = tabletache.row( tr );
+
+                        if ( row.child.isShown() ) {
+                            // This row is already open - close it
+                            row.child.hide();
+                            tr.removeClass('shown');
+                        }
+                        else {
+                            // Open this row
+                            console.log(row.data())
+                            row.child( formatTache(row.data().idtache, row.data().periodes) ).show();
+
+
+                            tr.addClass('shown');
+                        }
+                    } );
+
+
+				 tabletache.MakeCellsEditable({
+					"onUpdate": myCallbackFunction,
+					"inputCss":'my-input-class',
+					"columns": [5,8],
+					"allowNulls": {
+						"columns": [3],
+						"errorClass": 'error'
+					},
+					"confirmationButton": { // could also be true
+						"confirmCss": 'my-confirm-class',
+						"cancelCss": 'my-cancel-class'
+					},
+					"inputTypes": [
+						{
+							"column": 5,
+							"type": "text",
+							"options": null
+						},
+						{
+							"column": 8,
+							"type": "text",
+							"options": null
+						},
+						 // Nothing specified for column 3 so it will default to text
+
+					]
+				});
+
+				function myCallbackFunction (updatedCell, updatedRow, oldValue) {
+					console.log("The new value for the cell is: " + updatedCell.data());
+					console.log("The old value for that cell was: " + oldValue);
+					/*var data=updatedRow.data();
+					data.typeperiode=$("#typeperiode").val(); period_id
+					*/
+					console.log(updatedRow.data());
+
+					//
+					$.ajax({
+								url: base_url+"taches/updatetachetext",
+
+								data: updatedRow.data(),
+								type: "get",
+								success: function(result){
+									console.log(result);
+									tabletache.ajax.reload();
+
+								}
+					 });
+				}
+
+				 //https://sodocumentation.net/datatables/topic/4176/server-side-data-processing
+					$(".form-chrono .checkbox").click(function() {
+					   console.log('jj');
+					    var id=$(this).attr('id');
+					     console.log(id);
+					   if ($(this).prop('checked')==true){
+							//do something
+
+							$("#h"+id).val("1");
+
+						} else {
+							$("#h"+id).val("0");
+						}
+					});
+
+
+
+
+
+				  $("#addChrono").click( function(e) {
+						// console.log("dd1");
+						$('#form-chrono').find("input[type=text]").each(function(i, v) {
+							$(this).val("");
+							// console.log("dd");
+						});
+						$('#form-chrono #id').val("");
+						$('#form-chrono #tache_id').val(tache_id);
+						$('#form-chrono #periode_id').val(periode_id);
+						$("#detail").show();
+				  });
+				  $("#saveChrono").click( function(e) {
+					var data=$("#form-chrono").serializeArray();
+					var data2=$("#form-chrono").serialize();
+					var id=data.find(t => t.name == "id").value;
+					//if(id!=""){ //mode edition
+						// var t = chronos.find(t => t.id == id);
+						// t.operation=data.find(t => t.name == "operation").value;
+						console.log(data2);
+						// console.log(chronos);
+
+						 $.ajax({
+								url: base_url+"taches/saveactivitescorrectrice",
+
+								data: data2,
+								type: "get",
+								success: function(result){
+									console.log(result);
+									$("#detail").hide();
+									datatable.ajax.reload();
+									tabletache.ajax.reload();
+
+								}
+						  });
+
+				  });
+					
+					/** datatable for config progr, actions, taches, activites/filteractivitesjson **/
+					$('#datatable').DataTable({"lengthChange":false, "ordering":false});
+					
+					/** end datatable config **/
+					
+					
+				  // config tache
+				  var tabletacheconfig = $('#tacheconfig').DataTable({
+			  // 'ajax': 'http://localhost/cdmt/cdmt/taches/listetache_json.php',
+			  'ajax': base_url+'config/tachesjson?annee='+$('#annee').val(),
+			  /*'columnDefs': [
+				 {
+					'targets': 0,
+					'checkboxes': {
+					   'selectRow': true
+					}
+				 }
+			  ],*/
+			  'columns': [
+					{ "data": "idtache" },
+					{ "data": "activite" },
+					{ "data": "nom" },
+					{ "data": "periode_id" }
+				],
+				'columnDefs': [
+				 {
+					'targets': 0,
+					'checkboxes': {
+					   'selectRow': true
+					}
+				 }
+			  ],
+			  'select': {
+				 'style': 'multi'
+			  },
+			  'order': [[1, 'asc']],
+			  "lengthChange":false,
+		   });
+
+		   /////////////////////////////////////////
+		   $("#example").on('mousedown.remove', "i.fa.fa-minus-square", function(e) {
+						console.log("hello");
+						const t = chronos.find(t => t.id == this.id);
+						console.log(t);
+						 $.ajax({
+								url: base_url+"taches/removeactivitescorrectrice",
+
+								data: t,
+								type: "get",
+								success: function(result){
+									console.log(result);
+									datatable.ajax.reload();
+									tabletache.ajax.reload();
+
+								}
+						  });
+
+			});
+			
+			/////////////////////////////////////////
+		   $("#example").on('mousedown', "i.fas.fa-file-signature", function(e) {
+						console.log("hello");
+						const t = chronos.find(t => t.id == this.id);
+						console.log(t);
+						 $.ajax({
+								url: base_url+"taches/changeStatutactivitescorrectrice",
+
+								data: t,
+								type: "get",
+								success: function(result){
+									console.log(result);
+									datatable.ajax.reload();
+									tabletache.ajax.reload();
+
+								}
+						  });
+
+			});
+
+   // Handle form submission event
+   $('#affecterperiodetache').on('click', function(e){
+		  var form = this;
+
+		  var rows_selected = tabletacheconfig.column(0).checkboxes.selected();
+		  var ids=[];
+
+		  // Iterate over all selected checkboxes
+		  $.each(rows_selected, function(index, rowId){
+			 // Create a hidden element
+
+			 $(form).append(
+				 $('<input>')
+					.attr('type', 'hidden')
+					.attr('name', 'id[]')
+					.attr('id', 'ids')
+					.val(rowId)
+			 );
+			 console.log(rowId);
+			 ids.push(rowId);
+
+		  });
+
+		  console.log(ids);
+		  console.log($('#periodetacheconfig').val());
+
+		 $.ajax({
+			type: 'GET',
+			url: base_url+'config/tachestoperiode',
+			data: {'ids':ids, 'periode':$('#periodetacheconfig').val()},
+			beforeSend: function() {
+				// setting a timeout
+
+			},
+			success: function(data) {
+				console.log(data);
+			    //$("#result").text(data);
+				tabletacheconfig.ajax.reload();
+			}
+		 });
+
+		  // FOR DEMONSTRATION ONLY
+		  // The code below is not needed in production
+
+		  // Output form data to a console
+		 // $('#example-console-rows').text(rows_selected.join(","));
+
+		  // Output form data to a console
+		  //$('#example-console-form').text($(form).serialize());
+
+		  // Remove added elements
+		  $('input[name="id\[\]"]', form).remove();
+
+		  // Prevent actual form submission
+		  e.preventDefault();
+	   });
+
+		   });
+
+        </script>
+
+    
+
+
+<!-- Mirrored from myrathemes.com/xeloro/layouts/vertical/index.html by HTTrack Website Copier/3.x [XR&CO'2005], Thu, 27 Feb 2020 14:18:28 GMT -->
+
+</body></html>

@@ -1,0 +1,136 @@
+{% extends './main.html' %}
+{% load static %}
+
+
+{% block style %}
+<style type="text/css">
+	body *{
+		font-size: 14px;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-media" style="position: fixed;">
+							<div class="header-illustration">
+								<img class="header-illustration-image asset-light" src="{% static 'webpages/dist/images/header-illustration-light.svg' %}" alt="Header illustration">
+								<img class="header-illustration-image asset-dark" src="{% static 'webpages/dist/images/header-illustration-dark.svg' %}" alt="Header illustration">
+							</div>
+							<div class="hero-media-illustration">
+								<img class="hero-media-illustration-image asset-light" src="{% static 'webpages/dist/images/hero-media-illustration-light.svg' %}" alt="Hero media illustration">
+								<img class="hero-media-illustration-image asset-dark" src="{% static 'webpages/dist/images/hero-media-illustration-dark.svg' %}" alt="Hero media illustration">
+							</div>
+							<div class="hero-media-container">
+								<img class="hero-media-image asset-light" src="{% static 'webpages/dist/images/hero-media-light.svg' %}" alt="Hero media">
+								<img class="hero-media-image asset-dark" src="{% static 'webpages/dist/images/hero-media-dark.svg' %}" alt="Hero media">
+							</div>
+						</div>
+<div style="z-index:9999;">
+	{% if edit == 1 %}<div class="mb-3 text-center" ><a style="font-size:14px;" class="btn btn-primary" href="/configurations/">Retourner à l'Ecran de Configuration</a></div>
+	{% else %}
+<div class="mb-3 text-center" ><a style="font-size:14px;" class="btn btn-success" href="/institution/">Retourner aux choix des Institutions</a></div>
+	{% endif %}
+</div>
+
+<div style="display:flex;justify-content: center;">
+<div class=" col-lg-12 p-3">
+	<form action="{% if edit != 1 %}/save_institution/{% else %}/save_edit_institution/{% endif %}" id="addFormAction" method="POST" data-toggle="validator" enctype="multipart/form-data">
+		{% csrf_token %}
+<div style="display:flex;justify-content: center;">
+<div class=" card col-lg-6 p-3">
+
+	<div class="card-header mb-3">
+		<div class="text-center" style="color:#777;"> <small > Bienvenue sur Opera </small></div>
+		{% if edit == 1 %}
+		<h1 class="text-center">Modifier l'Institution <b class="text-primary">{{institution}}</b> </h1>
+		{% else %}
+		<h1 class="text-center"> Ajouter une <b class="text-primary">Institution</b> </h1>
+		{% endif %}
+		{% if edit == 1 %}  <div class="text-center" style="color:#777;font-weight:bold; "> <small > Modifier les Informations de Base de votre Institution </small></div> 
+		{% else %}  <div class="text-center" style="color:#777;"> <small > Il s'agit d'une Entité ausein de laquelle sera déployé l'outil de Suivi et Evalaution des Plans d'Action </small></div> 
+		{% endif %}
+	</div>
+	<div style="width: 100vw; " class="card-body col-lg-12 d-flex flex-column justify-content-around">
+		<center>
+		<div class="form-group col-lg-6">
+			<div class="text-center"><label> Sigle de l'Institution</label></div>
+			<div><input type="text" required {% if edit == 1 %} value="{{institution.sigle}}" {% endif %} class="form-control" name="code"></div>
+		</div>
+		</center>
+		<center>
+		<div class="my-2 col-lg-12">
+			<div class="text-center"><label> Nom de l'Institution</label></div>
+			<div><input required type="text" required {% if edit == 1 %} value="{{institution.nom}}" {% endif %} class="form-control" name="nom"></div>		
+		</div>
+		</center>
+	</div>
+	<center>
+	<div class="col-lg-12">
+		<div class="text-center"><label> Logo de l'Institution</label></div>
+		<div><input style="font-size: 14px;{% if edit == 1 %}display:none;{% endif %}" id='institution_logo_input' type="file" class="form-control" {% if edit != 1 %} {% endif %} name="file">
+			{% if edit == 1 %}
+			<div><img src="{{institution.img.url}}" id='actual_img_input' style="width:300px;height: 300px;"><span class="btn change_admin_img" href="#">Changer le Logo</span></div>{% endif %} </div>	
+	</div>
+	</center>
+	<input type="hidden" value="{{institution.id}}" name="insti_id">
+	{% if edit != 1 %}
+	<center>
+	<div class="col-lg-6 mt-3">
+		<div class="text-center"><label> Code Opera+</label></div>
+		<div><small class="text-primary"> Cliquez ici pour Démander un Nouveau Code</small></div>
+		<div><input type="number" class="bg-light form-control"  name="app_code"></div>	
+	</div>
+	</center>
+	{% endif %}
+	<center>
+	<div class="col-lg-12 mt-3">
+		<div class="text-center"> <input style="font-size: 14px;" {% if edit == 1 %} value="Modifier l'Institution" {% else %}value="Enregistrer l'Institution" {% endif %} type="submit" class="btn btn-primary" name=""> </div>
+	</div>
+	</center>
+</div>
+</div>
+</form>
+</div>
+</div>
+
+
+<footer class="mt-2 footer" style="padding:20px;position:static; background-color:#fff;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                2022 © BeinInfo.
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-right">
+                 <a href="/main/" class="text-primary">A Propos</a> | <a href="/main/" class="text-success">Aide</a> | Design &amp; Develop by Beinfos Plus
+             </div>
+         </div>
+     </div>
+ </div>
+</footer>
+<script type="text/javascript">
+	/*$(".change_admin_img").click(function(){
+		alert("fdf")
+		$("#institution_logo_input").click()
+	});
+	*/
+	blah = document.getElementById('actual_img_input');
+	institution_logo_input = document.getElementById("institution_logo_input");
+	change_admin_img = document.getElementsByClassName('change_admin_img');
+	institution_logo_input.onchange = evt => {
+	  const [file] = institution_logo_input.files
+	  if (file) {
+	    blah.src = URL.createObjectURL(file)
+	  }
+	}
+	for (var i=0; i<change_admin_img.length; i++){
+		change_admin_img[i].onclick = function(){
+			institution_logo_input.click()
+		}
+	}
+</script>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

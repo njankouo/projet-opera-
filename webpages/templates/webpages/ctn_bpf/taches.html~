@@ -1,0 +1,309 @@
+{% extends './entities.html' %}
+{% load static %}
+{% block add_title %} 
+ - Gestionnaire des Tâches
+{% endblock %}
+
+{% block style %}
+<style type="text/css">
+	.calendar_card{
+		cursor: pointer;
+		color: #aaa;
+		transition: all 0.2s ease;
+	}
+	.calendar_card:hover{
+		color: #fff;
+		background: #0099d5;
+	}
+	.calendar_card[data-selected='1']{
+		color: #fff;
+		background: #00d995;		
+	}
+</style>
+{% endblock %}
+
+{% block search_buttons %}
+<a href="/planifier/" class="btn btn-info">Plannifier </a>
+{% endblock %}
+{% block search_buttons2 %}
+<a href="/planifier/" class="btn btn-info">Plannifier </a>
+{% endblock %}
+
+{% block fields %}
+	<tr role="row">
+		{% for th in fields %}
+		<th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">{{th}}</th>
+		{% endfor %}                                                    
+		<th class="">Structure</th>
+		<!--<th> Superviseur </th>-->
+		<!--<th class="text-info">Plannification</th> -->
+		<th class="text-success">Options</th>
+		<th> Progression </th>
+		<th>  Evolution </th>
+	</tr>
+{% endblock %}
+        
+{% block add_modals %}
+			<div class="modal fade bd-example-modal-xl" id="superviserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+
+												<h4 class="modal-title">Assigner Superviseur</h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+<form action='/assign_supervisor/' method="POST">
+{% csrf_token %}
+<div class="p-4 my-2">
+	<div> Choix du Superviseur</div>
+	<div class="row">
+	<div class="col-lg-8">
+		<select name='perso' class="form-control">
+			{% for perso in personnel %}
+			<option value="{{perso.id}}">{{perso}} </option>
+			{% endfor %}
+		</select>
+	</div>
+	<input type="hidden" name="assign" id="assign_supervisor">
+	<div class="col-lg-4">
+	</div>
+	</div>
+</div>
+</form>
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/save_plannify/" enctype="multipart/form-data" data-toggle="validator" role="form" method="post" onsubmit="checkCalendar();">
+																{% cs
+		<input type="submit" class="btn btn-success" value="Valider">rf_token %}
+																		
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<div class="modal fade bd-example-modal-xl" id="repartirModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title">Repartir la Tâche</h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/repartir_tache/" id="addFormAction" onsubmit='get_hidden1();' data-toggle="validator" role="form" method="post">
+																{% csrf_token %}
+                                                                        <input type='hidden' name='tache' id='form_tache' value=''>
+																		<div class="row">
+																			
+ 																			<div class="col-sm-12">
+ 																				<div>
+ 																					<b>Tache :</b>
+ 																					<span class=" form_nom_tache"></span>
+ 																				</div>
+                                                                                <div>
+                                                                                	<div>
+                                                                                		<div class='text-success'> Repartir à des Postes</div>
+                                                                                	</div>
+                                                                                	<div>
+                                                                                		<div><small>Sélectionner les Postes</small></div>
+                                                                                		<ul style="max-height: 350px;overflow-y: auto;" class="my-2 list-group">
+                                                                                			{% for role in roles %}
+                                                                                			<li data-selected='0' class="list-group-item mb-1 roles_tache role_list" data-id="{{role.id}}">{{role}}</li>
+                                                                                			{% endfor %}
+                                                                                		</ul>
+                                                                                		<input type="hidden" id='roles_tache' name="roles_tache" value="">
+                                                                                		<input type="hidden" id='persos_tache' name="personnel_tache" value="">
+                                                                                	</div>
+                                                                                	<div style="display:none;">
+                                                                                		<div class='text-success'> Repartir à des Particuliers</div>
+                                                                                		<div><small>Sélectionner le Personnel</small></div>
+                                                                                	</div>
+                                                                                	<div style="display:none;">
+                                                                                		<ul style="max-height: 350px;overflow-y: auto;" class="my-2 list-group">
+                                                                                			{% for perso in personnel %}
+                                                                                			<li data-selected='0' class="list-group-item mb-1 personnel_tache role_list" data-id="{{perso.id}}">{{perso}}</li>
+                                                                                			{% endfor %}
+                                                                                		</ul>
+                                                                                	</div>
+                                                                                </div>
+                                                                            </div>
+
+
+																		 </div>
+																        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+										    </div>
+												<!--div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
+												</div-->
+
+										</div>
+									</div>
+								</div>
+			<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title" id='modify_title'>Ajouter une Tache </h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+
+															<form class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" enctype="multipart/form-data" data-toggle="validator" role="form" method="post">
+																{% csrf_token %}
+																<input type="hidden" name="edit_or_create">
+																<input type="hidden" name="redirect" {% if detail_g_v == True %} value="{{base_val.id}}" {% else %} value="-1" {% endif %}>
+																
+																		<input type='hidden' name='generator' value='t'>
+																		<div class="row">
+																			<div class="col-sm-4">
+																				<div class="form-group">
+																					Code
+																				   <input type="text" class="form-control" name="code" id="codeAct" required="">
+																	           </div>
+																			</div>
+																			<div class="col-sm-8">
+																				<div class="form-group">
+																					Nom
+																				   <input type="text" class="form-control" name="nom" id="nomAct" required="">
+																	           </div>
+																			</div>
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Résultat Attendu
+																				</div>
+																				<textarea rows=3 name="result_process" class="col-sm-12"></textarea>	
+																			</div>
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Budget Alloué
+																				   <input type="number" class="form-control" value="0" name="total_montant_aloue" id="codeAct">
+																	           </div>	
+																			</div>
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Indicateur de Processus
+																				</div>
+																				<textarea name="indicateurresult" rows=3 class="col-sm-12"></textarea>	
+																			</div>
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Valeur Attendue
+																				   <input value=100 type="text" class="form-control" name="valeur_attendue" id="codeAct" required="">
+																	           </div>	
+																			</div>
+
+                                                                            <div class="col-12 h6 text-center">Plannifier la Tâche</div>
+                                                                            <div class="col-lg-12" id='calendar_modals' style="height: 400px;display: flex;flex-wrap: wrap;overflow:auto;justify-content: center;">	
+                                                                            	
+																				{% for card in actual_institution.default_period.decoup_slip %}
+																				<div data-selected='0' data-num='{{card}}' class='card calendar_card mr-1 col-lg-3' style='display:flex;justify-content:center;flex-direction:column;height: 20%;'>
+																					<div style='text-align:center;font-weight:bold;font-size:12px;'>{{card}}</div>
+																				</div>										
+																				{% endfor %}
+																			</div>
+																			{% for search in searches %}
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                <label for="exampleFormControlSelect1">{{search.label}}</label>
+                                                                                {% if search.values != None %}
+                                                                                <select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+                                                                                    {% for v in search.values %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+                                                                                </select>
+                                                                                {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endfor %}
+																		 </div>
+																		
+																        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+			
+
+
+                                {% endblock %}
+
+{% block add_script %}
+<script type="text/javascript">
+	$(".role_list").click(function(){
+		data_selected = parseInt($(this).attr('data-selected'));
+		data_selected = 1 - data_selected;
+		$(this).attr('data-selected',data_selected);
+		if (data_selected == 1){
+			$(this).addClass("list-group-item-success");
+		}
+		else{
+			$(this).removeClass("list-group-item-success")
+		}
+	});
+	$(".repartiBTN").click(function(){
+		$("#form_tache").val($(this).attr('data-id'));
+		$(".form_nom_tache").text($(this).attr('data-nom'));
+	});
+
+	function get_hidden1(){
+		//alert("dfd")
+		roles_taches = document.getElementsByClassName('roles_tache');
+		persos_taches = document.getElementsByClassName('persos_tache');
+		roles_tache = document.getElementById('roles_tache');
+		persos_tache = document.getElementById('roles_tache');
+		for (var i=0; i<roles_taches.length; i++){
+			if (parseInt(roles_taches[i].getAttribute('data-selected')) == 1){
+				roles_tache.value += roles_taches[i].getAttribute('data-id')+"_";
+			}
+		}
+		for (var i=0; i<persos_taches.length; i++){
+			if (parseInt(persos_taches[i].getAttribute('data-selected')) == 1){
+				persos_tache.value += persos_taches[i].getAttribute('data-id')+"_";
+			}
+		}
+		//alert(roles_tache);
+	}
+	var calendar_modal = document.getElementById("calendar_modal");
+
+
+	$(".calendar_card").click(function(){
+		var data_selected = $(this).attr('data-selected');
+		data_selected = 1-parseInt(data_selected);
+		$(this).attr('data-selected',data_selected);
+
+	});
+	$(".repartiBTN").click(function(){
+
+		$("#calendar_tache").val($(this).attr('data-id'));
+		//alert($(this).attr('data-id'));
+	});
+	function checkCalendar(){
+		result ="";
+		calendar_card = document.getElementsByClassName("calendar_card");
+		
+		for (var i=0; i<calendar_card.length; i++){
+			data_selected = parseInt(calendar_card[i].getAttribute('data-selected'));
+			if(data_selected == 1){
+				result += ""+calendar_card[i].getAttribute('data-num')+"_";
+			}
+		}
+		$("#calendar_selected").val(result);
+	}
+  $(".design_sup").click(function(){
+  	$("#assign_supervisor").val($(this).attr('data-id'));
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,326 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block generate_docs %}
+<div class="col-lg-3" style="display:flex;">
+<label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+<input type='text' class='chercher form-control' style='border-radius:0px;' placeholder="Recherche Personnel ..."> 
+</div>
+{% endblock %}
+
+{% block search_filters %}
+<div class="d-flex col-lg-12">
+			<h4 class="card-title"><a class="{% if g_vs == 'p2' %} btn btn-success text-white {% else %} btn btn-light {% endif %}" href="/personnels/">Personnel</a></h4>
+			<h4 class="ml-2 card-title"><a class="{% if g_vs != 'p2' %} btn btn-success text-white {% else %} btn btn-light {% endif %}" href="/roles/">Roles</a></h4>
+
+</div>
+      <h2> {{entity}}s </h2>
+
+                <div style="display:flex;justify-content: space-between;flex-wrap: wrap;">
+                    <div class="row col-md-12" >
+                    {% for search in searches %}
+                      <div class="col-md-2">
+                        <div class="form-group">
+
+                                                    <label for="exampleFormControlSelect1">{{search.label}}</label>
+                                                    {% if search.values != None %}
+                                                    <select class="form-control" name="niveau" id="exampleFormControlSelect1">
+                                                        <option value="0">Tous</option>
+                                                        {% for v in search.values %}<option value="tache">{{v}}</option>{% endfor %}
+                                                    </select>
+                                                    {% endif %}
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {% if searches != None %}
+                        <div class="col-sm-1">
+                             <div class="form-group" style="margin-top: 30px;">
+                                <button type="submit" class="btn btn-success waves-effect waves-light">Filtrer</button>
+                             </div>
+                        </div>
+                    {% endif %}
+                    </div>
+
+                </div>
+                <div class="d-flex pl-3 col-lg-3 justify-content-between mb-3">
+                	{% if g_vs == 'p2' %}
+	<div>
+		<a href="#addActionModal" data-toggle='modal' class="btn btn-success"> Ajouter du {{entity}} </a>
+	</div>
+					{% else %}
+	<div>
+		<span data-target="#addRoleModal" data-toggle="modal" class='btn btn-success' style="cursor: pointer;"> Ajouter {{entity}} </span>
+	</div>
+					{% endif %}
+</div>
+      {% endblock %}
+
+                                    {% block search_doc %}
+                                    <div style='display:flex;justify-content:flex-end;' class="col-lg-6"> 
+                                    <div class="col-lg-6 d-flex"> <!-- <label> Search </label> --> 
+                                        <label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+                                        <input type='text' class='form-control' style='border-radius:0px;' placeholder="Recherche Personnel..."> 
+                                    </div>
+                                    <!--<div class="col-lg-6 d-flex">
+                                        <label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
+                                        <input type='text' class='form-control' style='border-radius:0px;' placeholder="Recherche Role..."> 
+                                    </div>-->
+                                    </div>
+
+                                    {% endblock %}
+
+{% block table %}
+
+<div class="d-flex justify-content-between">
+	<div class="col-lg-12">
+		<table class="col-lg-12">
+			<tr class="bg-success text-white">
+				{% for field in fields %}
+				<th>{{field}}</th>
+				{% endfor %}
+				<!-- <th></th> -->
+
+				<th> Actions </th>
+			</tr>
+			{% if g_vs == 'p2' %}
+				{% for line in lines %}
+				<tr>
+					<td><img src="{{line.photo.url}}" style="border-radius:100%;width:50px;height:50px;"></td>
+		              <td>{{line.nom}}ss</td>
+		              <td>{{line.prenom}}</td>
+		              <td>{{line.mail}}</td>
+		              <td>{% if line.get_function == None %}<span data-id="{{line.id}}" data-nom="{{line.prenom}} {{line.nom}}" data-toggle='modal' data-target='#modifyRole' class="renseigner btn btn-success">Renseigner</span>{% else %}<b class="text-success">{{line.get_function}}</b>{% endif %}</td>
+		              <td>{{line.get_structure}}</td>
+		              <td></td>
+		              <td><button class="btn btn-success" data-id="{{line.id}}" class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+		  			</button> <button class="btn btn-danger delete-btn" onclick='merde(this);' data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button>
+		  			</td>				
+				</tr>
+				{% endfor %}
+			{% else %}
+				{% for line in lines %}
+					<tr>
+                <td>{{line.nom}}</td>
+                <td>{{line.description}}</td>
+                <td><b>{{line.permissions}}</b></td>
+                <td>
+								<button class="btn btn-success mb-1" onclick="editAction(333)"><i class="fas fa-pencil-alt"></i>
+								</button> <button class="btn btn-danger" onclick="deleteAction(333)"><i class="fas fa-trash-alt"></i></button>
+								</td>
+					</tr>
+				{% endfor %}	
+			{% endif %}
+		</table>
+	</div>
+	<!--<div class="col-lg-5">
+		<h4 class="card-title">Rôles</h4>
+		<table class="col-lg-12">
+			<tr class="bg-success text-white">
+				{% for field in fields2 %}
+				<th style="font-size:13px;">{{field}}</th>
+				{% endfor %}
+				<th></th>
+			</tr>
+			{% for line in roles %}
+			<tr>
+                <td>{{line.nom}}</td>
+                <td>{{line.description}}</td>
+                <td><b>{{line.permissions}}</b></td>
+                <td>
+    			<button class="btn btn-success mb-1" onclick="editAction(333)"><i class="fas fa-pencil-alt"></i>
+    			</button>
+    			<button class="btn btn-danger" onclick="deleteAction(333)"><i class="fas fa-trash-alt"></i></button>
+    			</td>				
+			</tr>
+			{% endfor %}
+		</table>
+	</div> -->
+</div>
+{% endblock %}
+
+{% block add_modal %}
+									<div class="modal fade bd-example-modal-xl" id="addRoleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title">Ajouter un Rôle </h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post">
+																{% csrf_token %}
+																		<input type="hidden" name="edit_or_create">
+                                                                        <input type='hidden' name='generator' value='r'>
+																		<div class="row">
+																			
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Nom
+																				   <input type="text" class="form-control" name="nom" id="nomAct" required="">
+																	           </div>
+																			</div>
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Description
+																				   <textarea class="form-control" name="description"></textarea>
+																				</div>
+																			</div>
+                                                                            <div class="col-sm-12">
+																				<div class="form-group">
+																					Permissions
+																				   <select class="form-control" name="permission">
+																				   	<option value='0'><span class="text-success">Operant :</span> Chargé d'Executer les Taches </option>
+																				   	<option value='1'>Superviseur de Tâches : Supervise les Taches  </option>
+																				   	<option value='2'>Superviseur des Activités : Supervise les Activités: </option>
+																				   	<option value='3'>Chef de Programme : Supervise les Actions</option>
+																				   	<option value='4'>Administrateur : Supervise les Programmes</option>
+																				   	<option value='5'>Super Admin : Supervise la Plateforme</option>
+																				   </select>
+																				</div>
+																			</div>
+
+                                                                            <!--{% for search in searches %}
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                <label for="exampleFormControlSelect1">{{search.label}}</label>
+                                                                                {% if search.values != None %}
+                                                                                <select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+                                                                                    {% for v in search.values %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+                                                                                </select>
+                                                                                {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endfor %}-->
+
+
+
+																		 </div>
+																        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+										    </div>
+												<!--div class="modal-footer">
+													<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+													<button type="submit" class="btn btn-primary">Save changes</button>
+												</div-->
+
+										</div>
+									</div>
+								</div>
+
+								<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title" id='modify_title'>Ajouter du Personnel</h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/save_gestion/" id="addFormPerso" enctype="multipart/form-data" data-toggle="validator" role="form" method="post">
+																{% csrf_token %}
+																		<input type="hidden" name="edit_or_create" id="edit_or_create">
+																		<input type='hidden' name='generator' value='p2'>
+																		<input type="hidden" name="edit_id" id="edit_id">
+																		<div class="row">
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Photo
+																				   <input type="file" name="photo" class="form-control" >
+																				</div>
+																			</div>
+																			<div class="col-sm-6">
+																				<div class="form-group">
+																					Nom
+																				   <input type="text" class="form-control" name="nom" id="codeAct" required="">
+																	           </div>
+																			</div>
+																			<div class="col-sm-6">
+																				<div class="form-group">
+																					Prenom
+																				   <input type="text" class="form-control" name="prenom" id="nomAct" required="">
+																	           </div>
+																			</div>
+
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Adresse Mail
+																				   <input type="text" name="mail" class="form-control" >
+																				</div>
+																			</div>
+
+																			{% for search in searches %}
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                <label for="exampleFormControlSelect1">{{search.label}}</label>
+                                                                                {% if search.values != None %}
+                                                                                <select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+                                                                                    {% for v in search.values %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+                                                                                </select>
+                                                                                {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endfor %}
+
+
+
+
+																		 </div>
+																        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+								<div class="modal fade bd-example-modal-xl" id="modifyRole" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title">Attribuer un Rôle </h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/modify/rol_emp/" id="addFormPerso" enctype="multipart/form-data" data-toggle="validator" role="form" method="post">
+																{% csrf_token %}
+																		<input type='hidden' id="add_val" name='personnel' value=''>
+																		<div class="row">
+																			<div id='add_nom' class="h3 col-sm-12 text-success">
+																				Ngaba Franck
+																			</div>
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                <select class="form-control" name="role" >
+                                                                                    {% for v in roles %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+                                                                                </select>
+                                                                                </div>
+                                                                            </div>
+																		 </div>
+																        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	$(".renseigner").click(function(){
+		$("#add_nom").text($(this).attr('data-nom'));
+		$("#add_val").val($(this).attr('data-id'));
+	});
+</script>
+{% endblock %}

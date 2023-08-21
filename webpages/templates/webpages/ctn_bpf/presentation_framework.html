@@ -1,0 +1,165 @@
+{% extends './login.html' %}
+{% load static %}
+
+    {% block super_log %}
+    <div style="max-height:80px;">
+        <div class="bg-danger text-center text-white">
+            <small> <i class="fas fa-code"> </i> Version Actuelle : <b>Opera+ 1.9</b></small>
+        </div>
+        <div class="col-12 d-flex justify-content-between">
+            <div class="col-lg-3 col-6 d-flex pt-2 px-2">
+                <div><img style="width: 45px;height:45px;border-radius:100%; " src="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+                </div>
+                <div class="pl-2 pt-2"> <b> OPERA + </b></div>
+            </div>
+            <!-- Logo Opera+ -->
+            <div style="font-weight:bold;" class="d-none d-lg-flex col-lg-6 pt-2  justify-content-between">   
+                {% if personnel_opera == None %}
+                <div class="px-1"><a class='text-danger' style="text-decoration:none;font-size:15px;" href="/website/">Site Web</a></div>
+                <div class="px-1"><a class='text-danger' style="text-decoration:none;font-size:15px;" href="/website/">Ressources </a></div>
+                <div class="px-1"><a class='text-danger' style="text-decoration:none;font-size:15px;" href="/website/">Framework</a></div>
+                <div class="px-1"><a class='text-danger' style="text-decoration:none;font-size:15px;" href="/website/">A Propos</a></div>
+                <div class="px-1"><a style="color:orange;text-decoration:none;font-size:15px;" href="/website/"> Applis&nbsp; <i class="fas fa-angle-down"></i> </a></div>
+
+                {% else %}
+                <div class="px-2 "><a class="button button-success btn-danger my-2" type='submit' style='width:200px;' href="/main/1/"><span style='color:white;'><i class="fas fa-fork"></i> Opera+ Framework </span></a></div>
+                <div class="px-2 "><a class="button button-success btn-danger my-2" type='submit' style='width:200px;' href="/main/2/"><span style='color:white;'><i class="fas fa-fork"></i> A Propos d'Opera+ </span></a></div>
+                {% endif %}
+            </div>
+            <div class="col-lg-3 col-3">
+                <div class="d-none d-lg-flex justify-content-center"><a class="d-block button button-warning btn-warning my-2" type='submit' style='width:200px;' href="/log_account/"><span style='color:white;'>Version d'Essai</span></a></div>
+                <div class="pt-2 d-lg-none">
+                    <span class="fas fa-th fa-2x"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+{% block content %}
+
+<section style="background-image:url({% static 'webpages/map.jpg' %});width:100%;height:100vh;margin-top:15px; background-size:cover;background-position:center;">
+	<div style="width:100%;height:100%;overflow-y:auto; background:rgba(20,20,20,0.8);  " class="features pt-3 section d-flex flex-wrap">
+		<div class="col-lg-3 col-md-12">
+			<div class="text-center col-12 px-3 pt-2">
+				<!-- <img src="{% static 'webpages/dist/images/features-box-light11.svg' %}" style="width: 295px;height: 250px;"> -->
+				<div>
+					<div class="h1 text-center"><span class="text-warning">Opera + </span> </div>
+					<div class="text-center text-white"> Version 1.7.5</div>
+					<div class="text-center">
+						<a href="#" class="button btn-danger text-white">Acheter Licence</a>
+					</div>
+				</div>
+				<div class="mt-3 pt-2">
+					<div class="text-center text-white"><small>Licences</small></div>
+					<div class="text-center text-white">
+						<div class="p-2"> <i class="fas fa-code"></i>&nbsp; Opera+ 1.6</div>
+						<div class="p-2"> <i class="fas fa-code"></i>&nbsp; Opera+ 1.56</div>
+					</div>
+				</div>
+				<div class="mt-3 pt-2">
+					<div class="text-center text-white"><small>Documentation</small></div>
+					<div class="text-center text-white">
+						{% for doc in docus %}
+						<div style="padding-bottom: 5px;border-bottom:1px solid #fff;">
+							<div><i class="fas fa-file"></i>&nbsp;{{doc.m_file}}</div>
+							<div><small>{{doc.m_description}}</small></div>
+						</div>
+						{% endfor %}
+						<div class="pt-2">
+							<a class="btn btn-warning" href="#">Toute la Doc</a>
+						</div>
+					</div>
+				</div>				
+			</div>			
+		</div>
+		<div class="col-lg-9">
+		<article class="col-lg-12 d-flex justify-content-center">
+			<div class="col-lg-8 pl-3">
+				<div class="h1 text-white text-center">
+					<span class="text-warning">Framework</span> de Suivi Evaluation
+				</div>
+				<div class="text-white text-center">
+					<div> Qu'est ce que c'est ?</div>
+					<div class="d-none d-md-block h4 pt-1">
+						Un Ensemble d'outils pour generer une Application de Suivi - Evaluation
+					</div>
+					<div class="d-md-none h4 pt-1" style="font-size:13px;">
+						Un Ensemble d'outils pour generer une Application de Suivi - Evaluation
+					</div>
+				</div>
+			</div>
+		</article>
+
+		<article class="mt-5 pt-3 pl-3">
+			<div class="col-lg-12 d-flex justify-content-center flex-wrap">
+				<div class="justify-content-center flex-wrap col-lg-12">
+					<!-- <div   style='width:150px;'>
+						<img  style="width:120px;height:120px;" src="{% static 'webpages/dist/images/feature-03-light.svg' %}" alt="Feature 03">
+					</div> -->
+					<div class="text-white feature-content">
+						<h3 class="feature-title mt-0"><span class="h3 text-warning">Developpez</span> une Application de Gestion multi-plateformes sur mesure</h3>
+
+						<p class="text-sm mb-0">Cous avez un ensemble de libraires Javascript et Python ainsi qu'une architecture adequate pour developper vos propres applications de Gestion </p>
+					</div>
+				</div>
+				<div class="col-12 mt-4">
+					<div class="col-lg-12">
+						<div class="col-lg-12 text-white"> <small class="text-warning">Outils</small> <small> utilises </small> </div>
+						<div class="col-lg-12 d-flex justify-content-around flex-wrap">
+							<div class="col-lg-2 col-md-4 col-6 py-2 text-center">
+								<img style="width: 75px;height: 75px;" src="{% static 'webpages/c-program-icon.svg' %}">
+							</div>
+							<div class="col-lg-2 col-md-4 col-6 py-2 text-center">
+								<img style="width: 75px;height: 75px;" src="{% static 'webpages/python-5.svg' %}">
+							</div>
+							<div class="col-lg-2 col-md-4 col-6 py-2 text-center">
+								<img style="width: 75px;height: 75px;" src="{% static 'webpages/logo-javascript.svg' %}">
+							</div>
+							<div class="col-lg-2 col-md-4 col-6 py-2 text-center">
+								<img style="width: 75px;height: 75px;" src="{% static 'webpages/django-community.svg' %}">
+							</div>
+							<div class="col-lg-2 col-md-4 col-6 py-2 text-center">
+								<img style="width: 75px;height: 75px; border-radius: 100%;" src="{% static 'webpages/electron-logo.png' %}">
+							</div>
+							<div class="col-lg-2 col-md-4 col-6 py-2 text-center">
+								<img style="width: 95px;height: 55px; border-radius: 20px;" src="{% static 'webpages/1200px-Ionic-logo-landscape.svg.png' %}">
+							</div>	
+						</div>
+					</div>
+					<div>
+						
+					</div>
+				</div>
+				<div class="pb-4 col-12 mt-4">
+					<div class=" col-lg-12">
+						<div class="text-white"> <small>Quelques <small class="text-warning">Applis </small>developpees avec Opera+ </small> </div>
+						<div class="col-lg-12 d-flex justify-content-between flex-wrap">
+							{% for app in apps %}
+							<div class="col-md-3 col-sm-6 p-3">
+								<img src="{{app.m_picture.url}}" style="width:95px;height: 70px;border-radius: 10px;">
+								<div>
+									<div><span class="badge badge-light">{{app.m_name}}</span>
+									{% if app.is_online == False %} <span class="badge badge-danger">Deploye en Intranet</span>
+									{% else %}
+									<a class="badge badge-success" href="{{app.m_website}}">Visiter le lien</a></span>
+									 {% endif %}
+									</div>
+									<div class="text-light">
+										<small>{{app.m_description}}
+										</small>
+									</div>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+					<div>
+						
+					</div>
+				</div>				
+			</article>
+		</div>
+	</div>
+</section>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends './specific_log.html' %}
+{% load static %}
+
+{% block add_content %}
+<div>
+	<!-- <div>
+		<span class="text-danger"> Mot de Passe Oublié </span>
+	</div> -->
+
+</div>
+<div class='cta-inner section-inner'>
+	<p class="text-secondary">
+		Avez-vous oublié votre mot de passe ? Ne vous inquietez pas, la proccédure pour le restaurer est très facile.
+	</p>
+	<div class="pt-4 d-flex justify-content-center">
+		<div class="text-center col-md-6">
+			<label class="text-center "> Votre Adresse Mail </label>
+			<input placeholder="Nom" style="z-index:9999;" type="text" class="form-control" name="">
+		</div>
+	</div>
+	<div class="pt-2">
+		<a href="#" id='restoreBTN' data-toggle='modal' class="btn btn-danger"> Restaurer mon Mot de Passe </a>
+	</div>
+</div>
+<div class="modal fade" id="restoreModals" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    Restaurer votre Mot de Passe
+                </div>
+                <div class="modal-body">
+                    <p>Veuillez saisir le code de réinitialisation que nous vous avons envoyé.</p>
+                    <div>
+                    	<input id='code_ver' type="text" class="form-control" name="code">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="px-2">
+                        <span> 2022 © BeinInfo. </span>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="new_password" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form onsubmit="return checkpass()" method="POST" action="/restorepass/" >
+                {% csrf_token %}
+                <div class="modal-header bg-success text-white">
+                    Nouveau Mot de Passe
+                </div>
+                <div class="modal-body">
+                    <div>
+                    	<label> Mot de Passe</label>
+                    	<input required type="password" class="pass_restore2 form-control" name="password">
+                    </div>
+                    <div>
+                    	<label> Confirmer Mot de Passe</label>
+                    	<input required type="password" class="pass_restore2 form-control" name="">
+                    </div>
+                    <div class="text-center mt-3">
+                    	<input class="btn btn-warning" value="Restaurer" type="submit">
+                    </div>
+                    <input type="hidden" id='mail_restore' name="restore">
+                </div>
+                <div class="modal-footer">
+                    <div class="px-2">
+                        <span> 2022 © BeinInfo. </span>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block section_footer %}
+
+{% endblock %}
+
+
+{% block special_script %}
+<script type="text/javascript">
+	var code;
+	$("#restoreBTN").click(function(){
+		mail_value = $("#mail").val();
+		if (mail_value != ""){
+			$.ajax({
+			url: '/ajax_restore/',
+				data: {
+					'mail':mail_value
+				},
+				dataType: 'json',
+				success: function (data) {
+					if (data.send == '0'){
+						code = data.code;
+						alert(code);
+						$("#restoreModals").modal('show');
+						$("#code_ver").change(function(){
+							if ($(this).val().length == 6){
+								if(code == $(this).val()){
+									$("#mail_restore").val(mail_value);
+									$("#restoreModals").modal('hide');
+									$("#new_password").modal('show');
+								}
+								else{
+									alert("Code Incorrect")
+								}
+							}
+						});
+					}
+					else{
+						alert("Probleme rencontré, veuillez réessayer svp")
+					}
+				},
+				error: function(data){
+
+				}
+			});
+		}
+		else{
+			alert("Veuillez renseigner une adresse mail")
+		}
+	});
+	function checkpass(){
+		result = true;
+		pass_restore2 = document.getElementsByClassName('pass_restore2');
+		if ( pass_restore2[0].value != pass_restore2[1].value){
+			alert("Mots de Passes Différents");
+			return false;
+		}
+		else{
+			return true;
+		}
+
+	}
+</script>
+{% endblock %}

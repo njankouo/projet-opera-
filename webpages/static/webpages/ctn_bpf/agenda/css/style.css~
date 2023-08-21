@@ -1,0 +1,223 @@
+*
+{
+ font-family:"Ubuntu"; 
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+@keyframes bip {
+	50% {
+	}
+}
+
+.bip
+{
+  -webkit-animation: bip 2s alternate infinite; /* Safari, Opera, Chrome */
+  animation: bip 2s alternate infinite;display:none; /* Tous les autres navigateurs */
+} 
+table
+{
+ overflow:scroll;
+}
+
+.table_tasks:hover
+{
+  background: #8d5ff3;
+  color: #fff;
+  cursor: pointer;
+}
+
+.table_tasks_type2:hover
+{
+  background: #aaa;
+  color: #8d5ff3;
+  cursor: pointer;		
+}
+/* Agenda Week & Day ------------ */
+.week_days
+{
+  font-size: 12px;
+}
+
+.jours_valeurs
+{
+  font-size : 30px;
+  color: #999;
+}
+
+.table_hours
+{
+  font-size : 14px;
+  color:#bbb;
+}
+/* ----------------------------- */
+
+.agenda_semester
+{
+  overflow-y: inherit;
+}
+/* Agenda Month ---------------- */
+.table_month
+{
+  width : 100%;height:92%;
+  font-size : 16px;
+}
+
+.table_month_mini
+{
+  margin:0px;
+  font-size : 9px;
+}
+.table_month_mini td
+{
+  width: 10%;
+}
+.table_month_title
+{
+  text-align:center;
+  width:100%;
+  background-color: #fff;
+  font-size : 16px;
+  color : #8d5ff3;
+}
+.table_month td
+{
+  width:12.5%;
+}
+
+.days_month
+{
+  font-weight: bold;
+}
+
+.days_month0
+{
+  color: #8d5ff3;
+}
+
+.month_sunday
+{
+  color:#8d5ff3;
+}
+
+.month_finished
+{
+  color: #bbb;
+}
+/* ----------------------------- */
+
+/* Agenda Year ----------------- */
+.table-responsive
+{
+ overflow-y:hidden;
+}
+.table_year
+{
+  margin-top:10px;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.table_month_year
+{
+  width: 30%;
+  height: 48%;
+  margin-bottom: 5%;
+}
+
+.table_month_year td
+{
+  width: 12%;
+}
+.table_month_year_title
+{
+	font-size: 12px;
+}
+.table_month_year
+{
+	font-size : 10px; 
+}
+
+#modal_time input
+{
+	background :none;
+	border: none;
+}
+/* ----------------------------- */
+
+/* Clock ----------------------- */
+.clock {
+  border-radius: 50%;
+  background: #fff url(cadran.png) no-repeat center;
+  background-size: 100%;
+  height: 7.5em;
+  padding-bottom: 31%;
+  position: relative;
+  width: 7.5em;
+}
+
+.hours {
+  background: #000;
+  height: 20%;
+  left: 48.75%;
+  position: absolute;
+  top: 30%;
+  transform-origin: 50% 100%;
+  width: 2.5%;
+}
+
+.minutes {
+  background:#8d5ff3;
+  height: 30%;
+  left: 49%;
+  position: absolute;
+  top: 20%;
+  transform-origin: 50% 100%;
+  width: 1.5%;
+}
+
+.seconds {
+  background: #000;
+  height: 45%;
+  left: 49.5%;
+  position: absolute;
+  top: 14%;
+  transform-origin: 50% 80%;
+  width: 1%;
+  z-index: 8;
+}
+
+.colorC
+{
+	color:#8d35df;
+}
+
+.minutes-container, .hours-container, .seconds-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.hours-container {
+  animation: rotate 43200s infinite linear;
+}
+.minutes-container {
+  animation: rotate 3600s infinite linear;
+}
+.seconds-container {
+  animation: rotate 60s infinite linear;
+}
+
+#gadgets i:hover
+{
+  cursor: pointer;
+  text-shadow: 0px 0px 6px #8d35df;
+}
+
+/* ------------------------------ */
+

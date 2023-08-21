@@ -1,0 +1,50 @@
+{% extends './index.html' %}
+{% load static %}
+
+
+{% block body %}
+    <div class="body-wrap boxed-container">
+        <header class="site-header">
+            <div class="container">
+                <div class="site-header-inner">
+                    <div class="brand header-brand">
+                        <h1 class="m-0">
+                            <a href="#">
+								<img class="header-logo-image asset-light" src="{% static 'webpages/dist/images/logo-light.svg' %}" alt="Logo">
+								<img class="header-logo-image asset-dark" src="{% static 'webpages/dist/images/logo-dark.svg' %}" alt="Logo">
+                            </a>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+     </div>
+        <main>
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-inner">
+						<div class="hero-copy">
+													<h1 style='color:orange;'> OPERA + </h1>
+	                        <h3 class="hero-title mt-0">Plateforme de Suivi et Evaluation des Plans d'Actions</h3>
+	                        <p class="hero-paragraph">Obtenir une meilleur gestion de Plans d'Action. Savoir au détail près <b>Quand</b> et <b> Comment</b>, <b> Qui </b> a fait <b>Quoi</b> </p>
+                {% if error == 404 %}
+
+<div class="h2 text-danger ">
+	Désolée mais aucune page ne correspond à votre Recherche.
+</div>
+                {% else %}
+ 
+<div class="h2 hero-title">
+	Désolée, une erreur Serveur rencontrée, <span class="h3 text-danger"> Veuillez contacter l'Administrateur</span>
+</div>
+{% endif %}
+  <div class=""><a class="btn btn-warning" href="/">Revenir a L'Ecran Titre </a></div>
+						</div>
+                    </div>
+                </div>
+
+            </section>
+
+
+        </main>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends './operations.html' %}
+{% load static %}
+
+
+{% block add_title %} 
+{% if base_val == None %}
+Aperçu - {{base_val}}
+{% endif %}
+{% endblock %}
+
+{% block table %}
+<table class="table">
+<thead id='thead_tache'>
+    {% block fields %}
+    <tr role="row">
+      <th>Nom {{actual_institution.operations_name}}</th>
+      {% if actual_institution.default_options == False %}
+      {% for th in actual_institution.operations_modules.fields %}
+      <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+        {{th}}
+      </th>
+      {% endfor %}
+      {% endif %}
+      <th>Période</th>
+       {% if actual_institution.default_options == False %}
+	   {% for th in actual_institution.operations_modules.fill_fields_rapp %}
+	   <th class="sorting text-primary" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style=" ">
+	     {% if th.type != 'choix' %} {{th.field}} {% else %} {{th.extras}} {% endif %} 
+	   </th>
+       {% endfor %}
+       {% else %}
+       <th> Rapport Technique </th>
+       {% endif %}
+    </tr>
+    {% endblock %}
+  </thead>
+  <tbody>
+  	{% for line in lines %}
+  	<tr>
+  		<td>{{line}}</td>
+	{% if actual_institution.default_options == False %}
+     {% for th in line.values_spl1 %}
+     <td class="sorting t_cell" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+        {{th}}
+     </td>
+     {% endfor %}
+     {% endif %}
+
+    <td class="t_cell planni_life" data-id="{{line.m_tache_plannification}}">{% if line.m_tache_plannification != None %}{{line.m_tache_plannification}}{% else %} Par Défaut {% endif %}</td>
+   	{% if actual_institution.default_options == False %}
+	{% for val in line.values_spl2 %}
+	<td class="t_cell value_liner text-primary">{{val}}</td>
+	{% endfor %}
+	{% else %}
+	<td class="t_cell">{% if line.rapported.date_creation == None %}<span style="cursor:pointer;" class="p-2  btn-rapport" data-id="{{line.id}}" data-tache="{{line}}" data-result="{{line.result_process}}" data-target="#addModal" data-toggle='modal'>Aucun Rapport</span>{% else %}<a href="{{line.rapported.piece_jointe.url}}" class=""> {% if line.rapported.nom_piece_jointe != None %} {{line.rapported.nom_piece_jointe}}{% else %} {{line.rapported.piece_jointe}} {% endif %}</a> {% if line.tech_rapports.first.commentaire != None %}<span data-toggle="modal" data-html="true" data-target='#commentOperModal' title="{{line.tech_rapports.first.commentaire}}" style="cursor:pointer;" class="badge bg-comment" data-comments="{{line.tech_rapports.first.commentaire}}" data-operation="{{line}}" data-personnel="{{line.personnel}}" data-tache="s">Voir Commentaires</span> {% endif %}{% endif %}</td>
+	{% endif %}
+
+  	</tr>
+  	{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

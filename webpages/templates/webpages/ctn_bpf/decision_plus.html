@@ -1,0 +1,194 @@
+{% extends './operations_home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-content" style='width:100%;padding:0px;margin:0px;'>
+	<div class="container"  style='width:100%;padding:0px;margin:0px;'>
+		<div class="row"  style='width:100%;padding:0px;margin:0px;'>
+
+		</div>
+		<div style='width:100%;margin:0px;padding:12px;'>
+			<div class="row" style='width:100%;padding:0px;'>
+				<div class="col-12">
+					<div class="card" style='border:none;width:100%;height:100%;'>
+						<div class="card-body" >
+							<!--h4 class="card-title">Menu à la carte</h4-->
+							<form data-toggle="validator" role="form" action="/save_gestion/" method="POST">
+								<input type="hidden" name="generator" value="i2">
+								<input type="hidden" name="entity_id" value="{{entity.id}}">
+								<input type="hidden" name="edit_or_create" id="edit_or_create" value="c">
+								{% csrf_token %}
+								<div class="row" style='border-bottom:2px solid #eee;'>
+									<div class="col-sm-12">
+										<div class="form-group">
+											<div>{{entity.m_type_entity}} : </div>
+											<div class="replace_n h4" for="exampleFormControlSelect1">{{entity.get_name}}</div>
+											<div><a href="/gestionnaire/t/{{tache.id}}/" class="btn btn-success"><b> ? </b></a></div>
+										</div>
+									</div>
+
+								</div>
+								<div class="row pl-3" style='display:flex;justify-content:space-between;margin-top:10px;'>
+									<!--
+									<div class="w-100 justify-content-between">
+										<div>
+											<div>
+												<small> Observations </small>
+											</div>
+											<div>
+
+											</div>
+										</div>
+									</div>
+									-->
+									<div class="mt-5  py-2"> Renseignement des Sources de Données </div>
+
+									<div class="d-flex flex-wrap w-100">
+										{% for ind in entity.get_indicateurs %}
+										<div class="col-lg-12 mb-3">
+											<div class="col-lg-12">
+												<label class="h5">{{ind}}</label>
+												<div class="d-flex col-12">
+												<div class="col-lg-6">
+													<label> <small>Periode</small> </label>
+													<div class="col-lg-12">
+														<select name="period{{ind.id}}" class="form-control">
+															{% for per in user.personnel.actual_institution.default_period.decoup_slip %}
+															<option {% if actual_institution.default_period.m_logic_type == 3 and forloop.counter == this_period.month or actual_institution.default_period.m_logic_type == 2 and forloop.counter == this_week or actual_institution.default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}" class='week_plus'>{{per}}</option>
+															{% endfor %}
+														</select>
+													</div>
+												</div>
+												<div class="col-lg-4">
+													<input type="hidden" name="id{{ind.id}}" value="{{ind.m_numerateur}}">
+
+													<div><label ><small style="font-weight:bolder;"> {{ind.indi_numerateur}}</small></label></div>
+
+													<div class="col-sm-8 col-lg-8"><input type="number" class="form-control" name="numer{{ind.id}}"></div>
+
+													<!--<div><label ><small class="denoms" data-name="{{ind.indi_denum}}" style="font-weight:bolder;"> </small></label></div>-->
+												</div>
+												</div>
+											</div>
+											<div>
+
+											</div>
+										</div>
+
+											<div>	
+												<small> Valeurs actuellement renseignées </small>
+												<table class="table table-responsive table-stripped">	
+													<thead>	
+															<tr>	
+																<td>Période</td>
+																<td>Valeur Renseignée</td>
+																<td>Source de Donnée</td>
+																<td class="bg-info">Valeur de l'Indicateur</td>
+															</tr>
+													</thead>
+														{% for i in ind.indicateur_values %}
+														<tr>	
+															<td>{{i.m_periode}}</td>
+															<td>{{i.m_valeur}}</td>
+															<td><span class="btn btn-light">{{i.m_numerateur}}</span></td>
+															<td class="text-info"> <b> {{i.value_calcul}} </b></td>
+														</tr>
+														{% endfor %}
+												</table>
+											</div>
+										<div>	
+												
+										</div>
+										{% endfor %}
+									</div>
+									<div> <input type="submit" value="Valider" class="btn btn-success" name=""></div>
+
+
+								</div>
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div>
+
+</div>
+
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade bd-example-modal-xl" id="validOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div style='max-width:450px;' class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header bg-success text-white">
+				<h4 class="modal-title">Valider le Rapport</h4>
+				<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form action='/valid_rapport/' method="POST">
+					{% csrf_token %}
+					<div class="">
+						<p>
+							<div style="text-transform:uppercase;" class="h5">Vous Validez le Rapport sur l'Operation <b id='opera_valider_title' class="text-success"> </b> ?</div>
+							<div>
+								<input type="hidden" id="opera_valider_id" name="opera_valider_id">
+								<input type="submit" class="btn btn-success" value="Oui" name="">
+								<span data-dismiss="modal" class="btn btn-danger">Non</span>
+							</div>
+						</p>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade bd-example-modal-xl" id="annulerOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div style='max-width:450px;' class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<div class="modal-header bg-danger text-white">
+				<h4 class="modal-title">Annuler le Rapport</h4>
+				<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form action='/in_valid_rapport/' method="POST">
+					{% csrf_token %}
+					<div class="">
+						<p>
+							<div style="text-transform:uppercase;" class="h5">Vous Invalidez le Rapport sur l'Operation <b id='opera_invalider_title' class="text-success"> </b> ?</div>
+							<div>
+								<input type="hidden" id="opera_invalider_id" name="opera_invalider_id">
+								<input type="hidden" name="opera_invalider_rapport" id="opera_invalider_rapport">
+								<input type="submit" class="btn btn-success" value="Oui" name="">
+								<span class="btn btn-danger">Non</span>
+							</div>
+							<div>
+								<label>Veuillez associer un Commentaire Svp</label>
+								<textarea rows='5' required name="opera_invalider_comment" class="form-control"></textarea>
+							</div>
+						</p>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	denoms = document.getElementsByClassName("denoms")
+	for (var i=0;i<denoms.length;i++){
+		base_val = denoms[i].getAttribute("data-name").split("#");
+		denoms[i].innerHTML = "Sur "+base_val[0]+" "+base_val[1];
+	}
+</script>
+{% endblock %}

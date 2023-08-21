@@ -1,0 +1,91 @@
+{% extends './dataelts.html' %}
+
+
+
+{% block print_bar %}
+{% endblock %}
+
+{% block documenter %}
+{% endblock %}
+
+{% block table %}
+<div class="mt-4">	
+		<div class="h2">
+			{% if dataelts.m_logo != None and dataelts.m_logo != '' %}
+			<img src="{{dataelts.m_logo.url}}" style="width:60px;height:60px;">
+			{% endif %}
+			Fiche : {{dataelts}}
+		</div>
+		<div class="d-flex col-12">
+			<div class="col-6">
+					<div>Parametres de Remplissage</div>
+					<div class="col-lg-9 p-2 mb-1"> 
+						<div>Type de Domaine</div>
+						<div class="pt-1">
+							<select class="form-control">
+								<option value="Aggregate">Aggregat</option>
+							</select>
+						</div>
+					</div>
+					<div class="col-lg-9 p-2 mb-1"> 
+						<div>Nature des Données</div>
+						<div class="pt-1">
+							{{dataelts.m_value_type}}
+							<select class="form-control">
+								<option value="Number">Numérique</option>
+								<option value="Text">Texte</option>
+							</select>
+						</div>
+					</div>				
+
+					<div class="col-lg-9 p-2 mb-1"> 
+						<div>Aggregation</div>
+						<div class="pt-1">
+							<select class="form-control">
+								<option value="s">Somme</option>
+								<option value="a">Moyenne</option>
+								<option value="M">Max</option>
+								<option value="m">Minimum</option>
+							</select>
+						</div>
+					</div>
+									
+			</div>
+			<div class="col-lg-4">
+				<div class="mb-4">
+					<div>Description</div>
+					<textarea class='form-control'>{{dataelts.m_description}}</textarea>
+				</div>
+				<div>
+					<div>Options</div>
+					<div>
+						<input type="checkbox" name="">
+						<label>Garder les vleurs Nulles</label>
+					</div>
+
+					<div>
+						<div>
+							<input type="checkbox" name="">
+							<label>Valeurs par Défaut</label>
+						</div>
+						<div>
+							<input type="number" value="{{dataelts.m_default_value}}" class="form-control" name="">
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div>
+			<input type="submit" class="btn btn-success" value="Enregistrer" name="">
+		</div>
+</div>
+<div style="display:none;">
+	<div> Liste des Indicateurs </div>
+	<div class="pt-4 d-flex flex-wrap ">
+		{% for ind in indicateurs %}
+		<div class="p-2"> <span class="btn btn-light"> {{ind}}</span> </div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}

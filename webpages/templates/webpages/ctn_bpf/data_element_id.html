@@ -1,0 +1,75 @@
+{% extends './dataelts.html' %}
+{% load static %}
+
+{% block add_title %} 
+Elements de Donnée - {{dataelt}}
+{% endblock %}
+
+{% block search_filters %}
+<h4 class="my-2  title_div"> Elements de Données {% if dataelt != None %} <span class="h4 text-primary"> : {{dataelt}}</span> {% endif %}</h4>
+
+<div class="d-flex" style="border-bottom: 1px solid #ddd;">
+	<div class="pr-2"> <a href="/dataelts/" class="btn {% if is_indi == None %} text-success {% endif %}"> Gestion des Element de Donnée </a> </div>
+	<!-- <div class="px-2"> <a href="/dataelts/indic/" class="btn {% if is_indi != None %} text-success {% endif %}"> Formules d'Indicateur </a> </div> -->
+	<div class="px-2"> <a href="/evaluer/0/" class="btn {% if is_indi == 2 %} text-success {% endif %}"> Gestion des Indicateurs</a> </div>
+</div>
+{% endblock %}
+
+
+{% block table %}
+<div class="mb-3 flrx-wrap d-flex mt-3 col-lg-12">
+	<div class="col-lg-3">
+		<div><label>Aggregation</label></div>
+		<div>
+			<select class="form-control" value="{{dataelt.m_domain_type}}">
+				<option  value="{{dataelt.m_domain_type}}">{{dataelt.m_domain_type}}</option>
+			</select>
+		</div>
+	</div>
+	<div class="col-lg-3">
+		<div><label>Periode de Recuperation</label></div>
+		<div class="d-flex">
+			<div class="px-1">
+				<select class="form-control" value="0">
+					<option  value="0">Annee</option>
+				</select>
+			</div>
+			<div class="px-1">
+				<select class="form-control" value="0">
+					<option  value="0">Mensuel</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="d-flex justify-content-between flex-wrap col-12">
+	<div class="p-3 d-sm-none col-sm-8 d-md-block col-md-6 col-lg-2">
+		<div><label><b>{{default_struc_name}}</b></label></div>
+		<div class="">
+			{% for s in structures %}
+			<div class="my-1 pt-1 text-dark "><a class="{% if s == actu_struc %}text-white bg-success {% endif %} btn" href="/dataelts/{{dataelt.id}}/{{s.id}}/">{{s}}</a></div>
+			{% endfor %}
+		</div>
+	</div>
+	<div class="col-lg-9 col-12">
+		<table class="table table-responsive">
+			<thead>
+				<tr>
+					<td>Sous-Periode</td>
+					<td>Periode</td>
+					<td class="text-primary">Valeur</td>
+				</tr>
+			</thead>
+			{% for e in values %}
+			<tr>
+				<td>{{e.sup_period}}</td>
+				<td>{{e.period}}</td>
+				<td class="text-primary">{{e.value}}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{{p_tmps}}
+	</div>
+</div>
+{% endblock %}

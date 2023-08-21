@@ -1,0 +1,5 @@
+{% extends './decision.html' %}
+{% load static %}
+
+							{% block main_content %}
+							<div class=" mt-4 row pl-3" style='display:flex;justify-content:center;margin-top:10px;'>

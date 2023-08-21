@@ -1,0 +1,23 @@
+{% extends './index.html' %}
+{% load static %}
+
+{% block add_title %} 
+Gestionnaire de {{type_entity}}
+{% endblock %}
+
+{% block content %}
+<div class="btn h1 text-center">
+  <b style="color:#aaa;" class="actu_date"></b>
+</div>
+{% if permissions > 0 %}
+<div class="p-5">
+	<div class="h2 text-center"> Vous n'avez pas encore plannifié un travail sur Opera</div>
+	<div class="text-center d-flex justify-content-center"><a style="width:270px;" class="title_div p-2 text-center text-white card bg-success btn-rounded rounded" href="/gestionnaire/0/"> Créer {{top_entity}} </a></div>
+</div>
+{% else %}
+<div class="p-5">
+  <div class="h2 text-center"> Rien n'a encore pu etre assigne pour l'instant</div>
+</div>
+{% endif %}
+
+{% endblock %}

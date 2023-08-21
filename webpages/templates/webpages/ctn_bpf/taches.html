@@ -1,0 +1,219 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block style %}
+
+{% endblock %}
+
+
+{% block add_modals %}
+
+
+
+			<div class="modal fade bd-example-modal-xl" id="superviserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+
+												<h4 class="modal-title">Assigner Superviseur</h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+<form action='/assign_supervisor/' method="POST">
+{% csrf_token %}
+<div class="p-4 my-2">
+	<div> Choix du Superviseur</div>
+	<div class="row">
+	<div class="col-lg-8">
+		<select name='perso' class="form-control">
+			{% for perso in personnel %}
+			<option value="{{perso.id}}">{{perso}} </option>
+			{% endfor %}
+		</select>
+	</div>
+	<input type="hidden" name="assign" id="assign_supervisor">
+	<div class="col-lg-4">
+	</div>
+	</div>
+</div>
+</form>
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/save_plannify/" enctype="multipart/form-data" data-toggle="validator" role="form" method="post" onsubmit="checkCalendar();">
+																{% csrf_token %}
+		<input type="submit" class="btn btn-success" value="Valider">
+																		
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+			
+
+
+                                {% endblock %}
+
+{% block add_script %}
+<script type="text/javascript">
+	$(".role_list").click(function(){
+		data_selected = parseInt($(this).attr('data-selected'));
+		data_selected = 1 - data_selected;
+		$(this).attr('data-selected',data_selected);
+		if (data_selected == 1){
+			$(this).addClass("list-group-item-success");
+		}
+		else{
+			$(this).removeClass("list-group-item-success")
+		}
+	});
+	$(".repartiBTN").click(function(){
+		$("#form_tache").val($(this).attr('data-id'));
+		$(".form_nom_tache").text($(this).attr('data-nom'));
+	});
+
+	function get_hidden1(){
+		roles_taches = document.getElementsByClassName('roles_tache');
+		persos_taches = document.getElementsByClassName('persos_tache');
+		roles_tache = document.getElementById('roles_tache');
+		persos_tache = document.getElementById('roles_tache');
+		for (var i=0; i<roles_taches.length; i++){
+			if (parseInt(roles_taches[i].getAttribute('data-selected')) == 1){
+				roles_tache.value += roles_taches[i].getAttribute('data-id')+"_";
+			}
+		}
+		for (var i=0; i<persos_taches.length; i++){
+			if (parseInt(persos_taches[i].getAttribute('data-selected')) == 1){
+				persos_tache.value += persos_taches[i].getAttribute('data-id')+"_";
+			}
+		}
+		//alert(roles_tache);
+		calend = checkCalendar();
+		if (calend == ""){
+			alert (" Veuillez choisir une Période à laquelle plannifier la Tache ");
+			result = false;
+			despBTN2 = document.getElementById("despBTN2");
+			despBTN2.setAttribute('disabled',false);
+		}
+		else{
+			result = true;
+		}
+
+	structures_list = document.getElementById("structures_list");
+	structures_roles = document.getElementById("structures_roles");
+	nb_checks = 0
+
+	stru_cho = document.getElementsByClassName("stru_cho");
+	for (var i=0; i<stru_cho.length; i++){
+		structures_list.value += stru_cho[i].value + "|"
+	}
+
+	structures_check = document.getElementById("structures_lines").getElementsByTagName('input');
+
+	tmp_value = "";
+	for ( var i=0; i<structures_check.length; i++)
+	{
+		if (i % 4 == 0 && i > 0 ){
+				tmp_value += "\n"
+		} // Mettre plutot le nombre de colonnes
+		if (structures_check[i].checked == true){
+
+			tmp_value += i+"|";
+			nb_checks+=1;
+		}
+	}
+	structures_roles.value = tmp_value;
+		if (nb_checks < 1){
+			result = false;
+			despBTN2 = document.getElementById("despBTN2");
+			despBTN2.setAttribute('disabled',false);
+			alert("Veuillez repartir les {{actual_institution.default_struc_name}} ");
+		}
+		else if(result == true){
+			result = true;
+		}
+
+	return result;
+	}
+
+	var calendar_modal = document.getElementById("calendar_modal");
+
+
+	$(".calendar_card").click(function(){
+		var data_selected = parseInt($(this).attr('data-selected'));
+		data_selected = 2-data_selected;
+		$(this).attr('data-selected',data_selected);
+		choosen_period = document.getElementById("choosen_period");
+		true_week = this.getElementsByClassName("week_detail")[0].textContent;
+		// Attributes Period
+		d_per = choosen_period.getAttribute('data-period');
+		dps = d_per.split("_");
+		dps_found = false;
+		dps_tmp=d_per;
+		dps_tmp_2="";
+
+		for (var l=0;l<dps.length;l++){
+			if (true_week == dps[l]){
+				dps_found = true;
+				break;
+			}
+		}
+
+		if(dps_found == false){
+			dps_tmp += true_week+"_";
+		}
+		else{
+			dps_tmp = "";
+			for (var l=0;l<dps.length;l++){
+				if (true_week != dps[l] && dps[l] != ""){
+				dps_tmp += dps[l]+"_";
+				
+			}
+		}
+		}
+		choosen_period.setAttribute('data-period',(dps_tmp));
+		dps_tmp = dps_tmp.split("_");
+
+		for (var l=0;l<dps_tmp.length-1;l++){
+			dps_tmp_2 = "<div class='p-1'><span class='btn btn-success'>"+dps_tmp[l]+"</span></div>" + dps_tmp_2;
+		}
+		choosen_period.innerHTML = dps_tmp_2;
+			year_plan.onchange = function(){launch_dataPeriod();}
+	});
+
+
+
+	$(".repartiBTN").click(function(){
+		$("#calendar_tache").val($(this).attr('data-id'));
+		//alert($(this).attr('data-id'));
+	});
+	function checkCalendar(){
+		result ="";
+		result = document.getElementById("choosen_period").getAttribute("data-period");
+		//alert(result);
+		if (result == ""){
+			av = $("#calendar_selected").val()
+			if (av == "#"){
+				result = av;
+			}
+		}
+		/*
+		calendar_card = document.getElementsByClassName("calendar_card");
+		
+		for (var i=0; i<calendar_card.length; i++){
+			data_selected = parseInt(calendar_card[i].getAttribute('data-selected'));
+			if(data_selected == 1){
+				result += ""+calendar_card[i].getAttribute('data-num')+"_";
+			}
+		}*/
+		$("#calendar_selected").val(result);
+		
+		return result;
+	}
+  $(".design_sup").click(function(){
+  	$("#assign_supervisor").val($(this).attr('data-id'));
+  })
+</script>
+
+{% endblock %}

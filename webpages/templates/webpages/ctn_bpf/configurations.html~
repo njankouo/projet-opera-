@@ -1,0 +1,424 @@
+{% extends './index.html' %}
+{% load static %}
+{% block content %}
+<div class="page-content" style='padding:0px;margin:0px;'>
+	<div class="container-fluid"  style='width:100vw;padding:0px;margin:0px;'>
+		<div class="row"   style='width:100vw;padding:0px;'>
+			<div class="col-12 mt-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<label style="text-transform:uppercase;"> Institution </label>
+							<div class="d-flex flex-wrap  justify-content-between">
+								<div class="col-8 d-flex flex-wrap">
+									<div>
+										<img src="{{institution.img.url}}" style="width:150px;height:100px;">
+									</div>
+									<div class="ml-2">
+										<div class='h5'>{{institution.sigle}}</div>
+										<div style="text-transform:uppercase;" class='h3 text-dark'>{{institution.nom}}</div>
+									</div>
+								</div>
+								<div class="col-lg-4 d-flex flex-wrap justify-content-between">
+									<div><a href="/edit_institution/{{institution.id}}/" class="btn btn-primary mb-2"> Configurer l'Administration </a></div>
+									<div><span class="btn btn-success"> Désigner un Responsable </span></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 mt-2 mb-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<label style="text-transform:uppercase;"> Logique des Tâches <span class="text-success">[ Quoi ? ]</span></label>
+							<div class="d-flex flex-wrap justify-content-between">
+								<div class="flex-wrap">
+									{% for entity in actual_institution.get_entities %}
+									<div class="insti_div mb-3 d-flex">
+										<div class="card"><b class="card-header text-success"> {{entity}} </b></div>
+										<div class='d-flex'>
+											<div style="" class="ml-2 mr-2 card bg-success"><b style="" class="card-header"><i class="text-white fas fa-pen"></i></b></div>
+											<div style="" class="card bg-danger"><b style="" class="card-header"><i class="text-white fas fa-trash"></i></b></div>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+								<div> <span class="btn btn-success" data-toggle='modal' data-target='#LogicModal'> Ajouter une Entité</span> </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+		  <div class="col-12 mt-4">
+				<div class="card" style='width:100%;height:100%;'>
+				<div class="card-body">
+					<div>
+						<div class="d-flex flex-wrap justify-content-between mb-3">
+						<label style="text-transform:uppercase;">Définir la periode <span class="text-success">[ Quand ? ]</span></label>
+						</div>
+					<div class="d-flex flex-wrap justify-content-between mb-3">
+						<div> Fréquence des Tâches </div>
+						<a class='btn btn-success' data-toggle='modal' href="#periodeModal" > Ajouter </a>
+					</div>
+					<div class=" table-responsive mb-3">
+											<table class="table mb-0" >
+												<thead>
+													<tr>
+														<th>Période</th>
+														<th>Découpage</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for periode in institution.periodes %}
+														<tr>
+															<td>{{periode.m_periode.m_value }}</td>
+															<td>{{periode.m_periode.m_decoupage}}</td>
+															<td>{% if periode.m_periode == user.personnel.actual_institution.default_period %} <i class="fas fa-star" style="color:#f78a09;font-size: 19px;"></i> {% else %} <a href="/set_period/{{periode.m_periode.id}}/" style="color:#f78a09;"> Choisir Période par Défaut </a> {% endif %}
+															</td>
+														</tr>
+													{% endfor %}													
+												</tbody>
+											</table>
+										</div>
+					</div>
+					<div class="d-flex flex-wrap justify-content-between mb-3">
+						<div> Fréquence des Operations </div>
+						<a class='btn btn-success' data-toggle='modal' href="#subperiodeModal" > Ajouter </a>
+					</div>
+						  <div class="table-responsive">
+											<table class="table mb-0" >
+												<thead>
+													<tr>
+														<th>Periode</th>
+														<th>Sous Periode</th>
+														<th>Decoupage</th>
+														<th>Description </th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for periode2 in institution.periodes %}
+														{% for periode in periode2.m_periode.sub_periods %}
+														<tr>
+															<td>{{periode.m_periode}}</td>
+															<td>{{periode.m_sub_value}}</td>
+															<td>{{periode.m_decoupage}}</td>
+															<td>{{periode.m_decoupage_description}}</td>
+															<td>{% if periode == user.personnel.actual_institution.default_subperiod %} <i class="fas fa-star" style="color:#f78a09;font-size: 19px;"></i> {% else %} <a href="/set_period/0/{{periode.id}}/" style="color:#f78a09;"> Choisir Période par Défaut </a> {% endif %}
+															</td>
+														</tr>
+														{% endfor %}
+													{% endfor %}
+												</tbody>
+											</table>
+										</div>
+					</div>
+				</div>
+			</div>
+			</div>
+			</div>
+			<!--
+			<div class="row">
+			<div class="col-8">
+			<div class="card">
+				<div class="card-body">
+				<h4 class="card-title">Définir l'institut par défaut</h4>
+										<div class="table-responsive">
+											<table class="table table-striped mb-0" >
+												<thead>
+													<tr>
+
+														<th>Code</th>
+														<th>Nom</th>
+														<th></th>
+
+													</tr>
+												</thead>
+												<tbody>
+												  @foreach($compteinstitution as $d)
+													<tr>
+
+														<td>&nbsp;</td>
+														<td>
+
+
+															@if($d->defaut==1)
+																<i class="mdi mdi-star" style="color:#f78a09;font-size: 19px;"></i>
+															@else
+																<a href="#"><i class="mdi mdi-star" style="color:#d5d5d5;font-size: 19px;"></i></a>
+															@endif
+
+														</td>
+
+
+													</tr>
+												  @endforeach
+												</tbody>
+											</table>
+										</div>
+				</div>
+				</div>
+				</div>
+				
+				
+				<div class="col-4">
+			    <div class="card">
+				<div class="card-body">
+				<h4 class="card-title">Définir l'année par défaut</h4>
+										<div class="table-responsive">
+											<table class="table table-striped mb-0" >
+												<thead>
+													<tr>
+
+														
+														<th>Année</th>
+														<th></th>
+
+													</tr>
+												</thead>
+												<tbody>
+												  @foreach($annees as $d)
+													<tr>
+
+														<td>&nbsp;</td>
+														<td>
+																<i class="mdi mdi-star" style="color:#f78a09;font-size: 19px;"></i>
+																<a href="#"><i class="mdi mdi-star" style="color:#d5d5d5;font-size: 19px;"></i></a>
+														</td>
+
+
+													</tr>
+												  @endforeach
+												</tbody>
+											</table>
+										</div>
+				
+				</div>
+				</div>
+        </div>
+		-->
+<div class="col-12 mt-2 mb-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<label style="text-transform:uppercase;"> Roles et Fonctions <span class="text-success">[ Qui ? ]</span></label>
+							<div class="d-flex flex-wrap mb-2 ">
+								<a class="d-block btn btn-success" href="/gestionnaire/p2 "> Gestion des Fonctions</a>
+								<div>&nbsp;</div>
+								<a class="d-block btn btn-primary" href="/gestionnaire/p2"> Gestion des Rôles</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-12 mt-2 mb-4">
+				<div class="card" style='width:100%;height:100%;'>
+					<div class="card-body">
+						<div>
+							<label style="text-transform:uppercase;"> Liste des Structures </label>
+							<div class="d-flex flex-wrap justify-content-between">
+								{% for structure in institution.structures %}
+<div>
+<div class="btn btn-success">{{structure}}</div>
+<div class="btn"><i class="fas fa-pen"></i></div>
+
+</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="LogicModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form class="form-horizontal bordered-row" onsubmit='saveEntity()' action="/save_entity/" method="post">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                      	<div class="modal-title">Logique de l'Institution :<span class='text-success'> Nouvelle Entité</span></div>
+                      </div>
+                      <div class="modal-body">
+                      		<input type="hidden" name="institution" value="{{actual_institution.id}}">
+													<input type='hidden' name='fields_name' id='fields_name'>
+													<input type='hidden' name='fields_type' id='fields_type'>
+													<div>
+														<div class="col-lg-10 form-group">
+				                      	<label>Nom de l'Entité</label>
+				                      	<input type='text' class="form-control" name="entity_nom">
+				                      </div>
+				                      <div class="col-lg-10 form-group">
+				                      	<label>Arborescence de l'Entité</label>
+				                      	<select class="form-control" name="entity_hierachy">
+																{% for entity in actual_institution.get_entities %}                          
+																	{% if entity.m_entity_type.is_tache == False %}
+																	<option value="{{entity.m_hierachie}}">{{entity}}</option>
+																	{% endif %}
+																{% endfor %}
+																</select>
+				                      </div>
+				                      <!-- <label>Champs de l'Entité</label> -->
+				                      <div class="d-flex justify-content-between form-group">
+																	<div class="col-lg-6">
+																		<label> Nom du Champs </label>
+																		<input value='Nom' type='text' class="entity_name form-control">
+																	</div>
+																	<div  class="col-lg-6">
+																		<label> Type </label>
+																		<select class="entity_type form-control">
+<option value='string'>Texte court </option><option value='int'>Entier</option><option value='text'>Texte</option><option value='image'>Image</option><option value='file'>Fichier</option>
+																		</select>
+																	</div>
+				                      </div>
+<div>
+															<div onclick='addChamps(this)' style='cursor:pointer;' class='text-center text-success'>+ Ajouter un Champs</div>
+</div>														
+													</div>
+													<!--{% for entity in actual_institution.get_entities %}                          
+													{% if entity.m_entity_type.is_tache == False %}
+														<div class="col-lg-12 form-group">
+		                        	<b class='btn btn-light'>{{entity}}</b>
+															<span class='btn text-success'> Modifier </span> 
+															<span class='btn text-danger'> Supprimer </span>
+		                        </div>
+														<div class='mb-2'>
+															<small style='font-weight:bold;'> + Ajouter une Entité </small>
+														</div>
+													{% endif %}
+													{% endfor %}-->
+                        </div>
+		                  <div class="modal-footer">
+		                        <button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+		                        <button type="submit" class="btn btn-primary"> Confirmer</button>
+		                  </div>
+                    </div>
+										</form>
+                  </div>
+                </div>
+
+                <div class="modal fade bd-example-modal-xl" id="periodeModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form class="form-horizontal bordered-row" action="/save_period/" id="deleteFormAction" method="post">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                      	<div class="modal-title">Ajouter Période</div>
+                      </div>
+                      <div class="modal-body">
+                      		<input type="hidden" name="institution" value="{{institution.id}}">
+                          <div class="col-lg-7 form-group">
+                          	<label>Renseigner la Période</label>
+                          	<input type="text" class="form-control" name="periode">
+                          </div>
+                          <div class="col-lg-12 form-group">
+                          	<label>Préciser le Découpage</label>
+                          	<textarea type="text" class="form-control" name="decoupage"> </textarea>
+                          </div>
+                          <!-- <div class="col-lg-7 form-group">
+                          	<label>Détails du Découpage</label>
+                          	<input type="text" class="form-control" name="details_decoupage">
+                          </div> -->
+                        </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+                          <button type="submit" class="btn btn-primary"> Confirmer</button>
+                      </div>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="modal fade bd-example-modal-xl" id="subperiodeModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form class="form-horizontal bordered-row" action="/save_period/" id="deleteFormAction" method="post">
+                      {% csrf_token %}
+                      <div class="modal-header">
+                      	<div class="modal-title">Ajouter Sous-Période</div>
+                      </div>
+                      <div class="modal-body">
+                      		<input type="hidden" name="sub_period" value="0">
+                      		<input type="hidden" name="institution" value="{{institution.id}}">
+                          <div class="col-lg-7 form-group">
+                          	<label>Renseigner la Période</label>
+                          	<select class="form-control" name="big_periode">
+                          		{% for periode in institution.periodes %}
+                          		<option value="{{periode.m_periode.id}}">{{periode}}</option>
+                          		{% endfor %}
+                          	</select>
+                          </div>
+                          <div class="col-lg-7 form-group">
+                          	<label>Renseigner la Sous-Période</label>
+                          	<input type="text" class="form-control" name="periode">
+                          </div>
+                          <div class="col-lg-12 form-group">
+                          	<label>Préciser le Découpage</label>
+                          	<textarea type="text" class="form-control" name="decoupage"> </textarea>
+                          </div>
+                          <div class="col-lg-12 form-group">
+                          	<label>Détails du Découpage</label>
+                          	<textarea type="text" class="form-control" name="details"> </textarea>
+                          </div>
+                        </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+                          <button type="submit" class="btn btn-primary"> Confirmer</button>
+                      </div>
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+{% endblock %}
+
+{% block script %}
+<script>
+insti_div = document.getElementsByClassName("insti_div");
+for (var i=1; i<insti_div.length; i++){
+	tmp = " ";
+	for (var j=1; j<i; j++){
+		tmp +="<div style='opacity:0;' class='card mr-3'><b style='' class='card-header'></b></div>";
+	}
+	tmp +="<div style='background:#fff;' class='card mr-3'><b style='background:#fff;' class='card-header'>-></b></div>";	
+	insti_div[i].innerHTML = tmp + insti_div[i].innerHTML;
+}
+
+function addChamps(element){
+	entity_form = element.parentNode;
+	//alert(parent);
+	entity_form.innerHTML = "<div class='mt-2 col-lg-12' style='display:flex;'><div class='col-lg-5'> <div><label> Nom du Champs </label></div> <div><input class='entity_name form-control' type='text'></div></div> <div class='col-lg-5'> <div><label> Type </label></div> <div><select class='form-control entity_type'>"+"<option value='string'>Texte court </option><option value='int'>Entier</option><option value='text'>Texte</option><option value='image'>Image</option><option value='file'>Fichier</option>"+"</select></div></div></div>" + entity_form.innerHTML;
+	/*entity_form.innerHTML += "<div class='col-lg-12 form-group'><div class='col-lg-6'><label> Nom du Champs </label>";
+	entity_form.innerHTML += "<input type='text' class='form-control'></div><div class='col-lg-6'><label> Type </label><input type='text' class='form-control'></div>";
+	entity_form.innerHTML += "</div>";*/
+}
+
+function saveEntity(){
+	entity_name = document.getElementsByClassName('entity_name');
+	entity_type = document.getElementsByClassName('entity_type');
+	names = "";
+	types = "";
+	for (var i=0; i<entity_name.length; i++){
+		names += entity_name[i].value + "|";
+		types += entity_type[i].value + "|";
+	}
+	fields_name = document.getElementById("fields_name");
+	fields_type = document.getElementById("fields_type");
+	fields_name.value = names;
+	fields_type.value = types;
+	alert(names);
+	alert(types);
+}
+
+</script>
+{% endblock %}

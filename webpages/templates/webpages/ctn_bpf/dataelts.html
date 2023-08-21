@@ -1,0 +1,176 @@
+{% extends './structure.html' %}
+
+{% block add_title %} 
+Elements de Donnée
+{% endblock %}
+
+	{% block BigLeft2 %}
+	<div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
+		<div class="btn text-primary"> Periode </div>
+		<div><i class="fas text-primary fa-angle-down"></i></div>
+	</div>
+	<div>
+		<div class="p-2">
+			<label>Annee</label>
+			<select class="form-control">
+				<option value="2022">2022</option>
+				<option selected value="2023">2023</option>
+				<option value="2024">2024</option>
+				<option value="2025">2025</option>
+				<option value="2026">2026</option>
+				<option value="2027">2027</option>
+				<option value="2028">2028</option>
+			</select>
+		</div>
+		<div class="p-2" style="max-height:200px;overflow-y:auto;">
+			
+		</div>
+	</div>
+	{% endblock %}
+
+
+{% block search_filters %}
+<h4 class="my-2  title_div"> Elements de Données </h4>
+
+<div class="d-flex" style="border-bottom: 1px solid #ddd;">
+	<div class="pr-2"> <a href="/dataelts/" class="btn {% if is_indi == None %} text-success {% endif %}"> Gestion des Element de Donnée </a> </div>
+	<!-- <div class="px-2"> <a href="/dataelts/indic/" class="btn {% if is_indi != None %} text-success {% endif %}"> Formules d'Indicateur </a> </div> -->
+	<div class="px-2"> <a href="/evaluer/0/" class="btn {% if is_indi == 2 %} text-success {% endif %}"> Gestion des Indicateurs</a> </div>
+</div>
+{% endblock %}
+
+{% block print_bar %}
+{% endblock %}
+
+{% block documenter %}
+{% endblock %}
+
+{% block table %}
+<div class="mt-4">	
+		<div>Manipulation des Elements de Données </div>
+		<div>
+			<small class="text-success" style="cursor:pointer" data-toggle="modal" data-target="#newIndicateur"> + Ajouter un Element de Donnée </small>
+		</div>
+		<div class="d-flex flex-wrap pt-4">
+			<table class="table">
+			<thead>
+				<tr>
+					<th>Element de Donnée</th>
+					<th>Type</th>
+					<th>Nature des Données</th>
+					<th>Aggrégation</th>
+					<th>Valeur par défaut</th>
+					<th class="text-success">Options</th>
+				</tr>
+			</thead>
+			{% for elt in dataelts %}
+			<tr>
+				<td>	
+					<div class="text-success"><a href="/dataelts/{{elt.id}}/">{{elt}}</a></div>
+					</td>
+					<td>{{elt.m_domain_type}}</td>
+					<td>{{elt.m_value_type}}</td>
+					<td>{{elt.m_aggregation_type}}</td>
+					<td>{{elt.m_default_value}}</td>
+					<td class="d-flex">
+					<div class="px-2"> <a class="btn btn-success " href="/dataelt/edit/{{elt.id}}/"><i class="text-white fas fa-pen"></i></a></div>
+					<div class="px-2"><a href="/dataelts/{{elt.id}}/"> <span class="btn btn-info " > <i class="fas fa-table"></i></span> </a> </div>
+					<div class="pl-2"> <span class="btn btn-danger" data-target="#deleteModal" onclick='merde(this);' data-id="{{elt.id}}" data-toggle="modal"> <i class=" fas fa-times"></i> </span> </div>
+					</td>
+			</tr>
+			{% endfor %}
+		</table>
+
+		</div>
+</div>
+<div style="display:none;">
+	<div> Liste des Indicateurs </div>
+	<div class="pt-4 d-flex flex-wrap ">
+		{% for ind in indicateurs %}
+		<div class="p-2"> <span class="btn btn-light"> {{ind}}</span> </div>
+		{% endfor %}
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block modals %}
+	<div class="modal fade" id="newIndicateur" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form enctype="multipart/form-data" class="form-horizontal bordered-row" action="/save_gestion/"  id="deleteFormAction" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="generator" value="eD">
+					<input type="hidden" name="edit_or_create" value="c">
+					<div class="modal-body">
+						<h5 style="text-transform:uppercase;">Nouvel Element de Donnée</h5>
+						<div>
+							<div class="py-2"> 
+								<label> Image pour l'Element de Donnée </label>
+								<input type="file" class="form-control" name="logo">
+								<div>
+									<small> S'il n'y a pas d'icone, l'image par défaut sera conservée </small>
+								</div>
+							</div>
+							<div class="py-2"> 
+								<label> Nom de l'Element de Donnée </label>
+								<input type="text" class="form-control" name="nom">
+							</div>
+							<div class="py-2"> 
+								<label> Type de Domaine </label>
+								<select class="form-control" name="domain_type">
+									<option value="Aggregate">Aggregat</option>
+								</select>
+							</div>
+							<div class="py-2"> 
+								<label> Nature des Données </label>
+								<select class="form-control" name="value_type">
+									<option value="Number">Nombre</option>
+									<option value="Text">Texte</option>
+								</select>
+							</div>
+							<div class="py-2"> 
+								<label> Aggrégation </label>
+								<select  class="form-control" name="aggregation_type">
+									<option value="s">Somme</option>
+									<option value="a">Moyenne</option>
+									<option value="M">Max</option>
+									<option value="m">Minimum</option>
+								</select>
+							</div>
+							<div class="py-2"> 
+								<label> Desription de L'Element </label>
+								<textarea class="form-control" name="description"></textarea>
+							</div>
+							<div class="pt-2">
+								<div>
+									<div> <input name="null_conserv" value="1" type="checkbox"> Conserver les Données Nulles</div>
+								</div>
+								<div class="mt-3">
+									<div> <input name="fill_valid" id="fill_valid" value="1"  type="checkbox"> <label for="fill_valid">Renseigner lors de la Validation</label></div>
+									<div class="pt-2" style="display:nones;" id='fill_default_div'>
+										<label>Valeur par Défaut</label>
+										<input type="text" class="form-control" name="default_value">
+									</div>
+									<!--
+									<div>	
+										<label>Periode de Validation</label>
+										<div></div>
+										<div><small class="text-success">Nouvelle Periode</small></div>
+									</div>
+									-->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary"> Confirmer</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
+

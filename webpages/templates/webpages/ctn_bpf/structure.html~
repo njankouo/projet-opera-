@@ -1,0 +1,85 @@
+{% extends './entities.html' %}
+{% load static %}
+{% block add_title %} 
+ - Gestionnaire des Structures
+{% endblock %}
+
+{% block fields %}
+                                                <tr role="row">
+                                                    {% for th in fields %}
+                                                        <th class="sorting" tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+                                                          {{th}}
+                                                          <span>
+                                                            <i class="fas fa-angle-up"></i>
+                                                            <i class="fas fa-angle-down"></i>
+                                                          </span>
+                                                        </th>
+                                                    {% endfor %}
+                                                    <th class="text-success">Options</th>
+                                                </tr>
+{% endblock %}
+
+                                                {% block lines_table %}
+                                                    {% for line in lines %}
+                                                    <tr role="row" class="even">
+                                                        <td>{{line.nom}}</td>
+                                                        <td>{{line.designation}}</td>
+                                                        <td>{% if line.responsable != None %}{{line.responsable}}{% else %}Par Défaut {% endif %}</td>
+                                                        <td>{{line.institution}}</td>
+                                                        <td><button  data-id="{{line.id}}"  class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
+    													</button> <button class="btn btn-danger delete-btn" data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"  onclick='merde(this);'><i class="fas fa-trash-alt"></i></button>
+    													</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% endblock %}
+
+{% block add_modal %}
+									<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+									<div style='max-width:450px;' class="modal-dialog modal-xl">
+										<div class="modal-content">
+											<div class="modal-header">
+												<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+												<h4 class="modal-title" id='modify_title'>Ajouter une Structure </h4>
+												<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+																	<span aria-hidden="true">×</span>
+												</button>
+											</div>
+
+											<div class="modal-body">
+															<form class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post">
+																{% csrf_token %}
+																		<input type='hidden' name='generator' value='s'>
+									                                    <input type="hidden" name="edit_or_create" id="edit_or_create" value="c">
+									                                    <input type="hidden" name="edit_id" id="edit_id">
+
+																		<div class="row">
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Nom
+																				   <input type="text" class="form-control" name="nom" id="codeAct" required="">
+																	           </div>
+																			</div>
+																			<input type="hidden" name="institution" value="{{actual_institution.id}}">
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					Désignation
+																				   <input type="text" class="form-control" name="designation" id="nomAct" required="">
+																	           </div>
+																			</div>
+																			{% for s in searches %}
+																			<div class="col-sm-12">
+																				<div class="form-group">
+																					{{s.label}}
+																					<select name="{{s.label}}" class="form-control">
+																						{% for val in s.values %}
+																						<option value="{{val.id}}">{{val}}</option>
+																						{% endfor %}}
+																					</select>
+																				</div>
+																			</div>
+																			{% endfor %}
+																		 </div>
+																        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+                                {% endblock %}

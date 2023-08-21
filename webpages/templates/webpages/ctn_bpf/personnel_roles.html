@@ -1,0 +1,109 @@
+{% extends './roles.html' %}
+{% load static %}
+{% block add_title %} 
+ - Gestionnaire des Roles et Permissions de l'Institution
+{% endblock %}
+
+{% block table %}
+
+<div class="d-flex justify-content-between">
+    <div class="col-lg-12">
+        <h4 class="card-title">Rôles</h4>
+        <table class="col-lg-12">
+            <tr class="bg-success text-white">
+                {% for field in fields %}
+                <th style="font-size:13px;">{{field}}</th>
+                {% endfor %}
+                <th></th>
+            </tr>
+            {% for line in lines %}
+            <tr>
+                <td>{{line.nom}}</td>
+                <td>{{line.description}}</td>
+                <td><b>{{line.permission}}</b></td>
+                <td></td>
+                <td><button data-id="{{line.id}}" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal" class="btn btn-success"><i class="fas fa-pencil-alt"></i>
+                </button> <button class="btn btn-danger" onclick='merde(this);' data-toggle='modal' data-target="#deleteModal" data-id="{{line.id}}"><i class="fas fa-trash-alt"></i></button>
+                </td>               
+            </tr>
+            {% endfor %}
+        </table>
+    </div> 
+</div>
+{% endblock %}
+
+{% block add_modal %}
+<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div style='max-width:450px;' class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                                                <h4 class="modal-title">Ajouter un Rôle </h4>
+                                                <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                            <form class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="edit_or_create" id="edit_or_create" value="c">
+                                                                        <input type="hidden" name="edit_id" id="edit_id">
+                                                                        <input type='hidden' name='generator' value='r'>
+                                                                        <div class="row">
+                                                                            
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                    Nom
+                                                                                   <input type="text" class="form-control" name="nom" id="nomAct" required="">
+                                                                               </div>
+                                                                            </div>
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                    Description
+                                                                                   <textarea class="form-control" name="description"></textarea>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                    Permissions
+                                                                                   <select class="form-control" name="permission">
+                                                                                    <option value='0'><span class="text-success">Operant :</span> Chargé d'Executer les Taches </option>
+                                                                                    <option value='1'>Superviseur de Tâches : Supervise les Taches  </option>
+                                                                                    <option value='2'>Superviseur des Activités : Supervise les Activités: </option>
+                                                                                    <option value='3'>Chef de Programme : Supervise les Actions</option>
+                                                                                    <option value='4'>Administrateur : Supervise les Programmes</option>
+                                                                                    <option value='5'>Super Admin : Supervise la Plateforme</option>
+                                                                                   </select>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <!--{% for search in searches %}
+                                                                            <div class="col-sm-12">
+                                                                                <div class="form-group">
+                                                                                <label for="exampleFormControlSelect1">{{search.label}}</label>
+                                                                                {% if search.values != None %}
+                                                                                <select class="form-control" name="{{search.label}}" id="exampleFormControlSelect1">
+                                                                                    {% for v in search.values %}<option value="{{v.id}}" selected>{{v}}</option>{% endfor %}
+                                                                                </select>
+                                                                                {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                            {% endfor %}-->
+
+
+
+                                                                         </div>
+                                                                        <button type="submit" class="btn btn-primary">Enregistrer
+                                                                        </button>
+                                </form>
+                                            </div>
+                                                <!--div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Save changes</button>
+                                                </div-->
+
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endblock %}

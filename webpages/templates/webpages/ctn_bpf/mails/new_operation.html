@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<div>
+		 <h1> <a href="https://operaplus.cm">Opera+</a> </h1>
+		 <h4> {{institution.operations_name}} : {{operation}}</h4>
+	</div>
+	<div>
+		<p>Bonjour, Cher(e) <b> {{personnel}} </b><br>
+		{{institution.operations_name}} attribuée via <b style="color:orange;"> <a href="https://operaplus.cm">Opera+</a> </b>
+		</p>
+		
+		<p> Vous êtes {% if role == 'A' %} <b class="text-primary">l'Accountable </b>
+		{% elif role == 'C' %} <b class="text-primary">le Consulted</b>
+		{% elif role == 'I' %} <b class="text-primary">l'Informed </b>
+		{% else %} <b class="text-primary">le Responsable </b>
+		{% endif %}
+		 désigné</p>
+
+		<p>
+			L'échéance est prévu : <b> {{operation.m_tache_plannification}}</b>
+			<table>
+				<thead>
+					<tr>
+					{% for period in institution.default_subperiod.decoup_desc_slip %}
+						<td style="border: 1px dotted #333;padding:10px;">{{period}}</td>
+					{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+					{% for period in operation.periodes.desc_split %}
+						<td style="border: 1px dotted #333;padding:10px;">{% if period == '0' %}{{operation}}{% endif %}</td>
+					{% endfor %}
+					</tr>					
+				</tbody>
+			</table>
+		</p>
+	</div>
+	<div>
+		<ul>
+		<li> <b>Institution</b> : {{institution}}</li>
+		<li> <b>{{institution.last_entity}}</b> : {{tache}}</li>
+		<li> <b> {{institution.operations_name}} </b> : {{operation}}</li>
+		</ul>
+	</div>
+	<div>
+		<p><a href="https://operaplus.cm/log_account/">Cliquez ici pour y acceder</a> </b>
+		</p>
+	</div>
+<footer class="mt-2 footer" style="padding:20px;position:static; background-color:#fff;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                2022 © BeinInfo.
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-right">
+                 <a href="https://operaplus.cm/main/" class="text-primary">A Propos</a> | <a href="https://operaplus.cm/main/" class="text-success">Aide</a> | Design &amp; Develop by Beinfos Plus
+             </div>
+         </div>
+     </div>
+ </div>
+</footer>
+
+</body>
+</html>

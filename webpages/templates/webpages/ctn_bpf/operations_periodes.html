@@ -1,0 +1,32 @@
+{% extends './operations.html' %}
+{% load static %}
+
+
+{% block caption_table %} 
+ <div class="h3 mb-2">{{periodes}}</div>
+{% endblock %}
+    {% block fields %}
+    <tr role="row">
+      <th>Période</th>
+      <th>{{actual_institution.operations_name}}</th>
+	   <th>Personnel</th>
+    </tr>
+    {% endblock %}
+
+      {% block tbody %}
+	{% for line in test %}
+	<tr>	
+		<td>{{line.per}}</td>
+		<td>
+			{% for v in line.val %}
+			<div class="list-group-item mb-1"><b>{{v}}</div></b>
+			{% endfor %}
+		</td>
+		<td>
+			{% for v in line.val %}
+			<div class="list-group-item mb-1">{{v.personnel}}</div>
+			{% endfor %}
+		</td>
+	</tr>
+	{% endfor %}
+	{% endblock %}

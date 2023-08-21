@@ -1,0 +1,2809 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title> OPERA+ {% block add_title %}{% if menu == 'o' %} Grille d'Execution {% else %} Suivi et Evaluation des Plans d'Actions {% endif %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Online Plateforme for M&E of the Work Plan" name="description">
+    <meta content="Ngaba Franck" name="author">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="{% static 'webpages/ctn_bpf/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/css/style.css' %}" >
+    <link href="{% static 'webpages/ctn_bpf/icons.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <link href="{% static 'webpages/ctn_bpf/theme.min.css' %}" rel="stylesheet" type="text/css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Licorice&family=Ubuntu:wght@300&display=swap" rel="stylesheet">    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style type="text/css">
+        body *{
+            font-family: Ubuntu,Corbel,sans-serif;
+        }
+        .starDiv div{
+            padding:10px;
+        }
+        .starDiv .fa-star:hover{
+            color: yellow;
+        }
+        .starDiv .fa-star{
+            cursor: pointer;
+        }
+        .calendar_card{
+            cursor: pointer;
+            color: #aaa;
+            transition: all 0.2s ease;
+        }
+        .calendar_card:hover{
+            color: #fff;
+            background: #0099d5;
+        }
+        /*.calendar_card[data-selected='1']{
+            color: #fff;
+            background: #00d995;        
+            }*/
+            .fa-times:hover{
+                cursor: pointer;
+            }
+        </style>
+        {% block extra_header %}
+
+        {% endblock %}
+
+        {% block style %}
+
+        {% endblock %}
+        <style>
+/*.modal{
+    width: 1000px;
+}
+.modal-dialog{
+    width:100%;
+}
+.modal-content{
+    width:100%;
+    }*/
+
+    #loader {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        z-index: 999999;
+        overflow: visible;
+        background: rgba(255,255,255,0.8);
+    }
+    #loader_img{
+        background:url({% static 'webpages/ctn_bpf/waiting.gif' %}) no-repeat center center;
+    }
+    #tache_filter{display:none;}
+    td.details-control {
+        background: url('../public/icons/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+    tr.shown td.details-control {
+        background: url('../public/icons/details_close.png') no-repeat center center;
+    }
+    td,th{min-width: 160px;}
+    legend{
+        text-transform:uppercase;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    .bg-light .nav-link{color:blue; important!}
+    /* Style the navbar */
+
+    /* The sticky class is added to the navbar with JS when it reaches its scroll position */
+    .btn{
+        cursor: pointer;
+    }
+
+    .sticky {
+        position: fixed;
+        top: 0px;left:0px;
+        width: 100%;
+        z-index: 9999;
+    }
+    .scroll-reveal{
+        display: none;
+    }
+    .sticky .scroll-reveal{
+        display: block;
+    }
+    g-top: 60px;
+}
+.fa-times{
+    cursor:pointer;
+}
+
+.pagination{
+    max-width:190vw;
+    min-width: 300px;
+    overflow: auto;
+}
+#blockRight .menu_littleWid_text{
+    display: none;
+}
+
+
+/* Responsive Styles */
+@media (max-width: 576px) {#contentRight{ width:100%;} }
+
+@media (max-width: 786px) {#contentRight{ width:100%;} }
+
+@media (min-width: 768px) { #contentRight{ width:88%;} }
+
+@media (min-width: 992px) {  }
+
+@media (min-width: 1200px) { }
+
+/* Responsive Styles */
+</style>
+
+
+<script type="text/javascript" src="https://cdn.weglot.com/weglot.min.js"></script>
+<script>
+    Weglot.initialize({
+        api_key: 'wg_9cc833a14ce6887fc6ebf66eab7688169'
+    });
+</script>
+</head>
+<body style="overflow-x:hidden;overflow-y:hidden;" >
+
+    {% block body %}
+
+
+    <!-- Begin page -->
+    {% if animate != None %} <div id="loader">
+        <div style="width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;">
+            <h1 class="text-center mb-3">Bienvenue {{prenom}}</h1>
+            <div id='loader_img' style="width: 100%;height: 280px;"></div>
+        </div>
+    </div> {% endif %}
+    <div class="modal fade" id="menuAppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div style="border-bottom:1px solid #aaa;" class="d-flex flex-wrap justify-content-between pt-3">
+                        <div> <span class='btn text-danger' data-dismiss='modal'><i class='fas fa-times'></i></span></div>
+                        <div class="d-flex justify-content-center d-md-none">
+                            <!-- <div class='mr-4 text-success'> 
+                                <a class="badge badge-light text-secondary " href="data_form/-1/1/" >
+                                    <i class="fas fa-folder"></i>
+                                    <span class="badge">0 / </span>
+                                    <span class="badge indi_total" ></span>
+                                </a>    
+                            </div> -->
+
+                            <div class=' mr-4 text-success'> 
+                                <a class=" badge badge-light text-success" href="/alert_notifs/0/0/" >
+                                    <i class="fas fa-envelope"></i>
+                                    <span class="badge">R</span>
+                                    <span class="badge badge-light count_to_done" >0</span>
+                                </a>    
+                            </div>
+                            
+                            <div class=' mr-4 text-white'> 
+                                <a class=" badge badge-light text-danger " href="/alert_notifs/0/1/" >
+                                    <i class="fas fa-envelope"></i>
+                                    <span class="badge">A</span>
+                                    <span class="badge badge-light count_is_observ" >0</span>
+                                </a>
+                            </div>
+
+                            <div class='mr-4 text-white'> 
+                                <a class=" badge badge-light text-primary " href="/alert_notifs/0/2/" >
+                                    <i class="fas fa-envelope"></i>
+                                    <span class="badge">C</span>
+                                    <span class="badge badge-light count_is_consulted" >0</span>
+                                </a>
+                            </div>
+
+                            <div class='mr-4 text-white'> 
+                                <a class=" badge badge-light text-warning" href="/alert_notifs/0/3/" >
+                                    <i class="fas fa-envelope"></i>
+                                    <span class="badge">I</span>
+                                    <span class="badge badge-light count_is_informed" >0</span>
+                                </a>
+                            </div>
+                            {% if permissions > 0 %}
+
+                            {% endif %}
+
+                            <div class="pr-2">
+                                <!--
+                                <a class=" " href="/alert_notifs/0/0/" >
+                                    <i class="fas fa-clock text-secondary"></i>
+                                    <span class="badge badge-secondary" >0</span>
+                                </a>
+                            -->
+                            <a class="badge badge-light text-secondary " href="data_form/-1/1/" >
+                                <i class="fas fa-folder"></i>
+                                    <!--<span class="badge">0 / </span>
+                                        <span class="badge indi_total" ></span>-->
+                                    </a>   
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center py-4">
+                            <div class="h4"> Mon Menu </div>
+                        </div>
+                        <div id="menu_littleWid" class="d-flex flex-wrap justify-content-around">
+                            {% if permissions > 0 and not_add == None %}
+                            <a href="/" class="text-success d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-home fa-2x text-secondy"></i></div>
+                                <div class="menu_littleWid_text"><small class="">Tableau de Bord</small></div>
+                            </a>
+                            {% elif entity_manage != None and no_simple_user %}
+                            <a href="/" class="text-success d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-home fa-2x text-secondy"></i></div>
+                                <div class="menu_littleWid_text"><small class="">{{entity_manage}} </small></div>
+                            </a>
+                            {% endif %}
+                            {% if permissions > 0 and not_add == None %}
+                            <a href="/gestionnaire/0/" class="text-primary col-6 col-md-4 d-block col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-table fa-2x y"></i></div>
+                                <div class="menu_littleWid_text"><small>Gestionnaire</small></div>
+                            </a>
+                            <a href="/gestionnaire/-1/" style="color:purple;" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-sticky-note fa-2x"></i></div>
+                                <div class="menu_littleWid_text"><small>Aperçu : {{last_entity}}</small></div>
+                            </a> 
+                            <a href="/evaluer/0/" class="text-danger d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-flag fa-2x tey"></i></div>
+                                <div class="menu_littleWid_text"><small>Objectifs et Indicateurs</small></div>
+                            </a>
+
+
+                            <a href="/chaine_indicateurs/" style="color:#940334;" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-globe fa-2x"></i></div>
+                                <div class="menu_littleWid_text"><small>Chaîne de Résultats</small></div>
+                            </a>
+                            {% endif %} 
+                            {% if permissions >= 0 %}
+                            <a href="/operations/" class="text-info d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-list fa-2x y"></i></div>
+                                <div class="menu_littleWid_text"><small>Grille d'Execution</small></div>
+                            </a>
+                            {% endif %}
+                            <a href="/extra/" class="d-block col-6 col-md-4 col-lg-3 p-4 text-warning text-center">
+                                <div><i class="fas fa-book fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Ressources et Multimedia</small></div>
+                            </a>
+                            <a href="/history/" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color:orange;">
+                                <div><i class="fas fa-file fa-2x text-sesscondary"></i></div>
+                                <div class="menu_littleWid_text"><small>Archives</small></div>
+                            </a>
+                            {% if permissions > 0 and not_add == None %}
+                            <a  href="/structures/" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color:#b00345;">
+                                <div><i class="fas fa-building fa-2x y"></i></div>
+                                <div class="menu_littleWid_text"><small>{{default_struc_name}}</small></div>
+                            </a>
+                            <a class="d-block col-6 col-md-4 col-lg-3 p-4 text-center" href="/personnels/" style="color:green;">
+                                <div><i class="fas fa-users fa-2x"></i></div>
+                                <div class="menu_littleWid_text"><small>Ressources Humaines</small></div>
+                            </a>
+                            {% endif %}
+                            <a href="/data_form/-1/0/" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color:#0050a3;">
+                                <div><i class="fas fa-calculator fa-2x"></i></div>
+                                <div class="menu_littleWid_text"><small>Saisie de Donnees</small></div>
+                            </a>
+                            {% if permissions > 0 and not_add == None %}
+                            <a href="/configurations/" class="text-secondary d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-cog fa-2x text-secondary"></i></div>
+                                <div class="menu_littleWid_text"><small>Cadre Logique</small></div>
+                            </a>
+                            {% endif %}
+                            {% if permissions > 0 and not_add == None %}
+                            <a href="/messengers/" style="color: pink" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-envelope fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Messagerie</small></div>
+                            </a>
+                            <a href="/configurations/" style="color: lightblue" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-code fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Modules DHIS2</small></div>
+                            </a>
+                            <a href="/configurations/" style="color: #12d5a3;" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center">
+                                <div><i class="fas fa-network-wired fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small> Echanges Opera+</small></div>
+                            </a>
+                            <a href="/configurations/" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color: brown">
+                                <div><i class="fas fa-chart-line fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Analyse de Donnees</small></div>
+                            </a>
+
+                            <a href="/configurations/" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color: #01b325;">
+                                <div><i class="fas fa-dollar-sign fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Plugins Budget</small></div>
+                            </a>
+
+                            <a href="/configurations/" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color: goldenrod;">
+                                <div><i class="fas fa-folder fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Elements de Donnees</small></div>
+                            </a>
+
+                            <a href="/configurations/" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color:#a38975;">
+                                <div><i class="fas fa-desktop fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Applications</small></div>
+                            </a>
+
+                            <a href="/configurations/" class=" d-block col-6 col-md-4 col-lg-3 p-4 text-center" style="color:#b46298;">
+                                <div><i class="fas fa-map fa-2x "></i></div>
+                                <div class="menu_littleWid_text"><small>Design et Interfaces</small></div>
+                            </a>
+
+                            {% endif %}                         
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+        <div class="main-content" style="height:100vh;overflow:hidden;">
+
+            <div style="position:fixed;z-index:100;width:100vw; height:50px;" class="bg-info text-white d-flex px-4 justify-content-between">
+                <div class="d-flex">
+                    <div class="mr-2">
+                        <a href="/" class="d-block pt-1">
+                            <img style="width:40px;height:40px;border-radius:100%; " src="{{actual_institution.img.url}}"><span class="btn text-white" style="font-size:14px;">OPERA+</span>
+                            <span class="btn text-white d-none d-md-inline" style="text-transform:capitalize;">{{actual_institution.nom}}</span>
+                            <span class="text-white d-none" style="text-transform:capitalize;">{{actual_institution.sigle}}</span>
+                            <!-- <b class="btn d-md-none"><i class="text-white fas fa-bars"></i></b> -->
+                        </a>
+
+                    </div>
+                    <div class="header-item pt-3 pb-2 d-none d-lg-flex">
+
+                    </div>
+                </div>
+                <div class="header-item pt-3 pb-2 d-flex">
+                    <div class="d-flex" style='display:flex;'>
+                        <div class="mr-4 ">
+                            <!-- <a style="color:#fff;{% if menu == 'o' %}font-weight: bold;text-decoration:underline;{% else %} text-white {% endif %}" class=" " href="/operations/">
+                                Exécution
+                            </a> K5mriXNrjf67KcrYeI83 -->
+                        </div>
+
+                            <!--
+                            <div class='d-none d-md-block mr-4 text-success'> 
+                                <a class=" badge badge-light text-secondary" href="/data_form/-1/1/" >
+                                    <i class="fas fa-folder"></i>
+                                    <span class="badge">0</span>
+                                    <span class="badge">/ </span>
+                                    <span class="badge indi_total">0</span>
+                                </a>    
+                            </div>
+                        -->
+                        <div class='d-none d-md-block mr-4 text-success'> 
+                            <a class=" badge badge-light text-success" href="/alert_notifs/0/0/" >
+                                <i class="fas fa-envelope"></i>
+                                <span class="badge">R</span>
+                                <span class="badge badge-light count_to_done" >0</span>
+                            </a>    
+                        </div>
+                        
+                        <div class='d-none d-md-block mr-4 text-white'> 
+                            <a class=" badge badge-light text-danger " href="/alert_notifs/0/1/" >
+                                <i class="fas fa-envelope"></i>
+                                <span class="badge">A</span>
+                                <span class="badge badge-light count_is_observ" >0</span>
+                            </a>
+                        </div>
+
+                        <div class='d-none d-md-block mr-4 text-white'> 
+                            <a class=" badge badge-light text-primary " href="/alert_notifs/0/2/" >
+                                <i class="fas fa-envelope"></i>
+                                <span class="badge">C</span>
+                                <span class="badge badge-light count_is_consulted" >0</span>
+                            </a>
+                        </div>
+
+                        <div class='d-none d-md-block mr-4 text-white'> 
+                            <a class=" badge badge-light text-warning" href="/alert_notifs/0/3/" >
+                                <i class="fas fa-envelope"></i>
+                                <span class="badge">I</span>
+                                <span class="badge badge-light count_is_informed" >0</span>
+                            </a>
+                        </div>
+
+                        <div class='d-none d-md-block mr-4 text-white'> 
+                            <a class="text-white " href="/data_form/-1/1/" >
+                                <i class="fas fa-folder"></i>
+                                    <!--<span class="badge">0 / </span>
+                                        <span class="badge indi_total" ></span>-->
+                                    </a>   
+                                <!--
+                            <a class=" " href="/alert_notifs/0/0/" >
+                                <i class="fas fa-clock text-white"></i>
+                                <span class="d-md-none badge badge-light" >0</span>
+                            </a>    -->
+                        </div>
+                        <div class='mr-4 text-white'> 
+                            <a class=" " data-toggle='modal' href="#menuAppModal" >
+                                <i class="fas fa-th text-white"></i>
+                            </a>    
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown d-inline-block">
+                            <div type="button" class="header-item pt-1" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false" class="">
+                                <!-- <img class="" style="width:30px;height:30px;border-radius:100%;display:inline; cursor:pointer; margin-bottom:0px;" src="{{user.personnel.photo.url}}"> -->
+                                <div class="mt-2" id='logoTAT'>{{request.user.personnel.initials}}</div>
+                            </div>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item d-flex align-items-center justify-content-between" href="/profile/">
+                                    <span>Profil</span>
+
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center justify-content-between" href="/institution/">
+                                    <span>Institution</span>
+
+                                </a>
+                                <a  class="dropdown-item d-flex align-items-center justify-content-between" href="/log/1/">
+                                    <span>Déconnexion</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div style="width:100vw;height: 60px;">
+
+            </div>
+            <div style="width:100vw;" class=" ">
+                <div style="width:100%;">
+                    <form class="col-lg-12 d-flex" method="POST" action="/search/">
+                        {% csrf_token %}
+                        <div class="col-2 col-sm-1 mr-4 d-md-none">
+                            <span id='menu_show' onclick="menuSH(this)" data-show='0' class="btn btn-info">Menu</span>
+                        </div>
+                        <div style='display:flex; max-height:50px;' class="pb-2 col-lg-9"> <!-- <label> Search </label> --> 
+                            <button type='submit' class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></button>
+                            <input type='text' name='search' class='pl-2 form-control' style='width:90%;border:0px; border-radius:0px;' placeholder="Recherche..."> 
+                        </div>
+                        <div class="d-none">
+                            <div onclick="launchNavigation(this)" data-show=0>
+                                <i class="btn btn-success fas fa-angle-down"></i>
+                                <span class="btn text-success d-none d-md-inline">Navigation</span>
+                            </div>
+                            <div class="pt-2" id="navigate_menu_div" style="display:none;width:300px;position:absolute;z-index:350;">
+                                <div class="card p-1">
+                                    <div class="card-body p-1">
+                                        <div id="navigate_menu" class="list-group">
+                                            <div class="" style="border-bottom:1px solid #aaa;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div style='width:100vw;padding:0px;display: flex;overflow-y:hidden;height:100vh;justify-content: space-between;'> 
+                <div style="width:10%;overflow-y:auto;max-height:90%;padding:0px;min-width:200px;" id='leftBig' class="pb-4 d-none d-md-block">                 
+                    <div class="bg-white mt-1 p-3">
+                        {% block BigLeft %}
+
+                        <div>
+
+                            {% if permissions >= 0 %}
+                            <!-- <a  data-toggle='modal' href="#NewModal" class="p-2 text-center text-white card bg-success btn-rounded rounded d-block"> Nouveau + </a> -->
+                            {% else %}
+                            <!-- <a href="/operations/" class="mt-3 p-2 text-center text-white card bg-info btn-rounded rounded d-block"> Exécution </a> -->
+
+                            <!-- <a href="#" class="mt-3 p-2 text-center btn-danger btn-rounded rounded d-block">  <i class="fas fa-network-wired"></i> Evaluation</a> -->
+                            {% endif %}
+                        </div>
+                        {% block miniBigLeft %}
+
+            <!-- <div class="px-2"><span class="btn btn-warning text-white mainBTN" onclick="showMainInte(this,1)">Technical</span></div>
+                <div class="px-2"><span class="btn btn-success mainBTN" onclick="showMainInte(this,2)">Financial</span></div> -->
+                {% endblock %}
+                {% if permissions <= 0 and no_simple_user %}
+                <div>
+                    <div class="mb-3">
+                        <div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
+                            <div class="btn text-primary">{{type_ents}}</div>
+                            <div><i class="fas text-primary fa-angle-down"></i></div>
+                        </div>
+                        <div>
+                            {% for m in my_entities %}
+                            <a href="/gestionnaire/{{hierachie_ent}}/{{m.id}}/" class="pl-3 d-block">
+                                <small class="">{{m}}</small>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if permissions >= 0 %}
+
+                <div class="mt-3 mb-3">
+                    <div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
+                        <div class="btn text-primary"> {{operations_name}}</div>
+                        <div><i class="fas text-primary fa-angle-down"></i></div>
+                    </div>
+                    <a href="/notifications/" class="text-dark d-block">
+                        <span class="btn">Non Effectuées</span>
+                        <span class="badge badge-light count_to_done2"></span>
+                    </a>
+                    <div class="">
+                        <span class="btn">Effectuées</span>
+                        <span class="badge badge-light count_done2"></span>
+                    </div>
+                            <!-- <div>
+                                <span class="btn">En Attente</span>
+                                <span class="badge badge-light count_to_report2"></span>
+                            </div> -->
+                        </div>
+                        {% endif %}
+                        {% if permissions > 1 %}
+                        <div class="mb-3">
+                            <div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
+                                <div class="btn text-primary">Rapports</div>
+                                <div><i class="fas text-primary fa-angle-down"></i></div>
+                            </div>
+                            <div>
+                                <a href="/alert_notifs/0/1/" class="text-dark d-block">
+                                    <span class="btn text-danger">En Attente</span>
+                                    <span class="badge badge-light count_to_report2">0</span>
+                                </a>
+                                <div>
+                                    <span class="btn text-success">Validés</span>
+                                    <span class="badge badge-light count_is_report2">0</span>
+                                </div>
+                                <!--
+                                <div>
+                                    <small class="btn">Observations</small>
+                                    <span class="badge badge-light count_is_observ2">0</span>
+                                </div>
+                            -->
+                        </div>                
+                    </div>
+                    {% endif %}
+
+                    {% if permissions > 0 and not_add == None %}
+                    <div class="">
+                        <div style="width:100%;" class="d-flex justify-content-between border-bottom border-primary">
+                            <div class="btn text-primary">Niveau </div>
+                            <div><i class="fas text-primary fa-angle-down"></i></div>
+                        </div>
+                        <div style="" >
+                            {% for entity in get_entities %}
+                            <div class="">
+                                <a {% if hierachy == entity.m_hierachie %}style='font-weight:bold;'{% endif %} href="/gestionnaire/{{entity.m_hierachie}}/" class="btn text-dark"> {{entity}} </a>
+                            </div>
+                            {% endfor %}
+                        </div>       
+                    </div>
+                    {% endif %}
+
+                    {% endblock %}
+                    <a href='/assistance/' style="width:100%;" class="d-flex justify-content-between">
+                        <div class="btn text-primary">Un Soucis ? </div>
+                        <div><i class="fas fa-phone text-primary"></i></div>
+                    </a>
+                    <a href="/documentation/" style="width:100%;" class="d-flex justify-content-between">
+                        <div class="btn text-primary">Documentation</div>
+                        <div><i class="fas fa-book text-primary"></i></div>
+                    </a>
+                    <div class="text-secondary mt-3">
+                        <span> 2022 © BeinInfo. </span>
+                    </div>
+
+                </div>
+            </div>
+            <div id="contentRight" style="display:flex;flex-direction:row-reverse;justify-content: space-around;">
+            <div id="blockRight" style="overflow-y:auto; width:6.5%; min-width: 75px; height:100vh;">
+            </div> 
+            <div class="pl-2 pt-2" id="content-body"  style="padding-bottom:125px;width:93.5%;overflow-x:auto; overflow-y:auto;height:100vh;">
+                {% block content %}
+
+                {% block permissions_content %}
+
+
+                {% if notif %}<div class="h4 text-center mb-5">  Renseigner :  {{last_entity}} </div>{% endif %}
+
+
+
+                <div class="page-content" style='width:100%;padding:0px;margin:0px;'>
+
+                <div class="h3 text-center oy-3">
+                    Grille d'Execution - PTA 
+                </div>
+
+                    <div style='width:100%;padding:0px;margin:0px;'>
+                        <div style='width:100%;margin:0px; padding:10px;'>
+                            <div style='width:100%;padding:0px;'>
+                                <div style='width:100%;padding:0px;'>
+                                    <div class="card" style='border:none;padding:0px;width:100%;height:100%;'>
+
+                                        <div class="card-body mb-2 pb-2" style="width:100%;">
+                                            <form>
+                                                {% csrf_token %}
+                                                <div class="row d-flex d-sm-block d-md-flex flex-wrap" style='border-bottom:2px solid #eee;width:100%;'>
+                                                    {% for ent in get_entities2 %}
+                                                    <div class="col-sm-6 col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="exampleFormControlSelect1"> {{ent}} </label>
+                                                            <select class="form-control" name="niveau" id="exampleFormControlSelect1">
+                                                                <option> Tous </option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+
+                                                    <div class="col-sm-1">
+                                                        <label for="structure" class="d-none d-sm-block">&nbsp;</label>
+                                                        <div class="form-group" >
+                                                            <button type="submit" class="btn btn-info waves-effect waves-light">Filtrer</button>
+                                                        </div>
+                                                    </div>                                                    
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="card-body" style="width:100%;" >
+                                            <!--h4 class="card-title">Menu à la carte</h4-->
+
+
+                                            {% block search_filters %}
+
+                                            <form data-toggle="validator" role="form" action="/filter_op/" method="POST">
+                                                {% csrf_token %}
+                                                <div class="row d-flex d-sm-block d-md-flex flex-wrap" style='border-bottom:2px solid #eee;width:100%;'>
+                                                    <div class="col-sm-6 col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="exampleFormControlSelect1">Niveau d'éxécution</label>
+                                                            <select class="form-control" name="niveau" id="exampleFormControlSelect1">
+                                                                {% for  niveau in get_entities.reverse %}
+                                                                {% if permissions >= niveau.hierachie_lvl or niveau.m_entity_type.is_tache == True %} <option value="{{niveau.m_hierachie}}" {% if lvl == niveau.m_hierachie %} selected {% endif %}>{{niveau}}</option>{% endif %}
+                                                                {% endfor %}
+
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class=" d-flex col-sm-12 col-md-5 flex-wrap">
+                                                        <div class="col-md-12 col-lg-9 px-2 form-group">
+                                                            <label for="typeperiode">Période</label>
+                                                            {% if periode != '#' %}
+                                                            <small>{{periode}}</small>
+                                                            {% endif %}
+                                                            <select class="form-control" id="typeperiode" name="periode">
+                                                                <option value="#">Toutes</option>                                                    
+                                                                {% for value in default_period.decoup_slip %}
+                                                                <option class='per_value week_plus' value="{{value}}"   >{{value}}</option>
+                                                                {% endfor %}
+                                                            </select>
+
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-3 form-group ">
+                                                            <label for="typeperiode">Année</label>
+                                                            <input type="number" id="year_plan" value=2022 class="form-control">
+
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-sm-6 col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="structure">Structures</label> 
+                                                            <select class="form-control" id="structure" name="structure">
+                                                                <option value="0" selected="">Toutes les structures</option>
+                                                                {% for structure in insti_structures %}
+                                                                <option style="color:#333;" {% if structure.id == arg_structure %} selected {% endif %} value="{{structure.id}}">{{structure.nom}}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-1">
+                                                        <label for="structure" class="d-none d-sm-block">&nbsp;</label>
+                                                        <div class="form-group" >
+                                                            <button type="submit" class="btn btn-info waves-effect waves-light">Filtrer</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="pt-2">
+
+                                                    <div>
+                                                        <input id="only_not" type="checkbox" name="only_not" value="1">
+                                                        <label for="only_not"> <small> Afficher uniquement :  {{operations_name}} non réalisées </small></label>
+                                                    </div>
+                                                    <div>
+                                                        <input id="only_not2" type="checkbox" name="only_not2" checked value="1">
+                                                        <label for="only_not"> <small> Afficher Toute la Hierachie d'Entites </small></label>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            {% endblock %}
+                                            {% block documenter %}
+                                            <div class="row" style='width:100%;display:flex;justify-content:space-between;margin-top:10px;'>
+                                                {% block generate_docs %}
+                                                {% block search_doc %}
+                                                <div class="col-lg-9 col-md-6 col-sm-6"><form action="/filter_op/search/" style="width:100%;" method="POST">
+                                                    {% csrf_token %}
+                                                    <div style='display:flex;' class="col-lg-4"> <!-- <label> Search </label> --> 
+                                                        <button type='submit' class='btn btn-info' style='border-radius:0px;'><i class='fas fa-search'></i></button>
+                                                        <input type="hidden" name="niveau" value="{{lvl}}">
+                                                        <input type='text' name='search' class='chercher form-control' style='border:0px;border-radius:0px;' placeholder="Recherche..."> 
+                                                    </div>
+                                                </form></div>
+                                                {% endblock %}
+                                            </div>
+                                            {% endblock %}
+                                        </div>
+                                        {% endblock %}
+
+                                        {% block print_bar %}
+                                        <div class="mb-4" style="border-bottom:1px solid #ddd;">
+                                            <div class="d-md-block text-secondary">
+                                                <label style="padding:10px;" class="text-secondary"> {% if gest_val != None %}<label style="padding:10px;"><a class="text-secondary" href="/gestionnaire/{{gest_val}}/"> Généralités</a></label>{% endif %} </label>
+                                                <!-- <label style="padding:10px;"> Trier</label> -->
+                                                {% if menu == 'g' %}<label style="padding:10px;"><a class="text-secondary" href="/evaluer/{{gest_val}}/{% if gest_id != None %}{{gest_id}}/{% endif %}"> Objectifs</a></label>{% endif %}
+                                                <label class="d-none d-md-inline" style="padding:10px;color:#ccc;"> Filtres</label>
+                                                <label class="d-none d-md-inline" style="padding:10px;"> <a style="color:#ccc;" href="#">Analyser</a></label>
+                                                <label class="d-none d-md-inline" style="padding:10px;"> <a style="color:#ccc;" data-toggle='modal' href="#evaluateModal">Evaluer</a> </label>
+                                                {% if menu != 'o' and g_v != 'i2' %}
+                                                <label class="d-none d-md-inline" style="padding:10px;cursor:pointer;" onclick="printDoc();"> Imprimer </label>
+                                                {% elif g_v == 'i2' %}
+                                                <label>  </label>
+                                                {% elif menu == 'o' %}
+                                                <label class="d-none d-md-inline" style="padding:10px;cursor:pointer;" data-toggle='modal' data-target="#pdfModal"> Imprimer</label>
+                                                {% endif %}
+                                            </div>
+                                            <div id='print_check' style="display:none," class="my-3 d-flex justify-content-between flex-wrap">
+
+                                            </div>
+                                        </div>
+                                        {% endblock %}
+                                        <div id="tache_aka" class="table  table-stripped" style="margin-top: 10px;">
+                                            {% block table %}
+                                            <table class="no-footer table table-stripped " style="max-width:100%;overflow:auto;" id="tache"  role="grid" aria-describedby="tache_info" style="font-size:12px;font-family: Ubuntu;">
+                                                <thead id='thead_tache'>
+                                                    <tr role="row">
+                                                        {% for niveau in get_entities2 %}
+                                                        <th> {{niveau}} </th>
+                                                        {% endfor %}
+
+                                                        {% for field in fields %}
+                                                        <td class="t_cell">{{field}}</td>
+
+                                                        {% endfor %}
+                                                        <td class="t_cell sorting" tabindex="0" style="">Taux d'execution</td>
+                                                        <!-- td colspan="1" class="t_cell noprint" style="">Graphiques</td> -->
+
+                                                        <!-- <th>  Observations  </th>-->
+                                                        <td class="t_cell"> Derniere Modification</td>
+                                                        {% for field in fields_rapported %}
+                                                        <td class="t_cell text-info">{{field}}</td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                </thead>
+                                                <tbody id='tbody_tache'>
+                                                    {% for line in pages_o %}
+                                                    <tr  class=' title_div tr_bod {% if tache_lvl %}bg-info text-white{% endif %}'>
+                                                        {% for sup in line.sup_hierachie %}
+                                                        <th>{{sup}}</th>
+                                                        {% endfor %}
+                                                        {% for value in line.values %}
+                                                        <td class="t_cell replace_n tache_td value_liner" style="cursor:pointer;" onclick="{% if entity.is_tache == False %}document.location='/gestionnaire/{{lvl}}/{{line.id}}/'{% else %}document.location='/taches/{{line.id}}/'{% endif %};">{{value}}</td>
+                                                        {% endfor %}
+                                                        <td style="cursor:pointer;" onclick="{% if entity.is_tache == False %}document.location='/gestionnaire/{{lvl}}/{{line.id}}/'{% else %}document.location='/taches/{{line.id}}/'{% endif %};" class="t_cell tache_td text-white"><b>{{line.progression}} % </b></td>
+                                                        <!-- <td colspan="1" data-print='0' class="tache_td noprint text-success"><div><span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher_evolution(this);" class="t_cell grapherBTN btn btn-light"><i class="fas fa-chart-line "></i></span>&nbsp;{% if entity.is_tache %}<span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher_personnel(this);" class="grapherBTN btn btn-light"><i class="fas fa-chart-pie"></i></span>&nbsp;{% else %}<span data-toggle='modal' data-target='#miniChartModal' data-tache='{{line.id}}' style="text-transform:capitalize;" onclick="grapher_linear(this);" class="grapherBTN btn btn-danger"><i class="fas fa-table"></i></span>&nbsp;{% endif %}</div></td> -->
+                                                        <td class="t_cell tache_td" style="cursor:pointer;" onclick="{% if entity.is_tache == False %}document.location='/gestionnaire/{{lvl}}/{{line.id}}/'{% else %}document.location='/taches/{{line.id}}/'{% endif %};">{{line.m_date_modif}}</td>
+
+                                                        <td colspan="12"></td>
+                                                    </tr>
+                                                    {% if line.m_type_entity.is_tache %}
+                                                    <tr class="text-info">
+                                                        <th colspan='2' class='morer noprint' data-print='0' data-stat='0' data-line="{{line.id}}" style="cursor:pointer;"><b >Voir {{operations_modules.m_nom}}</b> <i class="fas fa-angle-down p-1 text-info"></i></th>
+                                                        <!-- <td><input id="sH{{line.id}}" data-l="{{line.id}}" onchange="show_histRACI(this)" type="checkbox" name=""><label for="sH{{line.id}}"><small >&nbsp;Afficher Historique RACI</small></label></td> -->
+                                                        <td colspan="20"></td>
+                                                        {% endif %}
+                                                    </tr>
+                                                    <tr data-nature="0" data-line="{{line.id}}" style="display:none;" class=" " role="row">
+                                                        <th><small>{{operations_modules.m_nom}}</small></th>
+                                                        <th style="display:none" class="td_raci" data-show="0" data-raci="1" data-l="{{line.id}}" colspan="10"><small>Historique RACI</small></th>
+                                                        <th><small>Personnel</small></th>
+                                                        <th><small>{{actual_institution.default_period}}</small></th>
+                                                        <th colspan='3'><small>Chronogramme</small></th>
+                                                        {% if actual_institution.default_options != True %}
+                                                        {% for th in operations_modules.fields %}
+                                                        <th class="sorting to_html " tabindex="0" aria-controls="tache"  aria-label="Tache: activate to sort column ascending" style="">
+                                                            <small class="value_liner">{{th}}</small>
+                                                        </th>
+                                                        {% endfor %}
+                                                        {% for th in operations_modules.fields_rapported %}
+                                                        <th class="sorting text-info to_html " tabindex="0" style="">
+                                                            <small class="value_liner">{{th}}</small>
+                                                        </th>
+                                                        {% endfor %}
+                                                        {% else %}
+                                                        <th>Rapport Technique </th>
+                                                        {% endif %}
+
+                                                    </tr>
+
+                                                    {% for operation in line.operations %}
+                                                    {% if operation.personnel.bd_user.id == user.id or user == line.superviseur.bd_user or permissions > 1 %}
+                                                    <tr data-line="{{line.id}}" style="display:none;" data-nature="0" class="text-dark" >
+                                                        <td ><small>{{operation}}</small></td><!-- and permissions < 1 -->
+                                                        <td colspan="10" style="display:none" class="td_raci" data-show="0" data-raci="1" data-l="{{line.id}}">
+                                                        </td>
+                                                        <td colspan="1"><small class='text-success'> R : {{operation.personnel}}</small><br>
+                                                            <small class='text-danger'> A : {{operation.accountable}}</small><br>
+                                                            <small class='text-primary'> C : {{operation.consulted}}</small><br>
+                                                            <small style="color:orange;"> I : {{operation.informed}}</small>
+                                                        </td>
+                                                        <td><small>{{operation.m_tache_plannification}}</small></td>
+                                                        {% if actual_institution.default_options != True %}
+
+                                                        <td colspan="3"> <div style="display:flex;justify-content: space-between;">
+                                                            {% for period in operation.periodes.chrono_split %}
+                                                            <div style="" class="px-1"> 
+                                                                <small>{{period}}</small> </div>
+                                                                {% empty %}
+                                                                {% for period in actual_institution.default_subperiod.decoup_desc_slip %}
+                                                                <div style="" class="px-1"> 
+                                                                    <small>{{period}}</small> </div>
+                                                                    {% endfor %}
+                                                                    {% endfor %}
+                                                                </div><div style="display:flex;justify-content: space-between;" class="">{% for period in operation.periodes.desc_split %}<div  style="font-weight:bold;">{% if period != '9' %}{% if operation.etat == '0' %}<i class="fas fa-clock"></i>{% elif operation.etat == '1' %}<i class="fas fa-check"></i>{% elif operation.etat == '2' %}<i class="fas fa-check text-success"></i>{% endif %}{% else %}<i style="opacity:0;'" class="fas fa-pen"></i>{% endif %}</div>{% endfor %}</div></td>
+
+                                                                {% for val in operation.values_spl1 %}
+                                                                <td class=""><small class="value_liner ">{{val}}</small></td>
+                                                                {% endfor %}
+                                                                {% if operation.etat == '1' or  operation.etat == '2' %}
+                                                                {% for val in operation.values_spl2 %}
+                                                                <td class="text-primary"><small class="value_liner ">{{val}}</small></td>
+                                                                {% endfor %}
+                                                                {% else %}
+                                                                {% for th in operations_modules.fields_rapported %}
+                                                                <td> <small><a class="text-info" href='/operations/{{operation.id}}'> <i class='fas fa-plus'></i> Renseigner </a></small> </td>
+                                                                {% endfor %}
+                                                                {% endif %}
+                                                                {% else %}
+                                                                <td colspan="3" > <div style="display:flex;justify-content: space-between;">{% for period in operation.periodes.chrono_split %}<div style="" class="px-1" ><small>{{period}}</small></div>{% empty %}
+                                                                    {% for period in actual_institution.default_subperiod.decoup_desc_slip %}
+                                                                    <div style="" class="px-1"> 
+                                                                        <small>{{period}}</small> </div>
+                                                                    {% endfor %}{% endfor %}</div><div style="display:flex;justify-content: space-between;" class="">{% for period in operation.periodes.desc_split %}<div class="px-1" style="font-weight:bold;">{% if period != '9' %}{% if period == '0' %}<i class="fas fa-clock"></i>{% elif period == '1' %}<i class="fas fa-check"></i>{% elif period == '2' %}<i class="fas fa-check text-success"></i>{% endif %}{% else %} {% endif %}</div>{% endfor %}</div></td>
+
+                                                                    {% if operation.rapported.piece_jointe != None %}<td > <small> <a href="{{operation.rapported.piece_jointe.url}}">{{operation.rapported}}</a></small> </td>
+                                                                    {% else %}
+                                                                    <td>Aucun Rapport : <small><a class="text-info" href='/operations/{{operation.id}}'> <i class='fas fa-plus'></i> Renseigner </a></small> </td>
+                                                                    {% endif %} 
+                                                                    {% endif %}
+
+                                                                </tr>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                        {% endblock %}
+                                                        {% if num_pages > 1 %}
+                                                        <nav>
+                                                            <ul class="pagination">
+                                                                <li>
+                                                                    {% if pages.number > 1 %}
+                                                                    <a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+                                                                    </a>
+                                                                    {% endif %}
+                                                                </li>
+                                                                {% for num in page_range %}
+                                                                <li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+                                                                {% endfor %}
+                                                                <li>
+                                                                    {% if pages.number < num_pages %}
+                                                                    <a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+                                                                        <span aria-hidden="true">&raquo;</span>
+                                                                    </a>
+                                                                    {% endif %}
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endblock %}
+
+
+
+
+                                        </div>
+                                        <div id="tache_to_print" class="d-none">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                        <!-- Main Block -->
+                    </div>
+
+
+                        {% endblock %}
+                    </div>  
+
+                </div>
+                <!-- Main Content Block --> 
+
+                <!-- Overlay-->
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form class="form-horizontal bordered-row" action="/delete/" id="deleteFormAction" method="post">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <input type="hidden" name="base_val" {% if base_val != None %} value="{{base_val.id}}{% else %}0{% endif %}">
+                                    <input type="hidden" name="actu_link" value="{{request.get_full_path}}">
+                                    <input type="hidden" id='delete_generator' name="generator" value="{{g_v}}">
+                                    <input type="hidden" class="entity_id form-control" name="id_entity">
+                                    <input type="hidden" name="hierachy" value="{{hierachy}}">
+                                    <h5 style="text-transform:uppercase;">Confirmer la Suppression</h5>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+                                    <button type="submit" class="btn btn-primary"> Confirmer</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                {% block modals %}
+
+                {% endblock %}
+
+                <div class="modal fade" id="NewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header"> Nouvelle Entité</div>
+                            <div class="modal-body">
+                                <div>
+                                    <div> Créer Nouveau</div>
+                                    <div>
+                                        <div class="list-group">
+                                            {% for entity in get_entities %}
+                                            {% if permissions > entity.absolute_hierachie %}
+                                            <a href="/gestionnaire/{{entity.m_hierachie}}/" class="mb-3 list-group-item btn text-secondary"> {{entity}} </a>
+                                            {% endif %}
+
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div style="">
+                                        {% if permissions > 1 %}
+                                        <div class="list-group pt-3">
+                                            <a href="/personnel/" class=" list-group-item btn text-secondary"> Personnel</a>
+                                        </div>
+                                        <div class="list-group pt-3">
+                                            <a href="/structures/" class=" list-group-item btn text-secondary"> Structure</a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="border-top:1px solid #bbb;" class="mt-3 list-group pt-3">
+                                        <a href="/notifications/" class="list-group-item btn text-secondary"> Nouveau Rapport</a> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade bd-example-modal-xl" 
+                tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id='commentOperModal'>
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header btn-light">Commentaire sur l'Opération</div>
+                        <div class="modal-body">
+                            <div class="d-flex">
+                                <div class="btn"> Operation : </div>
+                                <div class="btn" id="tmp_operation" style="font-weight:bold;"> </div>
+                            </div>
+                            <div class="d-flex my-2">
+                                <div class="btn"> Fait par : </div>
+                                <div class="btn" id="tmp_opera_personnel"  style="font-weight:bold;"> </div>
+                            </div>
+                            <div class="">
+                                <div class=' p-2' id='tmp_comments'>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade bd-example-modal-xl" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                            <h4 class="modal-title ">Rapport <b id='type_rapport' class="h4 text-success"> Technique </b> de l'Operation <span class="h4 text-info" id='tache-nom'></span></h4>
+                            <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div id="spinner" class="spinner-border avatar-lg text-primary m-2" role="status" style="position:absolute; display:none;"></div>
+                            <h6>{{last_entity}}</h6>
+                            <p id="tache-title"> </p>
+                            <p id="tache-result"> </p>
+
+                            <div id="detail" class="card" style="margin-top: 30px;border: 1px solid #EBEEF3;">
+                                <div class="card-body">
+                                    <div>
+                                        <div class="">
+                                            <legend>Ajouter une pièce jointe pour l'opération <i id="codeoperation"></i></legend>
+                                            <form enctype="multipart/form-data" action="/save_rapport/" class="form-horizontal form-chrono-file bordered-row"  method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" id="rapport_input" name="rapport_input">
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <small>NOM</small>
+                                                            <input type="text" class="form-control" name="operation_nom" id="nomfile">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <small>FICHIER</small>
+                                                            <input required="" type="file" class="form-control" name="operation_fichier" id="fichier">
+                                                            <input type="hidden" id='tache-id-op' class="form-control" name="operation_id">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <legend>Ajouter un Commentaire</legend>
+                                                    <div class="col-lg-12">
+                                                        <textarea name='operation_comm' style="width:100%;" rows=4></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div><input class="btn btn-success" type="submit" value="CONFIRMER LA REALISATION" name=""></div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade bd-example-modal-xl" id="addModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
+                        <h4 class="modal-title ">Rapport <b class="h4 text-success"> Financier </b> de l'Operation <span class="h4 text-info"></span></h4>
+                        <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div id="spinner" class="spinner-border avatar-lg text-primary m-2" role="status" style="position:absolute; display:none;"></div>
+                        <h6>{{last_entity}}</h6>
+                        <p id="tache-title2"> </p>
+                        <p id="tache-result2"> </p>
+
+                        <div id="detail" class="card" style="margin-top: 30px;border: 1px solid #EBEEF3;">
+                            <div class="card-body">
+                                <div>
+                                    <div class="">
+                                        <legend>Renseigner le Montant Dépensé <i id="codeoperation"></i></legend>
+                                        <form enctype="multipart/form-data" action="/save_rapport/" class="form-horizontal form-chrono-file bordered-row"  method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" id="rapport_input2" name="rapport_input">
+                                            <div class="row">
+                                                <div class="text-center h6 pl-4"> <legend style="font-weight:normal;"> Montant Alloué </legend><label id='tache-montant2' class="text-success"></label></div>
+                                                <div class="col-lg-12 mb-2 mt-2">
+                                                    <small>Montant Dépensé</small>
+                                                    <input required="" type="number" class="form-control" name="operation_montant" id="fichier2">
+                                                    <input type="hidden" id='tache-id-op2' class="form-control" name="operation_id">
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <legend>Ajouter un Commentaire</legend>
+                                                    <div class="col-lg-12">
+                                                        <textarea name='operation_comm' style="width:100%;" rows=4></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div><input class="btn btn-success" type="submit" value="CONFIRMER LA REALISATION" name=""></div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-hidden="true" >
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <b>Générer un PDF</b>
+                    </div>
+                    <div class="modal-body mb-3">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <div>
+                                <div style="cursor: pointer;"  onclick="printDoc(1,'Plan de Travail Opérationnel')" class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Opérationnel </b>
+                                </div>
+                                
+                                {% if periode != '#' %}
+                                <div style="cursor: pointer;" onclick="printDoc(2,'Plan de Travail Personnel')"  class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Opérationnel - </b> <b class="text-success">{{periode}}</b>
+                                </div>
+                                {% for sub in actual_institution.default_subperiod.decoup_desc_slip %}
+                                <div style="cursor: pointer;" onclick="printDoc(2,'Plan de Travail Personnel')"  class="mb-3">
+                                    <i class="fas fa-3x text-warning fa-file-pdf"></i>
+                                    <b>Plan de Travail Opérationnel - {{sub}} </b> <b class="text-success">{{periode}}</b>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                <div style="cursor: pointer;" onclick="printDoc(2,'Plan de Travail Personnel')"  class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Personnel </b>
+                                </div>
+                                {% if periode != '#' %}
+                                <div style="cursor: pointer;" onclick="printDoc(2,'Plan de Travail Personnel')"  class="mb-3">
+                                    <i class="fas fa-3x text-danger fa-file-pdf"></i>
+                                    <b>Plan de Travail Personnel - </b> <b class="text-success">{{periode}}</b>
+                                </div>
+                                {% endif %}                            
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  -->
+
+
+        <div class="modal fade bd-example-modal-xl" id="RapportModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div style='max-width:450px;' class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form action='/valid_observations/' onsubmit="collectLines()" method="POST">
+                            {% csrf_token %}
+                            <div id='attributes_valid' class="">
+
+                            </div>
+                            <input type="hidden" id='attributes_valid_line' name="element_id">
+                            <input type="hidden" name="attributes" id="valid_attributes">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade bd-example-modal-xl" id="validOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div style='max-width:450px;' class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h4 class="modal-title">Valider le Rapport</h4>
+                        <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action='/valid_rapport/' method="POST">
+                            {% csrf_token %}
+                            <div class="">
+                                <p>
+                                    <div style="text-transform:uppercase;" class="h5">Vous Validez le Rapport sur l'Operation <b id='opera_valider_title' class="text-success"> </b> ?</div>
+                                    <div>
+                                        <input type="hidden" id="opera_valider_id" name="opera_valider_id">
+                                        <input type="submit" class="btn btn-success" value="Oui" name="">
+                                        <span class="btn btn-danger">Non</span>
+                                    </div>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade bd-example-modal-xl" id="annulerOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div style='max-width:450px;' class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h4 class="modal-title">Annuler le Rapport</h4>
+                        <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action='/in_valid_rapport/' method="POST">
+                            {% csrf_token %}
+                            <div class="">
+                                <p>
+                                    <div style="text-transform:uppercase;" class="h5">Vous Invalidez le Rapport sur l'Operation <b id='opera_invalider_title' class="text-success"> </b> ?</div>
+                                    <div>
+                                        <input type="hidden" id="opera_invalider_id" name="opera_invalider_id">
+                                        <input type="submit" class="btn btn-success" value="Oui" name="">
+                                        <span class="btn btn-danger">Non</span>
+                                    </div>
+                                    <div>
+                                        <label>Veuillez associer un Commentaire Svp</label>
+                                        <textarea rows='5' required name="opera_invalider_comment" class="form-control"></textarea>
+                                    </div>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade bd-example-modal-xl" id="miniChartModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <b class="" id='graphique_name'>Graphiques</b>
+                    </div>
+                    <div class="modal-body mb-3">
+                        <div class="graphic_name h4"> </div>
+                        <div id='graph_modal_div'  style="width:100%;">
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="menu-overlay"></div>
+
+
+    {% endblock %}
+
+    <div style="display:none;">
+        <table id='table_print'>
+            <thead id="table_print_header"></thead>
+            <tbody id="table_print_body"></tbody>
+        </table>
+        <table id='table_print2'>
+        </table>
+        <div id="table_print_body2">
+
+        </div>
+    </div>
+    <div style="display:none;font-family:courier;" id='pdf'>
+        <div class="content-body" style="font-weight:normal;">
+            <h4 style="font-family:Ubuntu;font-weight:normal;">{{actual_institution}}</h2>
+                <h4 style="font-family:Ubuntu;font-weight:normal;" class="text-secondary">{{actual_institution.nom}}</h2>
+                    <center>
+                        <br>
+                    </center>
+                </div>
+            </div>
+
+            <div class="modal fade" id="rapportdoneModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        {% if animate2 == 1 %}
+                        <div class="modal-header text-success">
+                            <b>Votre Avis vient d'etre enregistre</b>
+                        </div>
+                        <div class="modal-body mb-3">
+                            <div class="d-flex flex-wrap justify-content-between">
+                                <div>
+                                    <div class="text-center">
+
+                                    </div>
+                                    <div class="h4 text-center"> <img style="width:100px;height:100px;" src="{% static 'webpages/ctn_bpf/smile-eyes-smiley.gif' %}"> Encore merci pour votre collaboration</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="modal-header text-success">
+                            <b>Rapport Soumis avec Succès</b>
+                        </div>
+                        <div class="modal-body mb-3">
+                            <div class="d-flex flex-wrap justify-content-between">
+                                <div>
+                                    <div class="text-center">
+                                        <img src="{% static 'webpages/ctn_bpf/smile-eyes-smiley.gif' %}">
+                                    </div>
+                                    <div class="h4 text-center">Votre <span class="h4 text-success">Rapport</span> a été enrégistrée, encore merci pour votre collaboration</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript" src="{% static 'webpages/pagination.min.js' %}"></script>
+    <!--
+        <script type="text/javascript" src="{% static 'webpages/ctn_bpf/vfs_font.js' %}"></script>-->
+        <script src='https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js'></script>
+        <!-- <script src='https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.min.js'></script>  -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/browser.js"></script>-->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> 
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.6/jspdf.plugin.autotable.min.js"></script> 
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script src="https://code.jscharting.com/latest/jscharting.js"></script>
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script type="text/javascript">
+            AOS.init();
+        </script>
+        {% if assist_send %}
+        <div>
+            <div class="modal fade" id="senddoneModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header btn-primary">
+                            <b>Message envoyé avec succes</b>
+                        </div>
+                        <div class="modal-body mb-3">
+                            <div class="d-flex flex-wrap justify-content-between">
+                                <div>
+                            <!-- <div class="text-center">
+                                <img src="{% static 'webpages/ctn_bpf/smile-eyes-smiley.gif' %}">
+                            </div> -->
+                            <div class="h4 text-center">Nous avons pris part de votre préoccupation, vous aurez bientot une réponse de notre équipe technique </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $("#senddoneModal").modal('show');
+</script>
+{% endif %}
+
+<script type="text/javascript">
+    document.getElementById("blockRight").innerHTML = document.getElementById("menu_littleWid").innerHTML
+    function showMainInte(btn,index){
+        section_div = document.getElementsByClassName("section_div");
+        $(".section_div").hide("slow",function(){
+            $(section_div[index]).show("slow");
+        });
+
+        section_canver = document.getElementsByClassName("section_canver")
+        $(".section_canver").hide("slow",function(){
+            $(section_canver[index]).show("slow");
+        });
+
+        mainBTN = document.getElementsByClassName("mainBTN")
+        classes = [
+        "p-2 text-center text-white card bg-primary btn-rounded rounded d-block mainBTN",
+        "p-2 text-center text-white card bg-warning btn-rounded rounded d-block mainBTN",
+        "p-2 text-center text-white card bg-success btn-rounded rounded d-block mainBTN"
+        ]
+        classes_2 = ["text-primary","text-warning","text-success"];
+        classes_3 = ["P","T","F"]
+        if (index == 0){
+            classes[index] = "p-2 text-center bg-light text-primary card border-primary btn-rounded rounded d-block mainBTN";
+        }
+        else if (index == 1){
+            classes[index] = "p-2 text-center bg-light text-warning card border-warning btn-rounded rounded d-block mainBTN"; 
+        }
+        else{
+            classes[index] = "p-2 text-center bg-light text-success card border-success btn-rounded rounded d-block mainBTN";
+        }
+
+        for (var i=0;i<3;i++){
+            $(mainBTN[i]).attr("class",classes[i])  
+        }
+        sections = ["proccess_section","technic_section","budget_section"]
+        $("#tbprd_menu").attr("class",classes_2[index]+" h2")
+        if (btn != null){
+            $("#tbprd_menu").html("&nbsp;"+btn.textContent)
+
+        }
+        $(".all_section").slideUp("slow",function(){
+            $("."+sections[index]).slideDown("slow")
+        })
+        launchProgress(classes_3[index])
+    }
+
+    function reveal(elt,block_id)
+    {
+        if (elt.checked){
+            $(block_id).slideDown("slow")
+        }
+        else{
+            $(block_id).slideUp("slow")
+        }
+    }
+
+    function scrolldiv(elem="#",offY=0) {
+        //var elem = document.getElementById("ele");
+        
+        contentBody = document.getElementById("content-body")
+        if (elem == '#')
+            {contentBody.scrollTop = offY;}
+    }   
+    title_div = document.getElementsByClassName("title_div");
+    navigate_menu = document.getElementById("navigate_menu");
+    for (var j=0;j<title_div.length;j++){
+        offY = title_div[j].offsetTop; 
+        navigate_menu.innerHTML += "<div class='list-group-item mb-1'> <a href='#' onclick=scrolldiv('#',"+offY+")>"+title_div[j].textContent+"</a> </div>";
+    }
+    function launchNavigation(element){
+        show = parseInt(element.getAttribute("data-show"));
+        if (show == 0){
+            $("#navigate_menu_div").slideDown('slow')
+        }
+        else{
+            $("#navigate_menu_div").slideUp('slow')
+        }
+        element.setAttribute("data-show",(1-show))
+    }                                       
+
+    function launchProgress(type_prog="P"){
+
+        progress_launcher = document.getElementsByClassName("progress_launcher");
+        list_ids = "";
+        for ( var i = 0;i<progress_launcher.length;i++){
+            list_ids += progress_launcher[i].getAttribute('data-id') + "#"
+        }
+        $(".progress_launcher").hide("slow");
+        $.ajax({
+            url: '/get_progressions/',
+            data: {
+                'list_ids':list_ids,
+                'type_progression':type_prog
+
+            },
+            dataType: 'json',
+            success: function (data) {
+                for (var i=0;i<progress_launcher.length;i++){
+                    for (var j=0;j<progress_launcher.length;j++){
+                        if (progress_launcher[j].getAttribute('data-id') == data.ids[i]){
+                            break;
+                        } 
+                    }
+                    prc = parseFloat(data.result[i]);
+                    if(type_prog == "P"){
+                        progress_launcher[j].innerHTML = "<span class='badge'>P : </span>&nbsp;"
+                    }
+                    else if (type_prog == "T"){
+                        progress_launcher[j].innerHTML = "<span class='badge badge-warning'>T : </span>&nbsp;"
+                    }
+                    else if(type_prog == "F"){
+                        progress_launcher[j].innerHTML = "<span class='badge badge-success'>F : </span>&nbsp;"
+                    }
+
+                    if (prc < 25 ){
+                        progress_launcher[j].innerHTML += "<span class='text-danger'>"+prc+" % </span>" 
+                    }
+                    else if (prc < 75 ){
+                        progress_launcher[j].innerHTML += "<span class='text-info'>"+prc+" % </span>"   
+                    }
+                    else{
+                        progress_launcher[j].innerHTML += "<span class='text-success'>"+prc+" % </span>"    
+                    }
+
+                    $(".progress_launcher").show("slow");                           
+                }               
+            },
+            error: function(data){
+                console.log(data)
+            }
+        });     
+    }
+    launchProgress()
+</script>
+<script type="text/javascript">
+
+    per_value = document.getElementsByClassName("per_value")
+    data_period={{actual_institution.default_period.m_logic_type}};
+    months = ["Jan","Fev","Mars","Avr","Mai","Jui","Jul","Aou","Sep","Oct","Nov","Dec"]
+    actual_month = new Date().getMonth();
+    actual_year = parseInt(new Date().getFullYear());
+    the_weeks = new Array()
+    if (data_period == 2){
+        the_weeks = new Array()
+        first_day = new Date(actual_year,0,1);
+        tmp_shit = first_day.getUTCDay();
+        if ( tmp_shit != 0){
+            first_day  = new Date((actual_year-1),11,(32-tmp_shit));
+            last_day = new Date((actual_year-1),11,6+first_day.getDate());
+        }
+        else{
+            last_day = new Date((actual_year),0,7);
+        }
+        tmp_i = 0;
+        for (var k=0;k<53;k++){
+            tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+            tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+            the_weeks.push("Semaine du "+tmp_first+" au "+tmp_last)
+            actual_month = last_day.getMonth()
+            first_day = new Date(actual_year,actual_month,1+last_day.getDate());
+            actual_month = first_day.getMonth()
+            last_day = new Date(actual_year,actual_month,6+first_day.getDate());
+            tmp_i += 7;
+        }
+        tmp = ""
+    }
+    else if (data_period == 3){
+        for (var k=0;k<12;k++){
+            first_day = new Date(actual_year,k,0);
+            first_day = new Date(actual_year,k,1);
+            last_day = new Date(actual_year,(k+1),0);
+            tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+            tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+            the_weeks.push("du "+tmp_first+" au "+tmp_last)
+        }
+    }
+    else if (data_period == 6){
+        for (var k=0;k<2;k++){
+            first_day = new Date(actual_year,k*6,1);
+            last_day = new Date(actual_year,6*(k+1),0);
+            tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+            tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+            the_weeks.push("du "+tmp_first+" au "+tmp_last)
+        }
+    }
+    else if (data_period == 9){
+        for (var k=0;k<4;k++){
+            first_day = new Date(actual_year,k*3,1);
+            last_day = new Date(actual_year,3*(k+1),0);
+            tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+            tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+            the_weeks.push("du "+tmp_first+" au "+tmp_last)
+        }
+    }
+    for (var k=0;k<per_value.length;k++){
+        per_value[k].value = the_weeks[k];
+        per_value[k].textContent += " : "+the_weeks[k];
+        if (per_value[k].value == "{{periode}}"){
+            per_value[k].selected = true;
+        }
+    }
+
+    $('form').submit(function(){
+        structures_list = document.getElementById("structures_list");
+        calendar_selected = document.getElementById("calendar_selected");
+        try{
+
+            structures_check = document.getElementById("structures_lines").getElementsByTagName('input');
+
+            nb_checks = 0;
+            for ( var i=0; i<structures_check.length; i++)
+            {
+                if (i % 4 == 0 && i > 0 ){
+                    tmp_value += "\n"
+                } // Mettre plutot le nombre de colonnes
+                if (structures_check[i].checked == true){
+
+                    tmp_value += i+"|";
+                    nb_checks+=1;
+                }
+            }
+
+            calend = checkCalendar();
+            if (nb_checks < 1 || calend == ""){
+                $(this).find(':input[type=submit]').prop('disabled', false);
+                $(this).find(':button[type=submit]').prop('disabled', false);
+
+            }
+            else{
+
+                $(this).find(':input[type=submit]').prop('disabled', true);
+                $(this).find(':button[type=submit]').prop('disabled', true);
+            }
+        }
+        catch(error){
+
+            $(this).find(':input[type=submit]').prop('disabled', true);
+            $(this).find(':button[type=submit]').prop('disabled', true);
+        }
+    });
+
+
+    value_liner = document.getElementsByClassName('value_liner');
+    for (var i=0; i<value_liner.length; i++){
+        value_liner[i].innerHTML = value_liner[i].textContent;
+    }
+
+    function search_split(a,b){
+        tmp = b.split(" ");
+        result = false;
+        for (var i=0;i<tmp.length;i++){
+            if (a == tmp[i]){
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+    function genPDF(){
+        html = document.getElementById("tache_aka")
+        html_content = html.innerHTML;
+        $.ajax({
+            url: '/genPDF/',
+            data: {
+                'html':html_content,
+                'name':'sdsd'
+            },
+            dataType: 'json',
+            success: function (data) {
+            },
+            error: function(data){
+
+            }
+        }); 
+    }
+
+function printDoc(ind="0",arg_title="Plan Operationnel de Travail"){
+    var pdfContent = document.querySelector("#tache_aka");
+    var pdfPrint = document.getElementById("tache_to_print");
+    pdfPrint.innerHTML = "<div class='py-2'> <div class='py-2 text-center'>"+arg_title+"</div>"+pdfContent.innerHTML+"</div>";
+    no_printers = document.get
+    var opts2 = {
+        margin:1,
+        filename:arg_title,
+        title:arg_title,
+        jsPDF: { unit: 'cm', format: 'A4', orientation: 'landscape' },
+        optimize_layout:true
+        //image:{ type: 'jpeg', quality: 0.98 },
+
+    };
+    html2pdf().set(opts2).from(pdfContent).save();
+    alert("sdsd")
+}
+
+logoTAT = document.getElementById("logoTAT");
+logoTAT.setAttribute("style","cursor:pointer;width:25px;height:25px;background:{{user.personnel.backgrounds_tat}};color:#fff;text-align:center;font-weight:bold;border-radius:100%; padding:2px;")
+function show_histRACI(element){
+    parent = element.parentNode.parentNode.parentNode;
+    line = element.getAttribute("data-l")
+    td_raci = parent.getElementsByClassName("td_raci");
+    if (element.checked == true){
+        for (var j=0;j<td_raci.length;j++){
+
+            if (td_raci[j].getAttribute("data-l") == line){
+                $(td_raci[j]).show("slow")
+            }
+            
+        }
+    }
+    else{
+        for (var j=0;j<td_raci.length;j++){
+            $(td_raci[j]).hide("slow")
+        }
+    }
+}
+
+function update_printCheck(specific=0){
+    print_check = document.getElementById('print_check');
+    if (specific == 0){
+        thead_tache = document.getElementById('thead_tache');
+        tbody_tache = document.getElementById('tbody_tache');
+    }
+    else{
+        thead_tache = document.getElementsByClassName('table_head_'+specific)[0];
+        tbody_tache = document.getElementsByClassName('table_body_'+specific)[0];
+    }
+    try {
+        ths1 = thead_tache.getElementsByClassName('t_cell');
+        print_check.innerHTML = "";
+        for (var i=0; i<ths1.length; i++){
+            print_check.innerHTML += "<div ><input onclick='displayCheckTable("+i+");' data-check="+i+" checked type='checkbox' class='checkip' id='check"+ths1[i].innerHTML+"' value='' name=''><label for='check"+ths1[i].innerHTML+"'> "+ths1[i].innerHTML+"</label></div>";
+        }
+    }
+    catch(err) {
+
+    }
+
+}
+update_printCheck();
+
+function displayCheckTable(element){
+    checkip = document.getElementsByClassName('checkip');
+    trs = tbody_tache.getElementsByClassName('tr_bod');
+    if (checkip[element].checked == false){
+        $(ths1[element]).hide('slow',function(){
+            for (var j=0; j<trs.length; j++){
+                tds2 = trs[j].getElementsByClassName('t_cell');
+                $(tds2[element]).fadeOut('slow');
+            }
+        });
+    }
+    else{
+        $(ths1[element]).show('slow',function(){
+            for (var j=0; j<trs.length; j++){
+
+                tds2 = trs[j].getElementsByClassName('t_cell');
+                $(tds2[element]).fadeIn('slow');
+            }
+        });
+    }           
+}
+
+function getFieldValues(form="#"){
+    fields_value = document.getElementsByClassName('fields_value');
+    fields = document.getElementById('fields');
+    for (var i=0;i<fields_value.length;i++){
+        if (fields_value[i].value != ""){
+            fields.value += fields_value[i].value + "|";
+        }
+    }
+    if (form != "#"){
+        disableSubmit(form);    
+    }
+
+}
+menu_show = document.getElementById("menu_show");
+leftBig = document.getElementById("leftBig");
+function menuSH(element){
+    var datashow = element.getAttribute('data-show');
+    if (datashow == 0 ){
+        leftBig.style.display = 'none';
+        $(leftBig).removeClass('d-none');
+        $(leftBig).show('')
+        element.className="btn btn-light text-info";
+        $(element).attr("data-show",1);
+    }
+    else{
+        $(leftBig).hide('')
+        element.className="btn btn-info";
+        $(element).attr("data-show",0);             
+    }
+}
+$(".bg-comment").click(function(){
+    data_operation = $(this).attr("data-operation");
+    data_comments = $(this).attr("data-comments");
+    data_personnel = $(this).attr("data-personnel"); 
+    $("#tmp_operation").text(data_operation);
+    $("#tmp_comments").text(data_comments);
+    $("#tmp_opera_personnel").text(data_personnel)
+})
+</script>
+<script type="text/javascript">
+    function block_op(elt){
+        if (elt == 1){
+            $("#block_op1").hide('slow',function(){
+                $("#block_op2").show('slow');
+            });
+            $("#wer1").attr('class','btn btn-light')
+            $("#wer2").attr('class','btn btn-success')
+        }
+        else{
+            $("#block_op2").hide('slow',function(){
+                $("#block_op1").show('slow');
+            })
+            $("#wer2").attr('class','btn btn-light')
+            $("#wer1").attr('class','btn btn-success')              
+        }
+
+    }
+    var calendar_modal = document.getElementById("calendar_modal");
+
+
+    $(".calendar_card").click(function(){
+        var data_selected = $(this).attr('data-selected');
+        data_selected = 1-parseInt(data_selected);
+        $(this).attr('data-selected',data_selected);
+
+    });
+    $(".repartiBTN").click(function(){
+
+        $("#calendar_tache").val($(this).attr('data-id'));
+        //alert($(this).attr('data-id'));
+    });
+    function checkCalendar(){
+        result ="";
+        calendar_card = document.getElementsByClassName("calendar_card");
+
+        for (var i=0; i<calendar_card.length; i++){
+            data_selected = parseInt(calendar_card[i].getAttribute('data-selected'));
+            if(data_selected == 1){
+                result += ""+calendar_card[i].getAttribute('data-num')+"_";
+            }
+        }
+        $("#calendar_selected").val(result);
+    }
+
+</script>
+<script type="text/javascript">
+    {% if animate2 != None %}
+    $("#rapportdoneModal").modal('show');
+    {% endif %}
+
+    //tache_window.print();
+
+</script>
+<script type="text/javascript">
+    $.ajax({
+        url: '/count_notifs/',
+        data: {
+            'institution':{{actual_institution.id}},
+            {% if user.personnel != None %}
+            'value':{{user.id}},
+            {% else %}
+            'value':{{user.id}}
+            {% endif %}
+        },
+        dataType: 'json',
+        success: function (data) {
+            $(".count_work").text(data.result);
+            $(".count_to_done").text(data.have_to_done);
+            $(".count_done").text(data.is_done);
+            $(".count_rapported").text(data.have_rapported);
+
+            $(".count_to_done2").text(data.have_to_done2);
+            $(".count_done2").text(data.is_done2);
+            $(".count_rapported2").text(data.have_rapported2);
+            $(".count_is_observ").text(data.nb_observations);
+
+            $(".count_is_consulted").text(data.count_is_consulted)
+            $(".count_is_informed").text(data.count_is_informed)
+
+            $(".indi_total").text(data.indi_total)
+            /*
+            $(".count_to_report").text(data.nb_have_to_report);
+            $(".count_is_report").text(data.nb_is_rapported);
+            $(".count_is_observ").text(data.nb_observations);
+
+            $(".count_to_report2").text(data.have_to_rapported2);
+            $(".count_is_report2").text(data.nb_is_rapported2);
+            */
+            $(".count_is_observ2").text(data.nb_observations2);
+        },
+        error: function(data){
+
+        }
+    }); 
+    
+    var xValues = [{% for periode in actual_institution.default_subperiod.decoup_desc_slip %}"{{periode}}",{% endfor %}""];
+
+    var yValues = [55, 49, 44, 24, 15];
+    var barColors = ["red", "green","blue","orange","brown","purple","pink","goldenrod","gray","cyan"];
+
+
+
+    var xyValues = [
+    {x:1, y:7},
+    {x:2, y:8},
+    {x:3, y:8},
+    {x:4, y:9},
+    {x:5, y:10}
+    ];
+
+    personnels = [{% for perso in personnel %}"{{perso}}",{% endfor %}""]
+
+/*
+new Chart("myChart3", {
+  type: "pie",
+  data: {
+    labels: personnels,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    title: {
+      display: true,
+      text: "Participation de l'Equipe "
+    }
+  }
+});
+*/
+
+</script>
+<script type="text/javascript">
+/*main_div = document.getElementById('layout-wrapper');
+main_div.onscroll = function() {myFunction()};
+*/
+// Get the navbar
+
+var navbar = document.getElementById("navbar_top");
+
+// Get the offset position of the navbar
+//var sticky = navbar.offsetTop;
+
+
+try{
+    year_plan = document.getElementById("year_plan");
+    year_plan.value = new Date().getFullYear(); 
+    actual_year = parseInt(year_plan.value);
+}
+catch (error){
+    actual_year = parseInt(2022);
+}
+function launch_dataPeriod(){
+
+    week_detail = document.getElementsByClassName('week_detail');
+    if (data_period == 2){
+        the_weeks = new Array()
+        first_day = new Date(actual_year,0,1);
+        tmp_shit = first_day.getUTCDay();
+        if ( tmp_shit != 0){
+            first_day  = new Date((actual_year-1),11,(32-tmp_shit));
+            last_day = new Date((actual_year-1),11,6+first_day.getDate());
+        }
+        else{
+            last_day = new Date((actual_year),0,7);
+        }
+        tmp_i = 0;
+        for (var k=0;k<53;k++){
+            tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+            tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+            the_weeks.push("Semaine du "+tmp_first+" au "+tmp_last)
+            actual_month = last_day.getMonth()
+            first_day = new Date(actual_year,actual_month,1+last_day.getDate());
+            actual_month = first_day.getMonth()
+            last_day = new Date(actual_year,actual_month,6+first_day.getDate());
+            tmp_i += 7;
+        }
+        tmp = ""
+        week_detail = document.getElementsByClassName('week_detail');
+
+        week_card = document.getElementsByClassName("week_card");
+        for (var k=0;k<week_card.length;k++){
+                //alert(the_weeks[k])   
+                week_card[k].textContent = the_weeks[k];
+            }
+            week_plus = document.getElementsByClassName("week_plus");
+            for (var k=0;k<week_plus.length;k++){
+                //alert(the_weeks[k])   
+                week_plus[k].textContent = the_weeks[k];
+            }
+        }
+        else if (data_period == 3){
+            for (var k=0;k<12;k++){
+                first_day = new Date(actual_year,k,0);
+                first_day = new Date(actual_year,k,1);
+                last_day = new Date(actual_year,(k+1),0);
+                tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+                tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+                the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+            }
+            for (var k=0;k<week_detail.length;k++){
+                week_detail[k].innerHTML = the_weeks[k%12]
+            }
+        }
+        else if (data_period == 6){
+            for (var k=0;k<2;k++){
+                first_day = new Date(actual_year,k*6,1);
+                last_day = new Date(actual_year,6*(k+1),0);
+                tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+                tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+                the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+            }
+            for (var k=0;k<week_detail.length;k++){
+                week_detail[k].innerHTML = the_weeks[k%4]
+            }
+        }
+        else if (data_period == 9){
+            for (var k=0;k<4;k++){
+                first_day = new Date(actual_year,k*3,1);
+                last_day = new Date(actual_year,3*(k+1),0);
+                tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+                tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+
+                the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+            }
+            for (var k=0;k<week_detail.length;k++){
+
+                week_detail[k].innerHTML = the_weeks[k%4]
+            }
+        }
+    }
+    
+    launch_dataPeriod();
+
+    try{
+        year_plan.onchange = function(){
+            launch_dataPeriod();
+        }
+    }
+    catch (error){
+
+    }
+
+    var actual_tache = 0;
+
+    {% if operation != None %}
+    type_month = new Date().getMonth();
+    typeperiode = document.getElementById('typeperiode');
+    function launchPeriode(){
+        months = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+        for (var m=0; m<months.length; m++){
+            if (m == type_month){
+                message = "<option value='"+m+"' selected>"+months[m]+" 2022 </option>"
+            }
+            else{
+                message = "<option value='"+m+"' >"+months[m]+" 2022 </option>"
+            }
+            typeperiode.innerHTML += message;
+        }
+    }
+    {% endif %}
+
+    function launchAttributes(element){
+        attribute_id = element.getAttribute("data-line");
+        attributes = element.getAttribute("data-attributes").split("|");
+        attributes_type = element.getAttribute("data-attributes-type").split("|");
+        attributes_valid = document.getElementById("attributes_valid");
+        attributes_valid.innerHTML = "<div class='text-success'> <b> Observations : </b></div>"
+        for (var i=0; i<attributes_type.length-1; i++){
+            if (attributes_type[i] == 'number'){
+                field = "<input type='number' class='form-control observation_val'>";
+            }
+            else if (attributes_type[i] == 'date'){
+                field = "<input type='date' class='form-control observation_val'>";
+            }
+            else{
+                field ="<textarea class='form-control observation_val'></textarea>"
+            }
+            tmp = "<div> <div> <label>"+attributes[i]+"</label> </div> <div>"+field+"</div> </div>"
+            attributes_valid.innerHTML += tmp;
+        }
+        attributes_valid.innerHTML += "<div class='my-2'><input type='submit' class='btn btn-success' value='Soumettre'></div>";
+        attributes_valid_line = document.getElementById("attributes_valid_line");
+        attributes_valid_line.value = parseInt(attribute_id);
+    }
+
+    function collectLines(){
+        observation_val = document.getElementsByClassName("observation_val");
+        valid_attributes = document.getElementById("valid_attributes");
+        valid_attributes.value = ""
+        for (var i=0; i<observation_val.length; i++){
+            valid_attributes.value += observation_val[i].value+"|";
+        }
+    }
+
+    morer = document.getElementsByClassName("morer");
+    if (morer.length > 0){
+        morer_0 = document.getElementsByClassName("morer")[0];
+        $(".morer").click(function(){
+        //alert("fdfd")
+        line = $(this).attr('data-line');
+        stat = parseInt($(this).attr('data-stat'));
+        $(".btn-rapport").click(function(){
+            $("#tache-title").html($(this).attr('data-tache'));
+            $("#tache-result").html($(this).attr('data-result'));
+            $("#tache-id-op").val($(this).attr('data-id'));
+        });
+        if (stat == 0 ){
+            $(this).html("<b>Masquer {{operations_modules.m_nom}}</b><i class='fas fa-angle-up p-1 text-infos'></i>");
+            $("tr[data-line='"+line+"']").show("fast");
+        }
+        else{
+            $(this).html("<b>Voir {{operations_modules.m_nom}}</b><i class='fas fa-angle-down p-1 text-info'></i>");
+            $("tr[data-line='"+line+"']").hide("fast");
+        }
+        $(this).attr('data-stat',(1-stat));
+    });
+    //morer_0.click();
+    $(".morer").click();
+}
+
+
+
+function rapport(element){
+    $("#tache-title").html($(element).attr('data-tache'));
+    $("#tache-result").html($(element).attr('data-result'));
+    $("#tache-id-op").val($(element).attr('data-id'));
+    $("#tache-nom").text($(element).attr('data-name'));
+    if ($(element).attr('data-rapport') == '0'){
+        $("#type_rapport").text("Technique");
+        $("#rapport_input").val('c');
+    }
+    else{
+        $("#type_rapport").text("Financier");
+        $("#rapport_input").val('f');
+    }   
+}
+
+
+function rapport2(element){
+    $("#tache-title2").html($(element).attr('data-tache'));
+    $("#tache-result2").html($(element).attr('data-result'));
+    $("#tache-id-op2").val($(element).attr('data-id'));
+    $("#tache-nom2").text($(element).attr('data-name'));
+    $("#tache-montant2").text($(element).attr('data-montant'))
+    $("#type_rapport2").text("Financier");
+    $("#rapport_input2").val('f');
+}
+
+function validerTache(element){
+    $("#opera_valider_title").text(element.getAttribute('data-operation'));
+    $("#opera_valider_id").val(element.getAttribute('data-id'));
+}
+function annulerTache(element){
+    $("#opera_invalider_title").text(element.getAttribute('data-operation'));
+    $("#opera_invalider_id").val(element.getAttribute('data-id'));
+}
+var ast = setTimeout(function(){
+    $("#loader").fadeOut('slow');
+},3000);
+
+function merde(element,generator="#"){
+    data_id = (element.getAttribute('data-id'));
+    delete_generator = document.getElementById("delete_generator");
+    $(".entity_id").val(data_id); 
+    if (generator != "#"){
+        delete_generator.value = generator;
+    }
+    else{
+        delete_generator.value = "{{g_v}}";
+    }
+}
+
+function restoreAdd(mdf='#',restore="#"){
+    $(".remove-on-modal").css('display','none');
+    if (mdf == '#'){
+        $("#modify_title").text("Ajouter {% if sub_entity != None  %} {{sub_entity}} {% else %}{{entity}}{% endif %}");
+    }
+    else{
+        $("#modify_title_"+mdf).text("Ajouter "+mdf);
+    }
+    // Restorers
+    if (restore == "#"){
+        edit_or_create = document.getElementById("edit_or_create");
+        edit_or_create.value = 'c';
+    }
+    else{
+        edit_or_create = document.getElementById("edit_or_create"+"_"+mdf);
+        edit_or_create.value = 'c';
+    }
+}
+
+function editBTN(element,html_div="addActionModal",mdf="#",new_design="#",task_edit=0){
+
+    $(".remove-on-modal").css('display','none');
+    if (mdf == '#'){
+        $("#modify_title").text("Modifier {% if sub_entity != None  %} {{sub_entity}} {% else %}{{entity}}{% endif %}");//Opération
+        edit_or_create = document.getElementById("edit_or_create");
+        edit_or_create.value = 'e';
+        edit_id = document.getElementById("edit_id");
+        edit_id.value = element.getAttribute('data-id');
+    }
+    else{
+        $("#modify_title_"+mdf).text("Modifier "+mdf);
+        edit_or_create = document.getElementById("edit_or_create_"+mdf);
+        edit_or_create.value = 'e';
+        edit_id = document.getElementById("edit_id_"+mdf);
+        edit_id.value = element.getAttribute('data-id');
+    }
+    edActionModal = document.getElementById(html_div);
+
+    if (new_design == "#"){
+        line = element.parentNode.parentNode;
+        special_edit = 0;
+        tds = line.getElementsByTagName("td");
+    }
+    else{
+        line = element;
+        special_edit = 1;
+        tds = line.getElementsByTagName("div");
+    }
+    input = edActionModal.getElementsByClassName("form-control");
+
+    for(var i=0; i<{% if is_tache or is_sub_tache %}input.length-1{% else %}input.length{% endif %}; i++){
+        //console.log(tds[i].innerHTML)
+        if (input[i].getAttribute('type') == 'file' || input[i].getAttribute('type') == 'image'){
+
+            parent_input = input[i].parentNode;
+            data_is_period = tds[i].getAttribute("data-is_period")
+            if (data_is_period != "1"){
+                i_tmp = "<div class='remove-on-modal' style='margin-top:15px;'> <b>Doc Actuel : </b> <div> "+tds[i].textContent+"</div> </div>";
+
+            }
+            enum_val = document.createElement("div");
+
+            parent_input.innerHTML += i_tmp;    
+        }
+        else if (input[i].getAttribute('type') == 'number' || input[i].getAttribute('type') == 'text' ){
+            if (input[i].getAttribute('type') == 'number'){
+                input[i].value = parseInt(tds[i].textContent);
+            }
+            else{
+                input[i].value = tds[i].textContent;    
+            }      
+        }
+        else if (input[i].tagName == 'SELECT') {
+            if (input[i].getAttribute("name") == "s_enum_2"){
+                input[i].value = tds[i].textContent;
+            }
+            if (tds[i].getAttribute('data-id') != '-1')
+            {
+                    //alert(tds[i].getAttribute('data-id'));
+                    tmp_value = tds[i].getAttribute('data-id');
+                    options = input[i].getElementsByTagName("option");
+                    for (var k=0; k<options.length; k++){
+
+                        if ( parseInt(options[k].getAttribute('value')) == parseInt(tmp_value))
+                        {
+                            options[k].selected = true;
+                            if (special_edit == 1){
+                                tmp2 ="<select name='sup_entity' class='form-control'>";
+                                
+                                for (var l=0; l<options.length; l++){
+                                    tmp2 += "<option ";
+                                    if (options[l].value == tmp_value){
+                                        tmp2 += " selected ";
+                                    }
+                                    tmp2 += "value='"+options[l].val-ue+"'>"+options[l].innerHTML+"</option>";
+                                }
+                                tmp2 += "</select>";
+                                input[i].parentNode.innerHTML = tmp2;       
+                            }
+                            break;
+                        }
+                    }
+
+                    shit = tds[i].getAttribute("data-period")+"a";
+                    if (shit != "nulla"){
+                        persh = tds[i].getAttribute("data-period").split("_");
+                        descs = tds[i].getAttribute("data-desc").split("|")
+                        
+                        acheck = document.getElementsByClassName("acheck");
+                        for (var j=0;j<persh.length-1;j++){
+                            if (persh[j] == '9'){
+                                acheck[j].parentNode.innerHTML = "<input type='checkbox' class='acheck checkbox custom-control-input clock_sem'  id='calend"+j+"'/> <label class='custom-control-label'  for='calend"+j+"'>"+descs[j]+"</label><div><small class='modal_calco_date text-primary'></small></div>";
+                            }
+                            else{
+                                acheck[j].parentNode.innerHTML = "<input type='checkbox' class='acheck checkbox custom-control-input clock_sem' checked  id='calend"+j+"'/> <label class='custom-control-label'  for='calend"+j+"'>"+descs[j]+"</label><div><small class='modal_calco_date text-primary'></small></div>";                               }
+                            }
+                            $(".acheck[type='checkbox']").on('change',function(){
+                                $(".acheck[type='checkbox']").not(this).prop('checked',false);
+                            });
+
+                        }
+                        {% if g_v == 'o' %}
+                        ajCD(modal_per_select.value)
+                        {% endif %}
+                    }
+
+
+                }
+                else{
+                    input[i].textContent = tds[i].textContent;  
+                }
+            }
+
+            try {
+                dataSup = element.getAttribute("data-sup");
+        //alert(dataStructs)
+        search1 = document.getElementById("search1");
+        search1.value = dataSup;
+    }
+    catch(err){
+
+    }
+    if (task_edit == 1) {
+        $("#calendar_selected").val("#");
+        dataPeriod = element.getAttribute("data-period");
+        dataPeriod = dataPeriod.split(",")
+        choosen_period = document.getElementById("choosen_period");
+        dps_tmp_2="";
+        dps_tmp = dataPeriod
+        choosen_period.innerHTML = "";
+        for (var l=0;l<dps_tmp.length-1;l++){
+            dps_tmp_2 = "<div class='p-1'><span class='btn btn-success'>"+dps_tmp[l]+"</span></div>" + dps_tmp_2;
+        }
+        choosen_period.innerHTML = dps_tmp_2;
+
+        dataStructs = element.getAttribute("data-structs");
+        dataStructs = dataStructs.split("§");
+        struc_grp_div = document.getElementById("struc_grp_div");
+        data_roles = new Array();
+        struc_grp_div.innerHTML = "";
+        tmp3 = ""
+        for (var i=0; i<dataStructs.length; i++){
+            tmp2 = dataStructs[i].split('#');
+            if (tmp2.length > 1){
+                data_roles.push(tmp2[2]);
+            }
+            tmp = " <div class='col-sm-4 form-group'>"+"<label>Structure</label> <select value='"+parseInt(tmp2[0])+"' onchange='getStruc_lines()' name='Structure' class='form-control searcher stru_cho'>";
+            {% for v in insti_structures %}
+            tmp += "<option ";
+            if ({{v.id}} == tmp2[0]){
+                tmp += " selected "
+            }
+            tmp += "value='{{v.id}}'>{{v}}</option>";
+            {% endfor %} 
+            tmp += "</select> </div>";  
+            tmp3 += tmp;
+        }
+        struc_grp_div.innerHTML += tmp3;
+
+        structures_lines = document.getElementById("structures_lines");
+        structures_lines.innerHTML = "";
+        getStruc_lines("#",data_roles);
+    }
+    result = "";
+}
+
+function filter_lines(type_search,value_search="|",sub_search="#"){
+    $.ajax({
+        url: '/ajax_lines/',
+        data: {
+            'sub_search':sub_search,
+            'value_search':value_search,
+            'type_search':type_search
+        },
+        dataType: 'json',
+        success: function (data) {
+            message = "";
+            $("#table_body").hide('');
+            if (data.lines_count > 0){
+                for (var i=0; i<data.lines_count; i++){
+                    text = data.lines[i].split("|");
+                    tr = "<tr>";
+                    for (var j=0;j<text.length;j++){
+                        tr+="<td>"+text[j]+"</td>";
+                    }
+                    tr += "<td><button class='btn btn-success edit-btn' ><i class='fas fa-pencil-alt'></i></button>";
+                    tr += " <button class='btn btn-danger delete-btn' data-target='#deleteModal' data-id='1' data-toggle='modal'><i class='fas fa-trash-alt'></i></button></td>";
+                    tr += "<td>"+data.progressions[i]+" % </td>";
+                    tr +="</tr>";
+                    message += tr;
+                }
+            }
+            else{
+                message =" <tr> <td> Aucune Donnée ne correspond à votre Recherche </td></tr>";
+            }
+            $("#table_body").html(message);
+            $("#table_body").show('');
+        },
+        error: function(data){
+
+        }
+    });
+}
+
+
+$(".filter-btn").click(function(){
+    searcher = document.getElementsByClassName('searcher');
+    nb_searchers = searcher.length;
+    code = searcher[(nb_searchers-1)].getAttribute('data-code');
+    sub_search = searcher[(nb_searchers-1)].value;
+    filter_lines("{{g_v}}","|",sub_search)
+});
+/*
+$(".searcher").change(function(){
+    val_sea = $(this).val();
+    val_code = $(this).attr('data-code')
+    $.ajax({
+        url: '/get_searches/',
+        data: {
+            'value':val_sea,
+            'type':val_code
+        },
+        dataType: 'json',
+        success: function (data) {
+            if (val_code == 'p'){
+
+            }
+            else if(val_code=='a'){
+
+            }
+            else if(val_code=='a1'){
+
+            }
+        },
+        error: function(data){
+
+        }
+    }); 
+});*/
+$(".charter_launch").click(function(){
+    index = $(this).attr('data-index');
+    //alert(index)
+    $(".graphic_title").text($(this).text());
+    $.ajax({
+        url: '/ajax_graphiques/',
+        data: {
+            'type_graph':index,
+            'id_tache':parseInt(actual_tache)
+        },
+        dataType: 'json',
+        success: function (dt) {
+            if ( index == '0'){
+                new Chart("myChart", {
+                    type: "bar",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                            backgroundColor: barColors,
+                            data: dt.results
+                        }]
+                    },
+                    options: {
+                        legend: {display: false},
+                        title: {
+                            display: true,
+                            text: "Evolution par Periode"
+                        }
+                    }
+                });
+                $("#chartDIV").attr("style='display:block;'");
+            }
+            else if( index == '1'){
+
+                new Chart("myChart2", {
+                    type: "line",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                            data: [0,10,12,14,14],
+                            borderColor: "red",
+                            fill: false
+                        },{
+                            data: [14,15,16,18,20],
+                            borderColor: "green",
+                            fill: false
+                        },{
+                            data: [20,20,35,40,50],
+                            borderColor: "blue",
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        legend: {display: false},
+                        title: {
+                            display: true,
+                            text: "Réalisation de la Tâche "
+                        }
+                    }
+                });
+                $("#chartDIV2").show();
+            }
+            else if( index  == '2'){
+                $("#chartDIV3").show();
+            }
+        },
+        error: function(data){
+
+        }
+    }); 
+
+});
+
+function ajax_grapher(element,type_graph){
+    var barColors = ["green", "#14b593","blue","#759845","#2365a3","#875Sdf","purple","pink","yellow","#a45467","#a2b514","#1258b2","#958523","#4862a3"];
+    id_graph = element.getAttribute('data-tache');
+
+    nature_graph = "{% if gest_val != None %}{{gest_val}}{% elif lvl != None %}{{lvl}}{% else %}-1{% endif %}";
+
+    $.ajax({
+        url: '/ajax_graphiques/',
+        data: {
+            'type_graph':type_graph,
+            'id_graph':parseInt(id_graph),
+            'inst_graph':{{actual_institution.id}},
+            'nature_graph':nature_graph
+        },
+        dataType: 'json',
+        success: function (data) {
+            xValues = data.x_abcisses;
+            yValues = data.y_abcisses;
+            if (type_graph == 'eT'){
+                new Chart("canvas_modal", {
+                    type: "line",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                            label:'Evolution {{entity}}',
+                            fill:false,
+                            borderColor: barColors,
+                            data: yValues
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Evolution {{entity}}"
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                    suggestedMax: 100
+                                }
+                            }],
+                        }
+                    }
+                });
+            }
+            else if(type_graph == 'p'){
+                new Chart("canvas_modal", {
+                    type: "pie",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                            backgroundColor: barColors,
+                            data: yValues
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Participation du Personnel"
+                        }
+                    }
+                });
+            }
+            else if(type_graph == 't'){
+                x_axes = new Array()
+                for (var x=0; x<data.nb_sub; x++){
+                    x_axes[x]={
+                        label: xValues[x].replace('&#x27;',"'"),
+                        fill:'origin',
+                        backgroundColor: barColors[x],
+                        data: [yValues[x]]
+                    }
+                }
+                new Chart("canvas_modal", {
+                    type: "bar",
+                    data: {
+                      labels: [data.sub_names], //Sous-entité
+                      datasets: x_axes
+                  },
+                  options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: 'rgb(255, 99, 132)'
+                            }
+                        }
+                    },
+                    indexAxis: 'y',
+                    title: {
+                        display: true,
+                        text: "Evaluation {{entity}}".replace('&#x27;',"'")
+                    },
+                    tooltips: {
+                         /*callbacks: {
+                            title: function(t, d) {
+                               return tasks_names[t[0].index];
+                            }
+                        }*/
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            },
+                            callback: function(t) {
+                                var maxLabelLength = 3;
+                                if (t.length > maxLabelLength) return t.substr(0, maxLabelLength) + '...';
+                                else return t;
+                            }
+                        }],
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            }
+        },
+        error: function(data){
+            $("#graph_modal_div").html("<div></div>");
+        }
+    });
+
+}   
+
+function grapher(element){
+    actual_tache = $(element).attr('data-tache');
+}
+
+function grapher_comparaisons(element){
+    graph_modal_div = document.getElementById("graph_modal_div");
+    graph_modal_div.innerHTML = "<canvas style='width:100%;' id='canvas_modal'></canvas>";
+    ajax_grapher(element,'t');
+}
+
+function grapher_personnel(element){
+    graph_modal_div = document.getElementById("graph_modal_div");
+    graph_modal_div.innerHTML = "<canvas style='width:100%;' id='canvas_modal'></canvas>";
+    ajax_grapher(element,'p');
+}
+
+function grapher_evolution(element){
+
+    graph_modal_div = document.getElementById("graph_modal_div");
+    graph_modal_div.innerHTML = "<canvas style='width:100%;height:100%;min-height:250px;' id='canvas_modal'></canvas>";
+    ajax_grapher(element,'eT');
+}
+
+function grapher_linear(element){
+    graph_modal_div = document.getElementById("graph_modal_div");
+    graph_modal_div.innerHTML = "<canvas style='width:100%;' id='canvas_modal'></canvas>";
+    ajax_grapher(element,'t');
+}
+
+
+$(".fa-pencil-alt").click(function(){
+    $("#editFormAction").html($("#addFormAction").html());
+});
+
+main_td = document.getElementsByTagName('td');
+for (var i=0; i<main_td.length; i++){
+    //main_td[i].innerHTML = main_td[i].innerHTML.replace('\n','<br>');
+}
+</script>
+<script src="{% static 'webpages/ctn_bpf/gauge.min.js' %}"></script>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script type="text/javascript">
+
+    var pdfContent = document.querySelector("#tache_aka");
+    //html2pdf().from(pdfContent).save();
+
+    var opts = {
+        angle: 0.1,
+        lineWidth: 0.44,
+        radiusScale: 1,
+        pointer:{
+            length:0.6,
+            strokeWidth: 0.035,
+            color:"#000000",
+        },
+        limitMax: false,
+        limitMin: false,
+        colorStart: '#00e380',
+        colorStop:'#a214d2',
+        strokeColor: "#1234a2",
+        generateGradient: true,
+        highDpiSupport:true,
+        staticZones: [
+        {strokeStyle: "#ff0030",min:0, max:20},
+        {strokeStyle: "#d06910",min:20, max:40},
+        {strokeStyle: "orange",min:40, max:60},
+        {strokeStyle: "#a0a345",min:60, max:80},
+        {strokeStyle: "green",min:80, max:100}
+        ],
+        staticLabels: {
+    font: "14px Ubuntu",  // Specifies font
+    labels: [0,20,40,65,80,100],  // Print labels at these values
+},
+}
+var targets = document.getElementsByClassName("barometer");
+gauges = new Array()
+for (var i=0; i<targets.length; i++){
+    var gauge = new Gauge(targets[i]).setOptions(opts);
+    gauge.maxValue = 100;
+    gauge.setMinValue(0)
+    gauge.animationSpeed = 12;
+    progression = targets[i].getAttribute('data-progression');
+    if (parseInt(progression) > 100)
+        {gauge.set(parseInt({{actual_progression}}));}
+    else{
+        gauge.set(progression)
+    }
+    gauges.push(gauge)
+}
+
+
+
+    //gauge.percentColors = [[0.0,"#111111"],[0.5,"#111111"],[1.0,"#111111"]]
+    shofs = 0;
+    function showFilters(){
+        print_check = document.getElementById("print_check");
+        if (shofs == 0){
+            $(print_check).show('slow');
+        }
+        else{
+            $(print_check).hide('slow');
+        }
+        shofs = 1 - shofs;
+    }
+
+
+</script>
+{% block script %}
+
+{% endblock %}
+{% if too_much_ins == True %}
+<div class="modal fade" id="tooMUCHModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal bordered-row" action="/delete/" id="tooMUCHFormAction" method="post">
+                {% csrf_token %}
+                <div class="modal-header bg-danger text-white">
+                    Veuillez Obtenir un Code Valable
+                </div>
+                <div class="modal-body">
+                    Désolé, mais le Code utilisé ne vous permet pas de créer plus d'institutions au sein d'Opera,
+                    Pour renseigner plus d'institutions, veuillez renouveler <b> votre Formule </b>
+                </div>
+                <div class="modal-footer">
+                    <div class="px-2">
+                        <span> 2022 © BeinInfo. </span>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#tooMUCHModal").modal('show')
+</script>
+{% endif %}
+<script type="text/javascript">
+    tree_link = document.getElementsByClassName("tree_link");
+    for (var i=0;i<tree_link.length;i++){
+        id = tree_link[i].getAttribute("data-id");
+        tree_link[i].setAttribute('href',"/gestionnaire/"+i+"/"+id+"/")
+    }
+
+    tree_link = document.getElementsByClassName("tree_link2");
+    for (var i=0;i<tree_link.length;i++){
+        id = tree_link[i].getAttribute("data-id");
+        tree_link[i].setAttribute('href',"/evaluer/"+(i+1)+"/"+id+"/")
+    }
+
+    tree_link = document.getElementsByClassName("tree_link3");
+    for (var i=0;i<tree_link.length;i++){
+        id = tree_link[i].getAttribute("data-id");
+        tree_link[i].setAttribute('href',"/data_form/"+(i+1)+"/"+id+"/")
+    }   
+    replace_n = document.getElementsByClassName("replace_n");
+    for (var i=0; i<replace_n.length; i++){
+        replace_n[i].innerHTML = replace_n[i].innerHTML.replace("\n","<br>");
+    }
+</script>
+</body>
+</html>

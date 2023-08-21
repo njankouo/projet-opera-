@@ -1,0 +1,1041 @@
+{% extends './entities.html' %}
+{% load static %}
+
+{% block add_title %} 
+Objectifs et Indicateurs
+{% endblock %}
+
+		{% block extra_header %}
+			<style>
+				label{
+					font-weight: bold;
+				}
+			</style>
+		{% endblock %}
+
+{% block search_filters %}
+
+{% block print_bar %}
+
+<div class="d-flex" style="margin-bottom:25px;border-bottom: 1px solid #ddd;">
+	<div class="pr-2"> <a href="/dataelts/" class="btn"> Gestion des Element de Donnée </a> </div>
+	<!-- <div class="px-2"> <a href="/dataelts/indic/" class="btn {% if is_indi != None %} text-success {% endif %}"> Formules d'Indicateur </a> </div> -->
+	<div class="px-2"> <a href="/evaluer/0/" class="btn text-success "> Gestion des Indicateurs</a> </div>
+</div>
+
+
+{% endblock %}
+
+{% if base_val == None %}
+<h3> Atteinte des Objectifs : {{entity}} </h3>
+{% endif %}
+{% endblock %}
+
+{% block miniBigLeft %}
+<div class="mb-3">
+							<div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
+								<div class="btn text-primary"> Graphes</div>
+								<div><i class="fas text-primary fa-angle-down"></i></div>
+							</div>
+
+	<div class="pt-2 pl-3">
+		<input type="checkbox" checked="" onchange="display_graph(this)" name="">
+		<label><small>Afficher/Masquer</small></label>
+	</div>
+</div>
+{% endblock %}
+
+{% block table %}
+<div class="d-flex flex-wrap">
+	{% for s in sup_hierachy %}
+	<div class="px-1"> <a class='tree_link2' data-id="{{s.id}}" href="#"><small> {{s}} </small> <small class="text-secondary"> > </small> </a> </div>
+	{% endfor %}	
+</div>
+
+<div class="d-flex justify-content-between pt-1">
+	<div class="table col-lg-11">
+		{% for element in pages_o %}
+		<div>
+			<p><a  class="h4 replace_n text-primary title_div"  href="/evaluer/{{gest_val_1}}/{{element.id}}/">{{element}}</a> </p>
+			{% if element.get_objectif != None %}
+			<p class="replace_n">Objectifs : {{element.get_objectif}}
+			</p>
+			{% endif %}
+			<p>
+				<b data-name="{{element}}" data-obj="{{element.get_objectif}}" data-id="{{element.id}}" class="indiAdd text-success" data-target="#add_indiModal" data-toggle="modal" style="cursor:pointer;" onclick="loadObjs(this)"> + Nouvel Indicateur </b>
+			</p></div>
+			<div class="mb-5">
+				<div class="h5"> Liste des Indicateurs </div>
+				<div>
+					<table id="tache" class="table table-responsive">
+						<thead>
+							<th> Nom de l'Indicateur </th>
+							<th colspan="2"> Variables </th>
+							<!-- <th> Dénominateur </th> -->
+							<!-- <th> Résultats Ciblés </th> -->
+							<th> Fiche </th>
+							<th class="text-success"> Dernier Résultat </th>
+							<th class="text-primary"> Unite </th>
+							<th> Formule de Calcul </th>
+							<th class="d-none"> Codes Couleur </th>
+							<th class="d-none"> Modalites d'Alarme </th>
+							<th class=""> Sources de Donnees </th>
+							<th> Action </th>
+						</thead>
+						<tbody>
+							{% for ind in element.get_indicateurs %}
+							<tr>
+
+								<td colspan="1"><!--<i class="fas fa-star"></i>--> {{ind}}</td>
+								<td colspan="2">
+									{% for in in ind.indi_numerateur %}
+									<span class="badge badge-light">{{in}}</span>&nbsp;
+
+									{% endfor %}
+								</td>
+								<td> <span class='text-info' style="cursor:pointer;" onclick="getIndi(0,{{ind.id}});" data-target="#indiModal" data-toggle="modal" ><i class="fas fa-file"> </i>&nbsp;Fiche d'Indicateur</span> </td>
+								<td>{{ind.last_value}}</td>
+								<td>{{ind.m_unite}}</td>
+								<td class="nums_code">{{ind.m_numerateur}}</td>
+								<td class="d-none">{{ind.get_colors_elts}} </td>
+								<td class="d-none">{{ind.get_alerts_code}}</td>
+								<td> {% if ind.data_verification != None %} <a href="/data_form/{{ind.data_verification.id}}/0/"> <small class="text-danger"><i class="fas fa-file"></i> {{ind.data_verification}}</small> </a> {% endif %}</td>
+								<td> <span data-nom="{{ind.m_name}}" data-numes="{{ind.m_numerateur}}" data-denums="{{ind.m_denominateur}}" data-coeff="{{ind.m_coefficient}}" data-period="" data-cibls="" class="btn btn-success" data-objectif="{% if ind.m_objectif_indi != None %} {{ind.m_objectif_indi}} {% endif %}" data-formula="{{ind.m_numerateur}}" onclick="editIndic(this)" data-id="{{ind.id}}"><i class="fas fa-pen"></i> </span> <span class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" onclick='merde(this);' data-id="{{ind.id}}"><i class="fas fa-trash"></i> </span> <!-- <span> <i class="fas fa-copy"></i> </span> --></td>
+								<td>{{ind.actu_value}}</td>
+							</tr>
+							{% if ind.actu_value != None %}
+							<tr class="canvas_show">
+								<td colspan="6"><div> <small> Courbe de Progression </small></div><canvas style="max-width:100%;height:150px;" data-period="{{ind.period_values}}" data-values="{% for i1 in ind.actu_value %}{{i1}}#{% endfor %}" id="indi_canver_{{ind.id}}" data-cibles="{{ind.m_cibles}}" class="indi_canver">{{ind.indicateur_values}}</canvas></td>
+								<!--
+								<td>
+									<table>
+										<tr>
+											<td> ddsdsd </td>
+											<td> asssae </td>
+										</tr>
+									</table>
+								</td>
+								-->
+							</tr>
+							{% endif %}
+
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="indiModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form class="form-horizontal bordered-row" action="/valid_modal/" id="deleteFormAction" method="post">
+				{% csrf_token %}
+				<div class="modal-header">
+					<h1>Fiche d'Indicateur </h1>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id='delete_generator' name="generator" value="{{g_v}}">
+					<input type="hidden" class="entity_id form-control">
+					<input type="hidden" name="hierachy" value="{{hierachy}}">
+					<h5 style="text-transform:uppercase;">Indicateur - {{entity}}</h5>
+					<div id='indicaBody'>
+
+					</div>
+					<!--
+					<div>
+						<div class="py-1">Courbe de Progression</div>
+					</div>
+					-->
+					<div>
+						<div class="py-1 border-bottom border-primary"> RENSEIGNEMENT INDICATEUR </div>
+						<div id='indiSources'>
+
+						</div>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+					<button type="submit" class="btn btn-primary"> Confirmer</button>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="add_indiModal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg"><!--  -->
+		<div class="modal-content">
+			<form class="form-horizontal bordered-row" action="/save_indicateur/" onsubmit="save_indicateur()" id="deleteFormAction" method="post">
+				<input type="hidden" name="indi_adds" id="indi_adds">
+				<input type="hidden" name="indi_cibls" id="indi_cibls">
+				<input type="hidden" name="indi_srcs" id="indi_srcs">
+				{% csrf_token %}
+				<div class="modal-body">
+					<input type="hidden" value="c" id="edit_or_create" name="edit_or_create">
+					<input type="hidden" id='delete_generator' name="generator" value="{{g_v}}">
+					<input type="hidden" class="entity_id form-control" name="id_entity">
+					<input type="hidden" id="edit_id" name="edit_id" value="">
+					<input type="hidden" name="gest_id" value="{{gest_id}}">
+					<input type="hidden" name="gest_val" value="{{gest_val}}">
+					<input type="hidden" name="entity_id" id='entity_modal_id' value="">
+					<h4>Renseigner un Indicateur</h4>
+					<h4 class="text-success" id='entity_modal_name'> Nom de l'Entité </h4>
+					<div class="d-flex flex-column flex-wrap">
+						<div style="border-bottom: 2px solid #aaa;" class="col-12 mb-3">
+							<h5> Informations Générales </h5>
+							<div class="col-12 d-flex pt-1 flex-wrap">
+								<div class="col-9">
+									<label>Nom de l'Indicateur</label>
+									<input type="text" required class="form-control" id="indicateur_name" name="nature_indicateur">
+								</div>
+								<div class="col-3">
+									<label> Unite </label>
+									<input type="text" placeholder="%" class="form-control" name="unite_indicateur">
+								</div>
+							</div>
+							<div class="col-12 py-2">
+								<label> Objectifs verifies par l'Indicateur</label>
+								<div id="textObjectif"></div>
+							</div>
+							<div class="col-12 py-2">
+								<label> Objectifs de l'Indicateur <small>Interet de l'Indicateur</small></label>
+								<div></div>
+								<div>
+									<textarea id="objectif_indi" name="objectif_indi" class="form-control"></textarea>
+								</div>
+							</div>
+							<div class="my-2 d-none">
+								<div>
+									<input type="checkbox" checked name="default_calcul" value="1" disabled>
+									<label>Methode de Calcul par défaut</label>
+									<input type="hidden" name="caclul_form">
+								</div>
+								<div>
+									<small>Numerateur*Coefficient/Denumerateur</small>
+								</div>
+								<div class="d-none col-lg-6">
+									<input type="text" name="" class="form-control">
+								</div>
+							</div>
+							<div class='col-12 d-flex justify-content-between flex-wrap'>
+								<div class="p-2 col-md-12">
+									<label><b>Formule de Calcul</b></label>
+									<div>
+									</div>
+									<div class="d-flex flex-wrap">
+										<div>
+											<div>
+												<textarea id="num_div" rows="3" class="form-control" name="numerateur" ></textarea>
+												<div class="bg-light text-secondary my-2">
+													<small></small>
+												</div>
+											</div>,
+											<div class="d-flex flex-wrap justify-content-between">
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('0','num_div','2')" class="btn btn-light">0</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('1','num_div','2')" class="btn btn-light">1</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('2','num_div','2')" class="btn btn-light">2</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('3','num_div','2')" class="btn btn-light">3</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('4','num_div','2')" class="btn btn-light">4</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('5','num_div','2')" class="btn btn-light">5</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('6','num_div','2')" class="btn btn-light">6</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('7','num_div','2')" class="btn btn-light">7</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('8','num_div','2')" class="btn btn-light">8</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('9','num_div','2')" class="btn btn-light">9</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('.','num_div','2')" class="btn btn-light">.</span>
+												</div>
+											</div>
+
+
+											<div class="d-flex flex-wrap justify-content-between">
+												<div class="p-1">
+													<span data-elt="SUM" onclick="printELT('+','num_div','2')" class="btn btn-light">+</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('-','num_div','2')" class="btn btn-light">-</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('*','num_div','2')" class="btn btn-light">*</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('/','num_div','2')" class="btn btn-light">/</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('^','num_div','2')" class="btn btn-light">^</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('%','num_div','2')" class="btn btn-light">%</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('<','num_div','2')" class="btn btn-light"><</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('>','num_div','2')" class="btn btn-light">></span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT(',','num_div','2')" class="btn btn-light">,</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('(','num_div','2')" class="btn btn-light">(</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT(')','num_div','2')" class="btn btn-light">)</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('and','num_div','2')" class="btn btn-light">ET</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('or','num_div','2')" class="btn btn-light">OU</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('xor','num_div','2')" class="btn btn-light">XOR</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('xnor','num_div','2')" class="btn btn-light">XNOR</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('not','num_div','2')" class="btn btn-light">NON</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('==','num_div','2')" class="btn btn-light">==</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('!=','num_div','2')" class="btn btn-light">!=</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('avg','num_div','2')" class="btn btn-light">Moy</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('max','num_div','2')" class="btn btn-light">Max</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('min','num_div','2')" class="btn btn-light">Min</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('sum','num_div','2')" class="btn btn-light">Sum</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('product','num_div','2')" class="btn btn-light">Prd</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('variance','num_div','2')" class="btn btn-light">Var</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('len','num_div','2')" class="btn btn-light">Nb</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('is_null','num_div','2')" class="btn btn-light">Null</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('nb_max','num_div','2')" class="btn btn-light">Mode</span>
+												</div>
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="printELT('e_type','num_div','2')" class="btn btn-light">E.Type</span>
+												</div>
+
+												<div class="p-1">
+													<span data-elt="{{elt.id}}" onclick="deletetELT('num_div')" class="btn btn-danger">Del</span>
+												</div>
+											</div>
+										</div>
+										<div class="pt-2 px-2">
+											<div>Variables</div>
+											<div>	
+												<input style="max-width:300px;" type="text" class="form-control" placeholder="Filtrer" name="">
+											</div>
+											<div class="d-flex flex-wrap justify-content-between" style="max-height:250px;overflow:auto;">
+												{% for d in dataelts %}
+												<div style="cursor:pointer;" class="pr-1 p-1 d-flex flex-wrap justify-content-between">
+													<div><span onclick="launchVar(this,'num_div')" data-id="{{d.id}}" class="btn p-1 btn-light">{{d}}</span></div>
+													<!-- <div class="pl-2"><small>${{d.id}}$</small></div> -->
+												</div>
+												{% endfor %}
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="denum_div" class="d-none p-2 col-md-12">
+									<label><b>Denominateur</b></label>
+									<div>
+									</div>
+									<div class="d-flex flex-wrap">
+										<div>
+											<div>
+												<textarea name="denominateur" class="form-control"></textarea>
+												<div class="bg-light text-secondary my-2">
+													<small></small>
+												</div>
+											</div>
+										</div>
+									</div>
+
+								</div>
+								<div class="p-2 col-12">
+									<div>
+										<label>Moyen de Verification</label>
+									</div>
+									<div class="col-12 d-flex pt-1 flex-wrap">
+										<div class="col-7">
+											<input type="text" name="verification_moyen" class="form-control">
+										</div>
+										<div class="col-5">
+											<select name="veri_type" class="form-control">
+												<option value="text">Commentaire Texte</option>
+												<option value="fichier">Fichier</option>
+												<option value="champ"> Champs a Renseigner </option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-12 pt-2">
+									<div>
+										<label>Source de Mesure</label>
+									</div>
+									<div class="d-flex flex-wrap">
+										<div class="p-2">
+											<input id="specig_form1" onchange="reveal(this,'#list_formulaires2')" value="1" type="radio" name="specig_form">
+											<label for="specig_form1" style="font-weight:normal;">Formulaire Specifique</label>
+										</div>					
+										<div class="p-2">
+											<input id="specig_form2" type="radio" value="2" checked name="specig_form">
+											<label for="specig_form2" style="font-weight:normal;">Tous les Formulaires de Donnee</label>
+										</div>					
+									</div>
+									<div style="display:none;" id="list_formulaires2">
+										<div class="d-flex flex-wrap" style="max-height:300px;overflow:auto;" id="list_formulaires">
+											
+										</div>
+									</div>
+								</div>
+
+								<div class="col-12 py-2">
+									<input type="hidden" id="codes_colors" name="codes_colors">
+									<div>
+										<label>Codes de couleur</label>
+									</div>
+									<div class="d-flex flex-wrap">
+										<div class="pr-3">
+											<input type="radio" checked name="radio_nam1">
+											<label style="font-weight:normal;">Valeurs Fixes</label>
+										</div>
+										<div class="pr-3">
+											<input type="radio" checked name="radio_nam1">
+											<label style="font-weight:normal;">Valeurs par intervalles</label>
+										</div>
+									</div>
+									<div class="d-flex justify-content-between col-12 flex-wrap">	
+										<div class="d-flex justify-content-between col-md-6 col-lg-4 col-10 p-1">	
+											<div class="px-1"></div> 
+											<div class="px-1"><input type="number" class="icol1 form-control" name=""></div>
+											<div class="px-1">- </div>
+											<div class="px-1"><input type="number" class="icol1 form-control" name=""></div>
+											<div class="px-1"><input type="color" name="" class="icol2"></div>
+										</div>	
+										<div class="d-flex justify-content-between col-md-6 col-lg-4 col-10 p-1">	
+											<div class="px-1"></div>
+											<div class="px-1"><input type="number" class="form-control icol1" name=""></div>
+											<div class="px-1">- </div>
+											<div class="px-1"><input type="number" class="form-control icol1" name=""></div>
+											<div class="px-1"><input type="color" name="" class="icol2"></div>
+										</div>
+										<div class="d-flex justify-content-between col-md-6 col-lg-4 col-10 p-1">
+											<div class="px-1"><input type="number" class="icol1 form-control" name=""></div>
+											<div class="px-1"> - </div>
+											<div class="px-1"><input type="number" class="icol1 form-control" name=""></div>
+											<div class="px-1"><input type="color" class="icol2" name=""></div>
+										</div>
+									</div>
+								</div>
+
+								<div class="col-12 py-2">
+									<input type="hidden" id="codes_colors" name="alerts_colors">
+
+									<div>
+										<label>Alertes</label>
+									</div>
+									<input type="hidden" name="alert_modals" id="alert_modals">
+									<div class="d-flex col-12 justify-content-between flex-wrap">
+										<div class="col-md-4 col-8 d-flex p-1">
+											<div><small>Seuil Limite Inferieur</small></div>
+											<div class="px-1"><input type="text" class="s1 form-control" name=""></div>
+										</div>
+										<div class="col-md-4 col-8 d-flex p-1">
+											<div><small>Seuil Limite Superieur</small></div>
+											<div class="px-1"><input type="text" class="s1 form-control" name=""></div>
+										</div>
+										<div class="col-md-4 col-8 d-flex p-1">
+											<div><small>Modalite d'Alerte</small></div>
+											<div class="px-1">
+												<select type="text" class="s1 form-control" name="">
+													<option value="email">e-mail</option>
+													<option value="SMS">SMS</option>
+												</select>
+											</div>
+										</div>										
+									</div>
+								</div>
+
+								<div class="col-12 py-2">
+									<div>
+										<label>Autre</label>
+									</div>
+									<div class="d-flex col-12 justify-content-between flex-wrap">
+										<textarea class="form-control" name="other"></textarea>
+									</div>
+								</div>
+
+
+								<div class="col-md-3 p-2 d-none">
+									<label><b> Coefficient</b></label>
+									<div class="flex-wrap justify-content-between">
+										<div class="c">
+											<label> Facteur de Calcul </label>
+											<input class="form-control" type="text" name="coefficient" value="1">
+										</div>
+									</div>
+								</div>
+
+							</div>
+							<div class="d-none mt-4 form-group">
+								<label>Champs Additionnels</label>
+								<div class='col-lg-6'>
+									<input placeholder="Nom du Champs" type="text" class="indi_add1 form-control" >
+									<div class="text-success"> + Ajouter un champs </div>
+								</div>
+							</div>
+							<!-- -->
+
+
+
+						</div>
+
+
+						<div style="" class="col-12 mb-3">
+							<h5> Cibles </h5>
+							<div class="d-flex row col-lg-12 ">
+								<div class="col-lg-6">
+									<div class="p-3 col-md-6 form-group">
+										<label>Période de Ciblage</label>
+										<select data-type="Année" id="ind_periodicite" name="periodicite" class="form-control">
+											<option value="0">Annuelle</option>
+											<option value="1">Mensuelle</option>
+											<option value="2">Hebdomadaire</option>
+										</select>
+									</div>
+									<div class="p-3 col-md-6 form-group">
+										<label>Période de Suivi</label>
+										<select data-type="Année" id="ind_periodicite2" name="periodicite2" class="form-control">
+											<option value="Mensuelle">Mensuelle</option>
+											<option value="Trimestriel">Trimestriel</option>
+											<option value="Semestriel">Semestriel</option>
+											<option value="Hebdomadaire">Hebdomadaire</option>
+										</select>
+									</div>
+								</div>
+
+							<div class="col-6 mt-4 form-group">
+								<label>Resultats ciblés</label>
+								<div class="content_div" style='max-height:350px;overflow:auto;display: flex;flex-wrap: wrap;'>
+									<div class='d-flex flex-wrap to_add_line'>
+										<table class="table table-responsive">
+											<tr>
+												<th>Periode</th>
+												<th> Cible </th>
+											</tr>
+											<tr>
+												<td><input type='number' min='2000' max='2100' value='2023' class="indi_cibl1 form-control"></td>
+												<td><input type="number" class="indi_cibl2 form-control"></td>
+											</tr>
+										</table>
+									</div>
+								</div>
+								<div class="text-success" style="cursor:pointer;" onclick='add_sup_line(this);'> + Ajouter un champs </div>
+							</div>
+							</div>
+						</div>
+						<div style="border-bottom: 2px solid #aaa;display:none;" class="col-12 mb-3">
+							<h3> Realisations </h3>
+							<table class="table">
+								<th>
+									Sous-Periode
+								</th>
+								<th>
+									Numerateur
+								</th>
+								<th>
+									Dénominateur
+								</th>
+							</table>
+						</div>
+					</div>
+					<div id='indicaBody' class="d-none pt-3">
+						<div class="h5 text-center"> Sources de Verification </div>
+						<div>
+							<div class="mt-4 form-group">
+								<label>Sources de Vérfication</label>
+								<input placeholder="Nom de la Source" type="text" class="form-control indiSrc1">
+								<textarea style='display:none;' placeholder="Valeurs Possibles" class="mt-4 form-control indiSrc2"></textarea>
+							</div>
+						</div>
+						<div class="d-none text-success"> + Ajouter un champs </div>
+					</div>
+				</div>
+				{% if no_secund == False %}
+				<div class="col-12">
+				<h5> Autres Champs </h5>
+				<div class="col-12">
+					<input type="other_fields" id="other_fields" name="other_fields">
+					{% for i in indi_options %}
+					<div data-val="{{i}}" class="indiShitter col-12 p-2">
+						<label>{{i.label}}</label>
+						<input class="form-control" type="{{i.type}}" name="">
+					</div>
+					{% empty %}
+					<div>Aucun Champs Supplementaire</div>
+					{% endfor %}
+				</div>
+				</div>
+				{% endif %}
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal"> Annuler</button>
+					<button type="submit" class="btn btn-primary"> Confirmer</button>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</div>
+
+	<div class="modal fade" id="dataFormModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div id="dF_Div">
+						<div class="text-center"> Recuperation des Information</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+	$(".indiAdd").click(function(){
+		arg_text = $(this).attr('data-name');
+		arg_id = parseInt($(this).attr('data-id'));
+		$("#entity_modal_name").text(arg_text)
+		$("#entity_modal_id").val(arg_id)
+	});
+
+	ind_periodicite = document.getElementById("ind_periodicite");
+	data_periods = new Array()
+	data_periods[0] = ["<option value='0'>Mensuelle</option>","<option value='1'>Trimestriel</option>","<option value='2'>Semestriel</option>","<option value='3'>Hebdomadaire</option>"]
+	data_periods[1] = ["<option value='3'>Hebdomadaire</option>"]
+	data_periods[2] = ["<option value='4'>Journalier</option>"]
+
+	data_intervals = [[]]
+	for (var j=0;j<25;j++){
+		data_intervals[0].push((2022+j));
+	}
+	data_intervals[1] = ["Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Octobre","Novembre","Decembre"]
+	data_intervals[2] = ["Semaine 1","Semaine 2","Semaine 3","Semaine 4","Semaine 5"]
+
+	indi_cibl1 = document.getElementsByClassName("indi_cibl1")
+	ind_periodicite.onchange = function(){
+		id_elt = parseInt(this.value)
+		ind_periodicite2 = document.getElementById("ind_periodicite2") 
+		ind_periodicite2.innerHTML = data_periods[id_elt];
+
+		for(var j=0;j<indi_cibl1.length;j++){
+			indi_cibl1[j].innerHTML = ""
+			for (var k=0;k<data_intervals[id_elt].length;k++){
+				indi_cibl1[j].innerHTML += "<option value='"+data_intervals[id_elt][k]+"'>"+data_intervals[id_elt][k]+"</option>"
+			}
+		}
+	}
+
+
+	function save_indicateur(){
+
+	indi_adds = document.getElementById("indi_adds");
+	indi_cibls = document.getElementById("indi_cibls");
+	indi_srcs = document.getElementById("indi_srcs");
+
+	// Champs additionnels
+	tmp = "";
+	indi_add1 = document.getElementsByClassName("indi_add1");
+	//indi_add2 = document.getElementsByClassName("indi_add2");
+	for (var i=0; i<indi_add1.length; i++)
+	{
+		//indi_add2_text = indi_add2[i].value.replace("\n","<br>");
+		tmp += indi_add1[i].value+"|#";
+	}
+	indi_adds.value = tmp;
+	// Resultats ciblés
+	tmp = "";
+
+	indi_cibl1 = document.getElementsByClassName("indi_cibl1");
+	indi_cibl2 = document.getElementsByClassName("indi_cibl2");
+	for (var i=0; i<indi_cibl2.length; i++)
+	{
+		indi_add2_text = indi_cibl2[i].value.replace("\n","<br>");
+		tmp += ind_periodicite.getAttribute('data-type')+"#"+indi_cibl1[i].value+"|"+indi_cibl2[i].value+"$";
+	}
+	indi_cibls.value = tmp;
+
+	// Sources de verification
+	indiSrc1 = document.getElementsByClassName("indiSrc1");
+	indiSrc2 = document.getElementsByClassName("indiSrc2");
+	tmp = "";
+	for (var i=0; i<indiSrc2.length; i++)
+	{
+		indi_Src2text = indiSrc2[i].value.replace("\n","<br>");
+		tmp += indiSrc1[i].value+"#"+indi_Src2text+"\n";
+	}
+	indi_srcs.value = tmp;
+	// Color Getter
+	codes_colors= document.getElementById("codes_colors")
+	icol1 = document.getElementsByClassName("icol1")
+	icol2 = document.getElementsByClassName("icol2")
+	tmp = ""
+	for (var i=0;i<icol1.length;i+=2){
+		tmp += icol1[i].value +"|";
+		tmp += icol1[(i+1)].value +"|";
+		tmp += icol2[parseInt(i/2)].value+"$"
+	}
+	codes_colors.value = tmp,
+	// Alert Getter
+	alerts_modals = document.getElementById("alerts_modals");
+	s1 = document.getElementsByClassName("s1");
+	alerts_modals.value = s1[0].value + "#"+s1[1].value+"#"+s1[2].value;
+
+
+	{% if no_secund == False %}
+	indiShitter = document.getElementsByClassName("indiShitter")
+	other_fields = document.getElementById("other_fields")
+	tmp = ""
+	for (var i=0;i<indiShitter.length; i++){
+		label = indiShitter[i].getElementsByTagName("label")[0].textContent;
+		input = indiShitter[i].getElementsByTagName("input")[0].value;
+		tmp += label +"|"+input+"#";
+	}
+	other_fields.value = tmp
+	{% endif %}
+
+}
+
+denominateur = document.getElementsByClassName("denominateur");
+for(var i=0;i<denominateur.length;i++){
+	denominateur[i].innerHTML = denominateur[i].innerHTML.replace("#"," : ")
+}
+function getIndi(type_i,index){
+	$.ajax({
+		url: '/get_indicateur_value/',
+		data: {
+			'id_indicateur':index,
+		},
+		dataType: 'json',
+		success: function (data) {
+			indicaBody = document.getElementById("indicaBody");
+			tmp = "<table class='table table-bordered '><tbody>";
+			tmp += "<tr> <td> Nature de l'Indicateur </td><td>"+data.indicateur+"</td></tr>" 
+
+			fields = data.fields.split("#")
+			for (var i=0; i<fields.length-1; i++){
+
+				actu_fields = fields[i].split("|");
+
+				if (actu_fields.length > 2){
+					tmp += "<tr>";
+					for (var j=0;j<2;j++){
+						tmp += "<td>"+actu_fields[j]+"</td>";
+					}
+					tmp += "</tr>";	
+				}
+			}
+			tmp += "<tr> <td>Interets de l'Indictateur</td><td>"+
+			data.obj+"</td> </tr>"
+			periods = ["Annuelle","Trimestriel","Semestriel","Hebdomadaire"]
+			tmp += "<tr> <td> Périodicité </td><td>"+periods[data.periodicite]+"</td></tr>";
+			tmp_fc = data.final_cible.split("|");
+			if (data.final_cible != ""){
+				tmp += "<tr> <td> Dernier résultat connu </td><td class='d-flex'><div class='pr-4'>"+(tmp_fc[0].split("#")[0] + " "+tmp_fc[0].split("#")[1] )+"</div><div class='px-4' style='border-left:1px solid #aaa;'> Valeur : <b>"+tmp_fc[1]+"</b> </div></td></tr>";
+
+			}
+			tmp_cibles = data.cibles.split("$");
+			tmp += "<tr> <td> Cibles par Périodes </td> <td>";
+			for (var i=0;i<tmp_cibles.length-1;i++){
+				tmp_fc = tmp_cibles[i].split("|");
+				tmp += "<div class='d-flex mb-2'><div class='pr-4'>"+(tmp_fc[0].split("#")[0] + " "+tmp_fc[0].split("#")[1] )+"</div><div class='px-4' style='border-left:1px solid #aaa;'> Valeur : <b>"+tmp_fc[1]+"</b> </div></div>";
+			}
+			tmp += "</tbody></table>"
+			indicaBody.innerHTML = tmp;
+			indiSources = document.getElementById("indiSources");
+			indiSources.innerHTML = "";
+			veri_indi = data.verification_indi.split("#")
+			data_infi = data.data_verification
+			tmp = "<table class='table'>"
+			if (veri_indi.length>1){
+				tmp += "<tr> <td> Moyen de Verification </td> <td>"+veri_indi[0]+"&nbsp;<small class='badge badge-primary'>"+veri_indi[1]+"</small> </td> </tr>";	
+			}
+			if (data.data_verificationind != "#"){
+				tmp += "<tr> <td> Sources de Verification </td> <td> <a href='"+data.data_verificationind_url+"'> <i class='fas fa-file'></i> "+data.data_verificationind+"</a> </td> </tr>"	
+			}
+			else{
+				tmp += "<tr> <td> Sources de Verification </td> <td> Tous les Formulaires </td> </tr>"	
+
+			}
+			tmp += "</table>"
+			//tmp += "</table><div class='text-center'><span> Renseignement des Formulaires de Donnee </span></div>"
+
+			if (data.others != "#"){
+				tmp += "<div> <div> Contenu Supplementaire </div> <div class='p-3'>"+data.others+" </div> </div>"
+			}
+			indiSources.innerHTML += tmp;
+		},
+		error: function(data){
+
+		}
+	});        
+}
+
+
+
+function replace_codes()
+{
+	nums_code = document.getElementsByClassName("nums_code");
+	codes = ""
+	for (var i=0; i<nums_code.length;i++){
+		codes += nums_code[i].textContent+"#"
+	}
+	$.ajax({
+			url: '/get_elements/',
+			data: {
+				'codes':codes,
+				'other':'dE_code',
+				'institution':{{actual_institution.id}}
+			},
+			dataType: 'json',
+			success: function(data){
+				console.log(data.data_elts)
+					for (var i=0; i<nums_code.length;i++){
+						txt = nums_code[i].textContent
+						c_r = data.codes_replace[i]
+						for (var j=0;j<c_r.length;j++){
+							txt = txt.replace("$"+c_r[j]+"$","<span class='badge'>"+data.data_elts[i][j]+"</span>")
+						}
+						nums_code[i].innerHTML = txt
+					}			
+			}
+	});	
+}
+replace_codes()
+
+function add_sup_line(element){
+	parent = element.parentNode.parentNode;
+	contentDiv = parent.getElementsByClassName("content_div")[0];
+	node = document.createElement("div");
+	div_to_add = contentDiv.getElementsByClassName("to_add_line")[0];
+	node.innerHTML = div_to_add.innerHTML;
+
+	contentDiv.appendChild(node)
+}
+
+indi_canver = document.getElementsByClassName("indi_canver");
+barColors = ["red","green","blue","yellow"];
+
+for (var i=0; i<indi_canver.length; i++){
+	periodes = indi_canver[i].getAttribute("data-period")
+	t_values = indi_canver[i].getAttribute("data-values")
+
+	xValues = periodes.split("#");
+	xValues2 = new Array();
+	yValues = t_values.split("#")
+	yValues2 = new Array();
+	t_cibles = indi_canver[i].getAttribute("data-cibles").split("$")
+	for (var i2=0;i2<t_cibles.length;i2++){
+		ar = t_cibles[i2].split("|")
+		//xValues2.push(ar[0].split("#")[1])
+		yValues2.push(ar[1])
+	}
+
+	new Chart(indi_canver[i].id, {
+		type: "line",
+		data: {
+			labels: xValues,
+			datasets: [{
+				label:'Valeurs Reelles',
+				fill:false,
+				borderColor: "blue",
+				data: yValues,
+			},{
+				label:'Valeurs Cibles',
+				fill:false,
+				borderColor: "red",
+				data: yValues2,
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: "Atteinte des Objectifs"
+			},
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true,
+						suggestedMax: 100
+					}
+				}],
+			}
+		}
+	});
+}
+
+
+function LaunchFormData(indi_id){
+	$.ajax({
+		url: '/ajax_form/',
+		data: {
+			'id_dataset':indi_id,
+		},
+		dataType: 'json',
+		success: function (data) {
+			dF_Div = document.getElementById("dF_Div");
+			tmp = "<div class='my-2'> Periode de Saisie </div>"
+			if (data.periode == "0"){
+				tmp += "<div style='border-bottom:1px solid #aaa;' class='py-2 col-12 d-flex'> <div class='col-6 px-3'> <label> Année </label>  <div>  <input class='form-control' value='2023' type='number'> </div> </div>"
+				if (data.subperiode == "Mensuelle"){
+				tmp += "<div> <label> Mois </label> <div> <select class='form-control'><option value='Janvier'>Janvier</option></select> </div> <div> </div> </div> ";
+				}
+			}
+			tmp +=  "</div>";
+
+			tmp2 = "<div class='my-2'> Strucures concernees </div> <div style='border-bottom:1px solid #aaa;' Class='py-2 d-flex'>"
+			for (var i=0;i<data.structures.length;i++){
+				tmp2 += "<div class='px-2'><input type='checkbox' class='mr-2'>"+data.structures[i]+" </div>"
+			}
+			tmp2 += "</div>";
+
+			tmp3 = " <div>";
+			tmp3 += data.form;
+			tmp3 += "</div>";
+
+			dF_Div.innerHTML = tmp+tmp3
+		},
+		error: function(data){
+
+		}
+	});        
+}
+
+numStack = ""
+function launchVar(element,ht){
+	html = document.getElementById(ht);
+	txt = element.value;
+	id = element.getAttribute('data-id');
+	html.value += "$"+id+"$"
+}
+function printELT(element,ht,coeff){
+	html = document.getElementById(ht);
+	html.value += element
+}
+
+function deletetELT(ht){
+	html = document.getElementById(ht);
+	elt = html.value00;
+	html.value = ""
+	for (var i=0;i<element.length;i++){
+		html.value += elt[i] 	
+	}
+}
+
+function editIndic(elt){
+	nom = elt.getAttribute('data-nom')
+	$("#indicateur_name").val(nom);
+	objectif = elt.getAttribute('data-objectif');
+	$("#objectif_indi").val(objectif);	
+	formula = elt.getAttribute('data-formula');
+	$("#num_div").val(formula)
+	$("#edit_id").val(elt.getAttribute('data-id'));
+	$("#add_indiModal").modal()
+	edit_or_create = document.getElementById("edit_or_create")
+	edit_or_create.value = "e"
+}
+
+function loadObjs(elt){
+	obj = elt.getAttribute("data-obj")
+	textObjectif = document.getElementById("textObjectif")
+	textObjectif.innerHTML = obj
+	edit_or_create = document.getElementById("edit_or_create")
+	edit_or_create.value = "c"
+}
+
+function loadDataForm(ind=1){
+		$.ajax({
+		url: '/get_elements/',
+		data: {
+			'other':"dS",
+			"institution":{{actual_institution.id}}
+		},
+		dataType: 'json',
+		success: function (data) {
+			list_formulaires = document.getElementById("list_formulaires")
+			tmp = ""
+			for (var i=0;i<data.datasets.length;i++){
+				tmp += "<div class='px-3'> <input type='radio' value='"+data.datasets_id[i]+"' name='dataSt'>&nbsp; <i class='fas fa-file'></i>&nbsp;"+data.datasets[i]+"</div>"
+			}
+			list_formulaires.innerHTML = tmp;
+		}
+		});
+}
+loadDataForm();
+
+function display_graph(elt){
+	if (elt.checked){
+		$(".canvas_show").slideDown("slow")
+	}
+	else{
+		$(".canvas_show").slideUp("slow")
+	}
+}
+
+</script>
+{% endblock %}
