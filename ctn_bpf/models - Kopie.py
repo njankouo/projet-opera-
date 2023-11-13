@@ -1196,7 +1196,7 @@ class Personnel_File(models.Model):
 
 class DataElement(models.Model):
 	m_logo = models.FileField(blank=True,null=True)
-	m_name = models.CharField(max_length=64,blank=True,null=True)
+	m_name = models.CharField(max_length=255,blank=True,null=True)
 	m_fields_type = models.TextField(blank=True,null=True)
 	m_fields = models.TextField(blank=True,null=True)
 	m_description = models.TextField(blank=True,null=True)

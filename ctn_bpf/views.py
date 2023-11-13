@@ -862,7 +862,7 @@ def structure_details(request, structure_id=0):
 def users_simples(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-    fields_roles = ['Role', 'Description', 'Entite']
+    fields_roles = ['Role', 'Description', 'EntitÃ©']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -5938,7 +5938,7 @@ def count_effectuee(request):
         if name != None:
             context['lines'] = context['lines'].filter(nom__contains=name)
         context['fields'] = ['Logo', 'Nom',
-                             'DÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©signation',
+                             'Designation',
                              'Responsable', 'Total : ' + str(context['actual_institution'].last_entity())]
         context['menu'] = 's'
         context['personnels'] = Personnel.objects.filter(
@@ -10995,7 +10995,7 @@ def structures(request, name=None, hierachie=None):
     if name != None:
         context['lines'] = context['lines'].filter(nom__contains=name)
     context['fields'] = ['Logo', 'Nom',
-                         'DÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©signation',
+                         '',
                          'Responsable', 'Total : ' + str(context['actual_institution'].last_entity())]
     context['menu'] = 's'
     context['personnels'] = Personnel.objects.filter(actual_institution=context['actual_institution']).select_related(
@@ -16146,7 +16146,7 @@ def structures(request, name=None, hierachie=None):
     if name != None:
         context['lines'] = context['lines'].filter(nom__contains=name)
     context['fields'] = ['Logo', 'Nom',
-                         'DÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©signation',
+                         '',
                          'Responsable', 'Total : ' + str(context['actual_institution'].last_entity())]
     context['menu'] = 's'
     context['personnels'] = Personnel.objects.filter(actual_institution=context['actual_institution']).select_related(
@@ -21297,7 +21297,7 @@ def structures(request, name=None, hierachie=None):
     if name != None:
         context['lines'] = context['lines'].filter(nom__contains=name)
     context['fields'] = ['Logo', 'Nom',
-                         'DÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©signation',
+                         '',
                          'Responsable', 'Total : ' + str(context['actual_institution'].last_entity())]
     context['menu'] = 's'
     context['personnels'] = Personnel.objects.filter(actual_institution=context['actual_institution']).select_related(
@@ -26448,7 +26448,7 @@ def structures(request, name=None, hierachie=None):
     if name != None:
         context['lines'] = context['lines'].filter(nom__contains=name)
     context['fields'] = ['Logo', 'Nom',
-                         'DÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©signation',
+                         'Designation',
                          'Responsable', 'Total : ' + str(context['actual_institution'].last_entity())]
     context['menu'] = 's'
     context['personnels'] = Personnel.objects.filter(actual_institution=context['actual_institution']).select_related(

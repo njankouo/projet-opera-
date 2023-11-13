@@ -162,12 +162,12 @@
                             <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
                             <h4 class="modal-title" >Repartition RACI <span class="h4 text-primary" id="RACI_operation"></span>  </h4>
                             <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">Ã—</span>
+                                <span aria-hidden="true">x</span>
                             </button>
                         </div>
 
                         <div class="modal-body">
-                            <div><small> Repartition des RÃ´les</small></div>
+                            <div><small> Repartition des R&ocirc;les</small></div>
                             <div id="RACI_details_div">
 
 
@@ -186,7 +186,7 @@
                         <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
                         <h4 class="modal-title text-primary"  id="modify_title" style="font-weight:bold">Ajouter {{actual_institution.operations_name}} </h4>
                         <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">Ã—</span>
+                            <span aria-hidden="true">x</span>
                         </button>
 
                     </div>
@@ -213,7 +213,7 @@
                                     {% elif th.type == 'int' or th.type == 'number'  %}
                                     <input type="number" class="form-control agg1">
                                     {% elif th.type == 'choix' %}
-                                    <div><small>Les valeurs doivent Ãªtre sÃ©parÃ©es par des Sauts de Ligne</small></div>
+                                    <div><small>Les valeurs doivent &ecirc;tre s&eacute;par&eacute;es par des Sauts de Ligne</small></div>
                                     <textarea value="" class="form-control agg1"></textarea>
                                     {% elif th.type == 'file' or th.type == 'image'  %}
                                     <input type="file" name="{{th.field}}_nam" class="form-control agg1">
@@ -225,7 +225,7 @@
                             {% endif %}
                             <div  class=" d-flex justify-content-center row">
                                 <div class="col-sm-8 form-group">
-                                    <label> PÃ©riode : {{base_val.m_type_entity}} </label>
+                                    <label> P&eacute;riode : {{base_val.m_type_entity}} </label>
                                     {% for s in searches %}
                                     <select id='modal_per_select' name="tache_periode" class="col-sm-8 form-control">
                                         {% for val in s.values %}
@@ -253,15 +253,15 @@
                                         {% for perso in personnels %}
                                         <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                         {% endfor %}
-                                        <option value="0">Non DÃ©fini</option>
+                                        <option value="0">Non D&eacute;fini</option>
                                     </select>
                                     <div class="d-none mt-1 form-group">
-                                        <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner Ã  un RÃ´le</span>
+                                        <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner &agrave;  un R&ocirc;le</span>
                                     </div>
                                 </div>
                             </div>
                             <div style='display:none;' class="assiDIV form-group">
-                                RÃ´le
+                                R&ocirc;le
                                 <div class="">
                                     <select name="role" class="form-control">
                                         {% for role in roles %}
@@ -307,7 +307,7 @@
 
                                     <div class="justify-content-around">
                                         <select name="consulted" class="consulted_selector form-control">
-                                            <option value="0">Non DÃ©fini</option>
+                                            <option value="0">Non D&eacute;fini</option>
                                             {% for perso in personnels %}
                                             <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                             {% endfor %}
@@ -322,7 +322,7 @@
 
                                     <div class="justify-content-around">
                                         <select name="informed" class="informed_selector form-control">
-                                            <option value="0">Non DÃ©fini</option>
+                                            <option value="0">Non D&eacute;fini</option>
                                             {% for perso in personnels %}
                                             <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                             {% endfor %}

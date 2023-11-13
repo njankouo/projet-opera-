@@ -101,7 +101,7 @@ Gestionnaire - {{entity}}
 
 <div class="">
 	<div style="display:snone;"  class="proccess_section justify-content-center mt-4 row mb-5 px-2">
-		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Informations GÃ©nÃ©rales - {{base_val}}</div>
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Informations G&eacute;n&eacute;rales - {{base_val}}</div>
 		<div style="" class="canver col-lg-4 pt-5 col-md-6 col-12">
 			{% if is_tache or is_sub_tache == True %}
 			<!-- <div class="mb-3 text-center">
@@ -128,10 +128,10 @@ Gestionnaire - {{entity}}
 
 			<div class="d-flex flex-wrap col-lg-12 my-2 mb-4 col-12">
 				<div class="col-8 col-lg-8">
-					<label> De la PÃ©riode du : </label>
+					<label> De la P&eacute;riode du : </label>
 					<div class="d-flex justify-content-center">
 						<select id='period_select' class="col-lg-12 form-control">
-							<option value="0"> Toutes les PÃ©riodes </option>
+							<option value="0"> Toutes les P&eacute;riodes </option>
 							{% for per in default_period.decoup_slip %}
 							<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}" class='week_plus'>{{per}}</option>
 							{% endfor %}
@@ -139,7 +139,7 @@ Gestionnaire - {{entity}}
 					</div>
 				</div>
 				<div class="col-4 col-lg-4">
-					<label for="typeperiode">AnnÃ©e</label>
+					<label for="typeperiode">Ann&eacute;e</label>
 					<input type="number" id="year_plan" value=2022 class="form-control">
 
 				</div>	
@@ -304,7 +304,7 @@ Gestionnaire - {{entity}}
 		{% endif %}
 		{% endif %}
 
-		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Fiche d'Informations  </div>
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Fiche d'Information  </div>
 		<div class="mb-3 col-12">
 			<div class="mb-2 d-flex"> 
 				<!-- <div class="px-3 text-success"> <a href="/gestionnaire/{{gest_val}}/">Modifier</a> </div> -->
@@ -562,11 +562,11 @@ Gestionnaire - {{entity}}
 										{% if entity.m_pic_represented.url != None %}
 										<img src="{{entity.m_pic_represented.url}}" style="width:40px;height:40px;border-radius:100%;">
 										{% else %}
-										Image par DÃ©faut
+										Image par D&eacute;faut
 										{% endif %}
 									</div>
 									{% elif entity.is_pic_represented == True %}
-									<div class="d-none">Aucune Image dÃ©finie</div>
+									<div class="d-none">Aucune Image d&eacute;finie</div>
 									{% else %}
 									{% endif %}
 									{% for val in entity.values %}<div class="d-none">{{val}}</div>{% endfor %}
@@ -596,7 +596,7 @@ Gestionnaire - {{entity}}
 						</div>
 					</div>
 					{% empty %}
-					<div> Aucune entitÃ© n'a encore Ã©tÃ© dÃ©clarÃ©e </div>
+					<div> Aucune enti&eacute; n'a encore &eacute;t&eacute; d&eacute;clar&eacute;e </div>
 					{% endfor %}
 				</div>
 			</div>
@@ -783,7 +783,7 @@ Gestionnaire - {{entity}}
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
 												{% endfor %}
-												<option value="0">Non DÃ©fini</option>
+												<option value="0">Non D&eacute;fini</option>
 											</select>
 										</div>
 									</div>
@@ -791,7 +791,7 @@ Gestionnaire - {{entity}}
 										Accountable
 										<div class="justify-content-around">
 											<select name="accountable" class="form-control">
-												<option value="0">Non DÃ©fini</option>
+												<option value="0">Non D&eacute;fini</option>
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso}}</option>
 												{% endfor %}
@@ -802,7 +802,7 @@ Gestionnaire - {{entity}}
 										Consulted
 										<div class="justify-content-around">
 											<select name="consulted" class="form-control">
-												<option value="0">Non DÃ©fini</option>
+												<option value="0">Non D&eacute;fini</option>
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso}}</option>
 												{% endfor %}
@@ -813,7 +813,7 @@ Gestionnaire - {{entity}}
 										Informed
 										<div class="justify-content-around">
 											<select name="informed" class="form-control">
-												<option value="0">Non DÃ©fini</option>
+												<option value="0">Non D&eacute;fini</option>
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso}}</option>
 												{% endfor %}
@@ -860,7 +860,7 @@ Gestionnaire - {{entity}}
 							<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
 							<h4 id='modify_title' class="modal-title">Ajouter  {% if base_val == None %} {{entity}} {% else %} {{sub_entity}} {% endif %} </h4>
 							<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">Ã—</span>
+								<span aria-hidden="true">x</span>
 							</button>
 						</div>
 
@@ -981,7 +981,7 @@ Gestionnaire - {{entity}}
 										<div class="col-sm-12 d-flex">
 											<table class="table table-responsive" >
 												<thead>
-													<td> RÃ´le </td>
+													<td> R&ocirc;le </td>
 													{% for rol in actual_institution.structures_split %}
 													<td class="text-info"> {{rol}} </td>
 													{% endfor %}
@@ -1006,7 +1006,7 @@ Gestionnaire - {{entity}}
 										<div class="px-3 text-danger">Configuration Annuelle</div>
 									</div>
 									<div class="col-12 col-md-4 pl-3 d-flex">
-										<div class="p-2"><label>AnnÃ©e </label></div>
+										<div class="p-2"><label>Ann&eacute;e </label></div>
 										<div><input id='year_plan' type="number" class="form-control" name=""></div>
 									</div>
 									<div class="col-lg-12 d-flex flex-wrap">
@@ -1021,7 +1021,7 @@ Gestionnaire - {{entity}}
 											{% endfor %}
 										</div>
 										<div class="px-1 col-lg-5" style="max-height:250px;overflow:auto;">
-											<div class="text-center mb-2"> PÃ©riodes Choisies </div>
+											<div class="text-center mb-2"> P&eacute;riodes Choisies </div>
 											<div data-period="" id='choosen_period' class="d-flex justify-content-center flex-wrap">
 												
 											</div>
@@ -1058,7 +1058,7 @@ Gestionnaire - {{entity}}
 													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
 													<h4 class="modal-title">Modifications</h4>
 													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-														<span aria-hidden="true">Ã—</span>
+														<span aria-hidden="true">x</span>
 													</button>
 												</div>
 												<div class="modal-body">
@@ -1075,7 +1075,7 @@ Gestionnaire - {{entity}}
 															</div>
 															<div class="col-sm-12">
 																<div class="form-group">
-																	DÃ©signation
+																	D&eacute;signation
 																	<input type="text" class="form-control" name="designation" irequired="">
 																</div>
 															</div>
