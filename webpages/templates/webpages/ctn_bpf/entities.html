@@ -101,14 +101,14 @@ Gestionnaire - {{entity}}
 
 <div class="">
 	<div style="display:snone;"  class="proccess_section justify-content-center mt-4 row mb-5 px-2">
-		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Informations Générales - {{base_val}}</div>
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;"> Informations GÃ©nÃ©rales - {{base_val}}</div>
 		<div style="" class="canver col-lg-4 pt-5 col-md-6 col-12">
 			{% if is_tache or is_sub_tache == True %}
 			<!-- <div class="mb-3 text-center">
-				<label> Période </label>
+				<label> PÃ©riode </label>
 				<div class="d-flex justify-content-center">
 					<select class="col-lg-6 form-control">
-						<option value="0"> Toutes les Périodes </option>
+						<option value="0"> Toutes les PÃ©riodes </option>
 						{% for per in default_period.decoup_slip %}
 						<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}">{{per}}</option>
 						{% endfor %}
@@ -128,10 +128,10 @@ Gestionnaire - {{entity}}
 
 			<div class="d-flex flex-wrap col-lg-12 my-2 mb-4 col-12">
 				<div class="col-8 col-lg-8">
-					<label> De la Période du : </label>
+					<label> De la PÃ©riode du : </label>
 					<div class="d-flex justify-content-center">
 						<select id='period_select' class="col-lg-12 form-control">
-							<option value="0"> Toutes les Périodes </option>
+							<option value="0"> Toutes les PÃ©riodes </option>
 							{% for per in default_period.decoup_slip %}
 							<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}" class='week_plus'>{{per}}</option>
 							{% endfor %}
@@ -139,7 +139,7 @@ Gestionnaire - {{entity}}
 					</div>
 				</div>
 				<div class="col-4 col-lg-4">
-					<label for="typeperiode">Année</label>
+					<label for="typeperiode">AnnÃ©e</label>
 					<input type="number" id="year_plan" value=2022 class="form-control">
 
 				</div>	
@@ -206,15 +206,15 @@ Gestionnaire - {{entity}}
 				<label class="btn"> Progression : </label> <label class="{% if base_val.progression < 25 %} text-danger {% elif base_val.progression < 75 %} text-warning {% else %} text-success {% endif %} btn progr_btn"> {{base_val.progression}}</label>  <small id="last_semaine"> &nbsp;Toutes les Periodes </small> </label>
 			</div>
 			<div>
-				<label class="btn"> {{sub_entity}} terminés : </label> <label class="btn text-secondary"> {{base_val.top_entities_full}} </label>
+				<label class="btn"> {{sub_entity}} terminÃ©s : </label> <label class="btn text-secondary"> {{base_val.top_entities_full}} </label>
 			</div>
 			<div>
 				<label class="btn"> {{sub_entity}}  en bonne voie :  </label> <label class="btn text-secondary"> {{base_val.top_entities_half}} </label>
 			</div>
 			<div>
-				<label class="btn"> {{sub_entity}} en faible réalisation :  </label> <label class="btn text-secondary"> {{base_val.top_entities_lower}} </label>
+				<label class="btn"> {{sub_entity}} en faible rÃ©alisation :  </label> <label class="btn text-secondary"> {{base_val.top_entities_lower}} </label>
 			</div>
-			{% if permissions >= nature %}<div> <a class="btn btn-success" href="/gestionnaire/{{nature}}">Gérer les {{type_entity}}</a></div>{% endif %}
+			{% if permissions >= nature %}<div> <a class="btn btn-success" href="/gestionnaire/{{nature}}">GÃ©rer les {{type_entity}}</a></div>{% endif %}
 		</div>
 
 	</div>
@@ -250,7 +250,7 @@ Gestionnaire - {{entity}}
 	{% if is_tache or is_sub_tache == True %}
 				<!-- <div onclick="tacheTable(1,this)" class="pr-3 pl-3">
 					<span class="btn btn-info fas fa-table"></span>
-					<span class="TTB btn btn-info text-white">Généralités</span>
+					<span class="TTB btn btn-info text-white">GÃ©nÃ©ralitÃ©s</span>
 				</div>
 				<div onclick="tacheTable(3,this)" class="pr-3">
 					<span class="btn btn-info fas fa-clock"></span>
@@ -260,7 +260,7 @@ Gestionnaire - {{entity}}
 				<!--
 				<div onclick="tacheTable(2,this)" class="pr-3">
 					<span class="btn btn-info fas fa-users"></span>
-					<span class="TTB btn btn-light text-info">Répartition</span>
+					<span class="TTB btn btn-light text-info">RÃ©partition</span>
 				</div>
 			-->
 			{% endif %}
@@ -351,7 +351,7 @@ Gestionnaire - {{entity}}
 		</div>
 		<div class="d-flex flex-wrap" style=' padding-bottom:5px;'>
 			{% if not_add == None and permissions > 0 %}
-			<div type="button"  onclick="restoreAdd({% if is_tache %}'Opération','0'{% endif %});" class=" waves-effect waves-light " data-toggle="modal" data-target="#addActionModal">
+			<div type="button"  onclick="restoreAdd({% if is_tache %}'OpÃ©ration','0'{% endif %});" class=" waves-effect waves-light " data-toggle="modal" data-target="#addActionModal">
 				<span class="btn btn-success fas fa-plus"></span>
 				<span class="btn btn-light text-success">Ajouter {{sub_entity}}</span>
 			</div>
@@ -359,7 +359,7 @@ Gestionnaire - {{entity}}
 			{% if is_tache or is_sub_tache == True %}
 				<!-- <div onclick="tacheTable(1,this)" class="pr-3">
 					<span class="btn btn-info fas fa-table"></span>
-					<span class="TTB btn btn-info text-white">Généralités</span>
+					<span class="TTB btn btn-info text-white">GÃ©nÃ©ralitÃ©s</span>
 				</div>
 				<div onclick="tacheTable(3,this)" class="pr-3">
 					<span class="btn btn-info fas fa-clock"></span>
@@ -369,7 +369,7 @@ Gestionnaire - {{entity}}
 				<!--
 				<div onclick="tacheTable(2,this)" class="pr-3">
 					<span class="btn btn-info fas fa-users"></span>
-					<span class="TTB btn btn-light text-info">Répartition</span>
+					<span class="TTB btn btn-light text-info">RÃ©partition</span>
 				</div>
 			-->
 			{% endif %}
@@ -453,7 +453,7 @@ Gestionnaire - {{entity}}
 		{% block div_bar %}
 		<div class="mb-4" style="border-bottom:1px solid #ddd;">
 			<div class="d-md-block text-secondary">
-				<label style="padding:10px;" class="text-secondary"> {% if gest_val != None %}<label style="padding:10px;"><a class="text-secondary" href="#" onclick="tacheTable(1,this)" > Généralités</a></label>{% endif %} </label>
+				<label style="padding:10px;" class="text-secondary"> {% if gest_val != None %}<label style="padding:10px;"><a class="text-secondary" href="#" onclick="tacheTable(1,this)" > G&eacute;n&eacute;ralit&eacute;s</a></label>{% endif %} </label>
 				<label style="padding:10px;" onclick="tacheTable(3,this)"><a class="text-secondary" href="#">Chronogramme</a></label>
 				<!-- <label style="padding:10px;"> Trier</label> -->
 				{% if menu == 'g' %}<label style="padding:10px;"><a class="text-secondary" href="/evaluer/{{gest_val}}/{% if gest_id != None %}{{gest_id}}/{% endif %}"> Objectifs</a></label>{% endif %}
@@ -506,7 +506,7 @@ Gestionnaire - {{entity}}
 					<!-- <td  onclick="document.location='/gestionnaire/{{g_v}}/{{line.id}}/';" style="width:100px;">{% if line.image.url != None %} <img src="{{line.image.url}}" style="width:50px;height:50px;"> {% else %} <i class="fas fa-3x fa-image text-success"></i> {% endif %}</td> -->
 					<th style="width:25px;" class="no_print">{% if permissions > 0 %}<input type="checkbox" class="entity_chbox" value="{{line.id}}" name="">{% endif %}</th>
 					{% if entity.is_pic_represented == True and line.m_pic_represented.url != None %}<td class="no_print t_cell"><img src="{{line.m_pic_represented.url}}" style="width:40px;height:40px;border-radius:100%;"></td>
-					{% elif entity.is_pic_represented == True %}<td class="t_cell no_print"> Aucune Image définie</td>
+					{% elif entity.is_pic_represented == True %}<td class="t_cell no_print"> Aucune Image dÃ©finie</td>
 					{% else %}
 					{% endif %}
 
@@ -562,11 +562,11 @@ Gestionnaire - {{entity}}
 										{% if entity.m_pic_represented.url != None %}
 										<img src="{{entity.m_pic_represented.url}}" style="width:40px;height:40px;border-radius:100%;">
 										{% else %}
-										Image par Défaut
+										Image par DÃ©faut
 										{% endif %}
 									</div>
 									{% elif entity.is_pic_represented == True %}
-									<div class="d-none">Aucune Image définie</div>
+									<div class="d-none">Aucune Image dÃ©finie</div>
 									{% else %}
 									{% endif %}
 									{% for val in entity.values %}<div class="d-none">{{val}}</div>{% endfor %}
@@ -596,7 +596,7 @@ Gestionnaire - {{entity}}
 						</div>
 					</div>
 					{% empty %}
-					<div> Aucune entité n'a encore été déclarée </div>
+					<div> Aucune entitÃ© n'a encore Ã©tÃ© dÃ©clarÃ©e </div>
 					{% endfor %}
 				</div>
 			</div>
@@ -639,7 +639,7 @@ Gestionnaire - {{entity}}
 		</tbody>
 	</table>
 
-	<!-- Chronogramme des Différentes Taches -->
+	<!-- Chronogramme des DiffÃ©rentes Taches -->
 	<table style="display:none;max-width:100%;overflow:auto;" class="main-table table">
 		<thead class="table_head_2">
 			<th class="t_cell ">
@@ -783,7 +783,7 @@ Gestionnaire - {{entity}}
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
 												{% endfor %}
-												<option value="0">Non Défini</option>
+												<option value="0">Non DÃ©fini</option>
 											</select>
 										</div>
 									</div>
@@ -791,7 +791,7 @@ Gestionnaire - {{entity}}
 										Accountable
 										<div class="justify-content-around">
 											<select name="accountable" class="form-control">
-												<option value="0">Non Défini</option>
+												<option value="0">Non DÃ©fini</option>
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso}}</option>
 												{% endfor %}
@@ -802,7 +802,7 @@ Gestionnaire - {{entity}}
 										Consulted
 										<div class="justify-content-around">
 											<select name="consulted" class="form-control">
-												<option value="0">Non Défini</option>
+												<option value="0">Non DÃ©fini</option>
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso}}</option>
 												{% endfor %}
@@ -813,7 +813,7 @@ Gestionnaire - {{entity}}
 										Informed
 										<div class="justify-content-around">
 											<select name="informed" class="form-control">
-												<option value="0">Non Défini</option>
+												<option value="0">Non DÃ©fini</option>
 												{% for perso in personnels %}
 												<option value="{{perso.id}}">{{perso}}</option>
 												{% endfor %}
@@ -860,7 +860,7 @@ Gestionnaire - {{entity}}
 							<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
 							<h4 id='modify_title' class="modal-title">Ajouter  {% if base_val == None %} {{entity}} {% else %} {{sub_entity}} {% endif %} </h4>
 							<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">×</span>
+								<span aria-hidden="true">Ã—</span>
 							</button>
 						</div>
 
@@ -981,7 +981,7 @@ Gestionnaire - {{entity}}
 										<div class="col-sm-12 d-flex">
 											<table class="table table-responsive" >
 												<thead>
-													<td> Rôle </td>
+													<td> RÃ´le </td>
 													{% for rol in actual_institution.structures_split %}
 													<td class="text-info"> {{rol}} </td>
 													{% endfor %}
@@ -1006,7 +1006,7 @@ Gestionnaire - {{entity}}
 										<div class="px-3 text-danger">Configuration Annuelle</div>
 									</div>
 									<div class="col-12 col-md-4 pl-3 d-flex">
-										<div class="p-2"><label>Année </label></div>
+										<div class="p-2"><label>AnnÃ©e </label></div>
 										<div><input id='year_plan' type="number" class="form-control" name=""></div>
 									</div>
 									<div class="col-lg-12 d-flex flex-wrap">
@@ -1021,7 +1021,7 @@ Gestionnaire - {{entity}}
 											{% endfor %}
 										</div>
 										<div class="px-1 col-lg-5" style="max-height:250px;overflow:auto;">
-											<div class="text-center mb-2"> Périodes Choisies </div>
+											<div class="text-center mb-2"> PÃ©riodes Choisies </div>
 											<div data-period="" id='choosen_period' class="d-flex justify-content-center flex-wrap">
 												
 											</div>
@@ -1058,7 +1058,7 @@ Gestionnaire - {{entity}}
 													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
 													<h4 class="modal-title">Modifications</h4>
 													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-														<span aria-hidden="true">×</span>
+														<span aria-hidden="true">Ã—</span>
 													</button>
 												</div>
 												<div class="modal-body">
@@ -1075,7 +1075,7 @@ Gestionnaire - {{entity}}
 															</div>
 															<div class="col-sm-12">
 																<div class="form-group">
-																	Désignation
+																	DÃ©signation
 																	<input type="text" class="form-control" name="designation" irequired="">
 																</div>
 															</div>
@@ -1237,7 +1237,7 @@ Gestionnaire - {{entity}}
 							new Chart("indi_chart2", {
 								type: "bar",
 								data: {
-									  labels:data.entities_id, //["Damn","Desdsd","DWWWWW"], //Sous-entité
+									  labels:data.entities_id, //["Damn","Desdsd","DWWWWW"], //Sous-entitÃ©
 									  datasets: x_axes
 									},
 									options: {
@@ -1539,7 +1539,7 @@ Gestionnaire - {{entity}}
 
 								tmp_body = new Array()
 								for (var i=0;i<data.lines.length;i++){
-									tmp2 = data.lines[i].split("§");
+									tmp2 = data.lines[i].split("Â§");
 									tmp3 = new Array()
 									for (var j=0; j<tmp2.length; j++){
 										tmp3.push(tmp2[j]);
@@ -1780,7 +1780,7 @@ if (supesea.length > 0){
 	if (nb_supesea == 0){
 		addEntityBody = document.getElementById("addEntityBody");
 		back_hie = parseInt({{gest_val}}) - 1; 
-		addEntityBody.innerHTML = "<div> Veuillez renseigner au préalable un <a class='text-primary' href='/gestionnaire/"+back_hie+"/'>{{sup_zone}}</a></div>"
+		addEntityBody.innerHTML = "<div> Veuillez renseigner au prÃ©alable un <a class='text-primary' href='/gestionnaire/"+back_hie+"/'>{{sup_zone}}</a></div>"
 	}
 }
 
@@ -1907,6 +1907,21 @@ grapher_evolution(graph_modal_div);
 
 </script>
 
+<script>
+// Vérifiez si le modal a déjà été ouvert précédemment
+if (localStorage.getItem('modalShown') !== 'true') {
+    // Affichez le modal
+    $('#addActionModal').modal('show');
+    
+    // Enregistrez l'état du modal dans le stockage local
+    localStorage.setItem('modalShown', 'true');
+  } else {
+    // Réinitialisez la valeur de 'modalShown' dans le stockage local
+    localStorage.removeItem('modalShown');
+  }
+  
+</script>
+
 {% endblock %}
 {% block script_structures %}
 
@@ -1917,3 +1932,5 @@ grapher_evolution(graph_modal_div);
 {% endblock %}
 
 {% endblock %}
+
+

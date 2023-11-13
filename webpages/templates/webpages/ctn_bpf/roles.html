@@ -1,3 +1,4 @@
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 {% extends './entities.html' %}
 {% load static %}
 
@@ -77,7 +78,7 @@
 	<form method="POST"  action="/search2/{{g_v}}/" class="col-lg-6 d-flex"> <!-- <label> Search </label> --> 
 		{% csrf_token %}
 		<label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
-		<input type='text' name='search' class='form-control' style='border-radius:0px;' placeholder="Recherche {% if g_v == 'r' %} Rôle {% else %} Personnel {% endif %}"> 
+		<input type='text' name='search' class='form-control' style='border-radius:0px;' placeholder="Recherche {% if g_v == 'r' %} RÃƒÂ´le {% else %} Personnel {% endif %}"> 
 	</form>
                                     <!--<div class="col-lg-6 d-flex">
                                         <label class='btn btn-success' style='border-radius:0px;'><i class='fas fa-search'></i></label>
@@ -110,7 +111,7 @@
 	</tbody>
 </table>
 -->
-                                		<table style="" class="table table-hover table-responsive">
+                                		<table style="" class="table table-hover table-responsive text-center">
                                 			<tr class=" ">
                                 				{% for field in fields %}
                                 				<th>{{field}}</th>
@@ -122,12 +123,24 @@
                                 			{% if g_vs == 'p2' %}
                                 			{% for line in pages_o %}
                                 			<tr style="cursor:pointer;">
-                                				<td onclick="document.location='/perso/{{line.id}}/'"><img src="{{line.photo.url}}" style="border-radius:100%;width:50px;height:50px;"></td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'">
+{%if line.photo == None%}
+<i class="fas fa-image"></i>
+{%else%}
+<img src="{{line.photo.url}}" style="border-radius:100%;width:50px;height:50px;">
+{%endif%}
+</td>
                                 				<td onclick="document.location='/perso/{{line.id}}/'">{{line.nom}}</td>
                                 				<td onclick="document.location='/perso/{{line.id}}/'">{{line.prenom}}</td>
-                                				<td onclick="document.location='/perso/{{line.id}}/'">{{line.tel}}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'">
+								{% if line.tel == None%}
+									<span class="badge badge-danger">Aucun num&eacute;ro de t&eacute;l&eacute;phone d&eacute;fini</span>
+								{%else%}
+<span class="badge badge-success">{{line.tel}}</span>
+{%endif%}
+</td>
                                 				<td onclick="document.location='/perso/{{line.id}}/'">{{line.mail}}</td>
-                                				<td onclick="document.location='/perso/{{line.id}}/'" class="line_func" {% if line.get_function != None %} data-id="{{line.get_function.m_role.id}}" {% endif %}>{% if line.get_function == None %}<span data-nom="{{line.prenom}} {{line.nom}}" class="text-success">Auun Rôle Défini</span>{% else %}<b class="text-success">{{line.get_function}}</b>{% endif %}</td>
+                                				<td onclick="document.location='/perso/{{line.id}}/'" class="line_func" {% if line.get_function != None %} data-id="{{line.get_function.m_role.id}}" {% endif %}>{% if line.get_function == None %}<span data-nom="{{line.prenom}} {{line.nom}}" class="text-success">Aucun R&ocirc;le D&eacute;fini</span>{% else %}<b class="text-success">{{line.get_function}}</b>{% endif %}</td>
                                 				<td onclick="document.location='/perso/{{line.id}}/'" class="line_struc" data-id="{{line.get_structure.m_structure.id}}">{{line.get_structure.m_structure}}</td>
                                 				<td><button class="btn btn-success" data-id="{{line.id}}" class="btn btn-success edit-btn" onclick="editBTN(this);" data-toggle="modal" data-target="#addActionModal"><i class="fas fa-pencil-alt"></i>
                                 				</button> <button class="btn btn-danger delete-btn" onclick='merde(this);' data-target="#deleteModal" data-id="{{line.id}}" data-toggle="modal"><i class="fas fa-trash-alt"></i></button></td>				
@@ -168,9 +181,9 @@
                                 					<div style="background:blue;">
                                 						<td class="text-info"><small>Photo</small></td>
                                 						<td class="text-info"><small>Nom</small></td>
-                                						<td class="text-info"><small>Prénom</small></td>
+                                						<td class="text-info"><small>Pr&eacute;nom</small></td>
                                 						<td class="text-info"><small>Adresse Mail</small></td>
-                                						<td class="text-info"><small>Entité</small></td>
+                                						<td class="text-info"><small>Entit&eacute;</small></td>
                                 					</div>
                                 					<tbody>
                                 						{% for p in line.persos %}
@@ -214,7 +227,7 @@
 			{% endif %}
                                 	</div>
 	<!--<div class="col-lg-5">
-		<h4 class="card-title">Rôles</h4>
+		<h4 class="card-title">RÃƒÂ´les</h4>
 		<table class="col-lg-12">
 			<tr class="bg-success text-white">
 				{% for field in fields2 %}
@@ -247,9 +260,9 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
-				<h4 class="modal-title">Ajouter un Rôle </h4>
+				<h4 class="modal-title">Ajouter un RÃƒÂ´le </h4>
 				<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">×</span>
+					<span aria-hidden="true">Ãƒâ€”</span>
 				</button>
 			</div>
 
@@ -282,22 +295,22 @@
 							<div class=" form-group">
 								Permissions
 								<div class="d-flex mb-3">
-									<div class="px-1"><span data-elt='0' class="ros_btn btn btn-success">Générique</span></div>
-									<div class="px-1"><span data-elt='1' class="ros_btn btn btn-light">Spécifique</span></div>
+									<div class="px-1"><span data-elt='0' class="ros_btn btn btn-success">G&eacute;n&eacute;lrique</span></div>
+									<div class="px-1"><span data-elt='1' class="ros_btn btn btn-light">Sp&eacute;cifique</span></div>
 									<div class="px-1"><span data-elt='2' class="ros_btn btn btn-light">Utilisateur Simple</span></div>
 									<input type="hidden" name="ros_click" id="ros_click">
 								</div>
 								<div class="ros_div">
 									<select class="form-control" name="permission">
-										<option value='-1'><span class="text-success">Operant :</span> Chargé d'Executer les Taches </option>
+										<option value='-1'><span class="text-success">Operant :</span> Charg&eacute; d'Executer les Taches </option>
 
 																				   	<!--
-																				   	<option value='1'>Superviseur de Tâches : Supervise les Taches  </option>
+																				   	<option value='1'>Superviseur de TÃƒÂ¢ches : Supervise les Taches  </option>
 																				   -->
 																				   {% for role in actual_institution.get_entities.reverse %}
-																				   <option  value="{{role.m_hierachie}}"> Chargé {{role}} : Supervise L'Evolution {{role}}</option>
+																				   <option  value="{{role.m_hierachie}}"> Charg&eacute; {{role}} : Supervise L'Evolution {{role}}</option>
 																				   {% endfor %}
-																				   <option value='99'> Administrateur : Aide à l'Administration de l'Institution </option>
+																				   <option value='99'> Administrateur : Aide ÃƒÂ  l'Administration de l'Institution </option>
 																				</select>
 																			</div>
 
@@ -322,7 +335,7 @@
 																			</div>
 																			<div class="ros_div" style="display:none;">
 																				<div>
-																					<small>Relier à une entité</small>
+																					<small>Relier &acirc;  une entit&eacute;</small>
 																				</div>
 																				<div>
 																					<select name="user_simple_entity" class="form-control">
@@ -366,13 +379,13 @@
 									</div>
 									{% else %}
 									<div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-										<div style='max-width:450px;' class="modal-dialog modal-xl">
+												<div class="modal-dialog modal-lg modal-dialog-centered">
 											<div class="modal-content">
 												<div class="modal-header">
 													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
 													<h4 class="modal-title" id='modify_title'>Ajouter du Personnel</h4>
 													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-														<span aria-hidden="true">×</span>
+														<span aria-hidden="true">Ã—</span>
 													</button>
 												</div>
 
@@ -392,27 +405,38 @@
 															<div class="col-sm-6">
 																<div class="form-group">
 																	Nom
-																	<input type="text" class="form-control" name="nom" id="codeAct" required="">
+																	<input type="text" class="form-control nom" name="nom"  required="" id="codeAct">
 																</div>
 															</div>
 															<div class="col-sm-6">
 																<div class="form-group">
 																	Prenom
-																	<input type="text" class="form-control" name="prenom" id="nomAct" required="">
+																	<input type="text" class="form-control prenom" name="prenom"  required="" id="nomAct">
 																</div>
 															</div>
+															
+															
 															<div class="col-sm-12">
 																<div class="form-group">
-																	Numéro Téléphone
-																	<input type="text" name="tel" class="form-control" >
+															<label>	Adresse Mail</label>
+																	<select class="js-example-basic-single form-control mail" name="mail" id="" style="width:100%">
+																		<option disabled>Selectionnez le Mail</option>
+																	
+																		{% for line in pages_o %}
+																			<option value="{{ line.id }}">{{line.mail}}</option>
+																		
+																		{%endfor%}
+																		
+																	  </select>	
 																</div>
+															
+														</div>
+														<div class="col-sm-12">
+															<div class="form-group">
+																NumÃ©ro TÃ©lÃ©phone
+																<input type="text" name="tel" class="form-control my-2 telephone" id=''>
 															</div>
-															<div class="col-sm-12">
-																<div class="form-group">
-																	Adresse Mail
-																	<input type="text" name="mail" class="form-control" >
-																</div>
-															</div>
+														</div>
 
 															{% for search in searches %}
 															<div class="col-sm-12">
@@ -431,11 +455,13 @@
 
 
 														</div>
+														<div class="modal-footer">
 														<button type="submit" class="btn btn-primary">Enregistrer
 														</button>
+													</div>
 													</form>
 												</div>
-											</div>
+										
 										</div>
 									</div>
 									{% endif %}
@@ -462,14 +488,14 @@
 																</select>
 															</div>
 															<div class="my-2">
-																<label>Entité :</label>
+																<label>EntitÃƒÂ© :</label>
 																<div class="d-flex flex-wrap" id="entities_roles_desc"> 
 
 																</div>
 															</div>
 															<div class="d-flex">
 																<div class="px-1">
-																	<label>Prénom</label>
+																	<label>Pr&eacute;nom</label>
 																	<input type="text" class="form-control" name="prenom">
 																</div>
 																<div class="px-1">
@@ -498,7 +524,7 @@
 													</div>
 													<div class="modal-footer">
 														<div class="px-2">
-															<span> 2022 © BeinInfo. </span>
+															<span style="font-family:quartz"> 2023,Solution BeinInfo. </span>
 														</div>
 													</div>
 												</form>
@@ -512,9 +538,9 @@
 											<div class="modal-content">
 												<div class="modal-header">
 													<!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
-													<h4 class="modal-title">Attribuer un Rôle </h4>
+													<h4 class="modal-title">Attribuer un RÃƒÂ´le </h4>
 													<button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-														<span aria-hidden="true">×</span>
+														<span aria-hidden="true">Ãƒâ€”</span>
 													</button>
 												</div>
 
@@ -557,12 +583,12 @@
 															<img src="{{perso_get.photo.url}}" style="width:85px;height:85px;border-radius:100%;">
 														</div>
 														<div class="text-center">
-															<b>{{perso_get}}</b> [ {{perso_get.mail}} ] a déja un compte au sein d'Opera, ses informations ont juste été conservées.
+															<b>{{perso_get}}</b> [ {{perso_get.mail}} ] a d&eacute;ja un compte au sein d'Opera, ses informations ont juste ÃƒÂ©tÃƒÂ© conservÃƒÂ©es.
 														</div>
 													</div>
 													<div class="modal-footer">
 														<div class="px-2">
-															<span> 2022 © BeinInfo. </span>
+															<span> 2022 Ã‚Â© BeinInfo. </span>
 														</div>
 													</div>
 												</form>
@@ -701,4 +727,62 @@
 	}
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+	$(document).ready(function() {
+	  $('.js-example-basic-single').select2({
+		placeholder: 'Saisissez Votre Adresse Email',
+		allowClear: true,
+		tags: true,
+		createTag: function(params) {
+		  var term = $.trim(params.term);
+	
+		  if (term === '') {
+			return null;
+		  }
+	
+		  return {
+			id: term,
+			text: term,
+			newTag: true
+		  }
+		}
+	  });
+	});
+	</script>
+<script>
+		$(document).ready(function() {
+		  // Lorsqu'un utilisateur est sÃ©lectionnÃ© dans la liste dÃ©roulante
+		  $('.mail').on('change', function() {
+			var mail = $(this).val();
+			
+			// RÃ©cupÃ¨re le jeton CSRF
+			var csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+			
+			// RequÃªte AJAX
+			$.ajax({
+			  url: "/recuperer_personnel/",
+			  type: 'POST',
+			  data: {
+				csrfmiddlewaretoken: csrf_token,
+				mail: mail
+			  },
+			  dataType: 'json',
+			  success: function(data) {
+				// Met Ã  jour les champs du formulaire avec les informations rÃ©cupÃ©rÃ©es
+				console.log(data);
+				$('.nom').val(data.nom);
+				$('.prenom').val(data.prenom);
+				$('.telephone').val(data.tel);
+				console.log(data.telephone)
+			  },
+			  error: function(jqXHR, textStatus, errorThrown) {
+				console.log('error');
+			  }
+			});
+		  });
+		});
+	  </script>
 {% endblock %}
+
+

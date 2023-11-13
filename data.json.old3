@@ -1,0 +1,1570 @@
+[
+{
+  "model": "ctn_bpf.owner",
+  "pk": 1,
+  "fields": {
+    "m_user": 1,
+    "m_code": "120001",
+    "m_bought": true,
+    "m_type": 10,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 2,
+  "fields": {
+    "m_user": 21,
+    "m_code": "741999",
+    "m_bought": true,
+    "m_type": 11,
+    "m_mail_notified": true
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 3,
+  "fields": {
+    "m_user": 22,
+    "m_code": "725411",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 4,
+  "fields": {
+    "m_user": 23,
+    "m_code": "924004",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 5,
+  "fields": {
+    "m_user": 24,
+    "m_code": "379580",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 6,
+  "fields": {
+    "m_user": 25,
+    "m_code": "979897",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 7,
+  "fields": {
+    "m_user": 26,
+    "m_code": "933547",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 8,
+  "fields": {
+    "m_user": 27,
+    "m_code": "011487",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 9,
+  "fields": {
+    "m_user": 28,
+    "m_code": "269144",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 10,
+  "fields": {
+    "m_user": 29,
+    "m_code": "528718",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 11,
+  "fields": {
+    "m_user": 30,
+    "m_code": "896525",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 12,
+  "fields": {
+    "m_user": 31,
+    "m_code": "409091",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 13,
+  "fields": {
+    "m_user": 32,
+    "m_code": "472837",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 14,
+  "fields": {
+    "m_user": 39,
+    "m_code": "855171",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 15,
+  "fields": {
+    "m_user": 40,
+    "m_code": "884069",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 16,
+  "fields": {
+    "m_user": 41,
+    "m_code": "036931",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 17,
+  "fields": {
+    "m_user": 42,
+    "m_code": "933499",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 18,
+  "fields": {
+    "m_user": 43,
+    "m_code": "515576",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 19,
+  "fields": {
+    "m_user": 46,
+    "m_code": "262591",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 20,
+  "fields": {
+    "m_user": 47,
+    "m_code": "538370",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 21,
+  "fields": {
+    "m_user": 48,
+    "m_code": "599183",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 22,
+  "fields": {
+    "m_user": 49,
+    "m_code": "449030",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 23,
+  "fields": {
+    "m_user": 55,
+    "m_code": "193456",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 24,
+  "fields": {
+    "m_user": 45,
+    "m_code": "123456",
+    "m_bought": true,
+    "m_type": 100,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 25,
+  "fields": {
+    "m_user": 64,
+    "m_code": "430385",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 28,
+  "fields": {
+    "m_user": 44,
+    "m_code": "000777",
+    "m_bought": true,
+    "m_type": 100,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 29,
+  "fields": {
+    "m_user": 87,
+    "m_code": "450114",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 30,
+  "fields": {
+    "m_user": 91,
+    "m_code": "419975",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 31,
+  "fields": {
+    "m_user": 84,
+    "m_code": "Edmond",
+    "m_bought": true,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 32,
+  "fields": {
+    "m_user": 93,
+    "m_code": "256970",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 33,
+  "fields": {
+    "m_user": 94,
+    "m_code": "469433",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 34,
+  "fields": {
+    "m_user": 95,
+    "m_code": "848351",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 35,
+  "fields": {
+    "m_user": 96,
+    "m_code": "234620",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 36,
+  "fields": {
+    "m_user": 99,
+    "m_code": "324773",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 37,
+  "fields": {
+    "m_user": 107,
+    "m_code": "435115",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 38,
+  "fields": {
+    "m_user": 108,
+    "m_code": "243659",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 39,
+  "fields": {
+    "m_user": 109,
+    "m_code": "246331",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 40,
+  "fields": {
+    "m_user": 110,
+    "m_code": "977012",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 41,
+  "fields": {
+    "m_user": 128,
+    "m_code": "034453",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 42,
+  "fields": {
+    "m_user": 129,
+    "m_code": "405300",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 43,
+  "fields": {
+    "m_user": 130,
+    "m_code": "535003",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 44,
+  "fields": {
+    "m_user": 133,
+    "m_code": "275324",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 46,
+  "fields": {
+    "m_user": 138,
+    "m_code": "313334",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 47,
+  "fields": {
+    "m_user": 139,
+    "m_code": "826209",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 48,
+  "fields": {
+    "m_user": 140,
+    "m_code": "660594",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 50,
+  "fields": {
+    "m_user": 143,
+    "m_code": "062022",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 51,
+  "fields": {
+    "m_user": 145,
+    "m_code": "579392",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 53,
+  "fields": {
+    "m_user": 154,
+    "m_code": "803515",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 55,
+  "fields": {
+    "m_user": 176,
+    "m_code": "076014",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 56,
+  "fields": {
+    "m_user": 184,
+    "m_code": "836332",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 57,
+  "fields": {
+    "m_user": 203,
+    "m_code": "525619",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 58,
+  "fields": {
+    "m_user": 204,
+    "m_code": "055809",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 59,
+  "fields": {
+    "m_user": 205,
+    "m_code": "256490",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 60,
+  "fields": {
+    "m_user": 206,
+    "m_code": "012029",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 61,
+  "fields": {
+    "m_user": 207,
+    "m_code": "991317",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 62,
+  "fields": {
+    "m_user": 209,
+    "m_code": "321347",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 63,
+  "fields": {
+    "m_user": 211,
+    "m_code": "041406",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 64,
+  "fields": {
+    "m_user": 222,
+    "m_code": "113694",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 65,
+  "fields": {
+    "m_user": 227,
+    "m_code": "822528",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 66,
+  "fields": {
+    "m_user": 228,
+    "m_code": "536877",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 67,
+  "fields": {
+    "m_user": 229,
+    "m_code": "466047",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 68,
+  "fields": {
+    "m_user": 230,
+    "m_code": "354333",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 69,
+  "fields": {
+    "m_user": 231,
+    "m_code": "870694",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 70,
+  "fields": {
+    "m_user": 232,
+    "m_code": "482501",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 71,
+  "fields": {
+    "m_user": 233,
+    "m_code": "834120",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 72,
+  "fields": {
+    "m_user": 234,
+    "m_code": "582724",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 73,
+  "fields": {
+    "m_user": 235,
+    "m_code": "816582",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 74,
+  "fields": {
+    "m_user": 236,
+    "m_code": "610977",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 75,
+  "fields": {
+    "m_user": 237,
+    "m_code": "566057",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 76,
+  "fields": {
+    "m_user": 238,
+    "m_code": "960532",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 77,
+  "fields": {
+    "m_user": 239,
+    "m_code": "398926",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 78,
+  "fields": {
+    "m_user": 240,
+    "m_code": "812024",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 79,
+  "fields": {
+    "m_user": 241,
+    "m_code": "679691",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 80,
+  "fields": {
+    "m_user": 242,
+    "m_code": "443800",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 81,
+  "fields": {
+    "m_user": 243,
+    "m_code": "733452",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 82,
+  "fields": {
+    "m_user": 244,
+    "m_code": "176303",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 83,
+  "fields": {
+    "m_user": 245,
+    "m_code": "724300",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 84,
+  "fields": {
+    "m_user": 246,
+    "m_code": "291885",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 85,
+  "fields": {
+    "m_user": 247,
+    "m_code": "103975",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 86,
+  "fields": {
+    "m_user": 248,
+    "m_code": "335232",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 87,
+  "fields": {
+    "m_user": 249,
+    "m_code": "206843",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 88,
+  "fields": {
+    "m_user": 250,
+    "m_code": "656626",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 89,
+  "fields": {
+    "m_user": 251,
+    "m_code": "639743",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 90,
+  "fields": {
+    "m_user": 252,
+    "m_code": "825630",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 91,
+  "fields": {
+    "m_user": 253,
+    "m_code": "927227",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 92,
+  "fields": {
+    "m_user": 254,
+    "m_code": "288872",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 93,
+  "fields": {
+    "m_user": 255,
+    "m_code": "236914",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 94,
+  "fields": {
+    "m_user": 256,
+    "m_code": "326881",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 95,
+  "fields": {
+    "m_user": 257,
+    "m_code": "824575",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 96,
+  "fields": {
+    "m_user": 258,
+    "m_code": "760836",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 97,
+  "fields": {
+    "m_user": 259,
+    "m_code": "355353",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 98,
+  "fields": {
+    "m_user": 260,
+    "m_code": "519676",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 99,
+  "fields": {
+    "m_user": 261,
+    "m_code": "160770",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 100,
+  "fields": {
+    "m_user": 262,
+    "m_code": "433931",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 101,
+  "fields": {
+    "m_user": 263,
+    "m_code": "526658",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 102,
+  "fields": {
+    "m_user": 264,
+    "m_code": "819049",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 103,
+  "fields": {
+    "m_user": 265,
+    "m_code": "093740",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 104,
+  "fields": {
+    "m_user": 97,
+    "m_code": "124466",
+    "m_bought": true,
+    "m_type": 11,
+    "m_mail_notified": true
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 105,
+  "fields": {
+    "m_user": 277,
+    "m_code": "987661",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 106,
+  "fields": {
+    "m_user": 279,
+    "m_code": "236155",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 107,
+  "fields": {
+    "m_user": 283,
+    "m_code": "322657",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 108,
+  "fields": {
+    "m_user": 284,
+    "m_code": "180250",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 109,
+  "fields": {
+    "m_user": 285,
+    "m_code": "850950",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 110,
+  "fields": {
+    "m_user": 286,
+    "m_code": "184572",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 111,
+  "fields": {
+    "m_user": 287,
+    "m_code": "045850",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 112,
+  "fields": {
+    "m_user": 288,
+    "m_code": "230821",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 113,
+  "fields": {
+    "m_user": 289,
+    "m_code": "572797",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 114,
+  "fields": {
+    "m_user": 290,
+    "m_code": "755210",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 115,
+  "fields": {
+    "m_user": 291,
+    "m_code": "539634",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 116,
+  "fields": {
+    "m_user": 188,
+    "m_code": "198626",
+    "m_bought": true,
+    "m_type": 3,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 117,
+  "fields": {
+    "m_user": 191,
+    "m_code": "003765",
+    "m_bought": true,
+    "m_type": 4,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 118,
+  "fields": {
+    "m_user": 306,
+    "m_code": "372809",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 119,
+  "fields": {
+    "m_user": 308,
+    "m_code": "687256",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.owner",
+  "pk": 120,
+  "fields": {
+    "m_user": 309,
+    "m_code": "905235",
+    "m_bought": false,
+    "m_type": 1,
+    "m_mail_notified": false
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 1,
+  "fields": {
+    "m_value": "Année 2022",
+    "m_decoupage": " Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Aout|Septembre|Octobre|Novembre|Décembre",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-04-20T15:15:50.779Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 2,
+  "fields": {
+    "m_value": "2022",
+    "m_decoupage": " T1-2022|T2-2022|T3-2022|T4-2022",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-04-20T15:15:50.779Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 3,
+  "fields": {
+    "m_value": "Trimestres",
+    "m_decoupage": "T1-2022|T2-2022|T3-2022|T4-2022",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-04-20T16:34:44.792Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 4,
+  "fields": {
+    "m_value": "Trimestriel",
+    "m_decoupage": "T1-2022|T2-2022|T3-2022|T4-2022",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-04-20T19:56:52.820Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 5,
+  "fields": {
+    "m_value": "Année 2022*",
+    "m_decoupage": "TRIMESTRE 01| TRIMESTRE 02| TRIMESTRE 03| TRIMESTRE 04",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-05-07T09:27:09.787Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 6,
+  "fields": {
+    "m_value": "TRIMESTRE",
+    "m_decoupage": " 1-Premier Trimestre |2- Deuxième Trimestre |3-Troisieme trimestre",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-06-02T21:09:10.649Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 7,
+  "fields": {
+    "m_value": "Semaines",
+    "m_decoupage": " Semaine 1: 29 Mai - 5 Juin 2022|Semaine 2: 6 - 12 Juin 2022|Semaine 3: 13 - 19 Juin 2022|Semaine 4: 20 - 26 Juin 2022|Semaine 5: 27 - 30 Juin 2022",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-06-13T07:46:52.369Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 8,
+  "fields": {
+    "m_value": "Trimestriel",
+    "m_decoupage": " TRIMESTRE 01| Trimestre 02| Trimestre 03| Trimestre 04",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-07-29T12:40:12.929Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 9,
+  "fields": {
+    "m_value": "TRIMESTRE",
+    "m_decoupage": " Trimestre 01| Trimestre 02| Trimestre 03| Trimestre 04",
+    "m_decoupage_description": null,
+    "m_date_creation": "2022-07-29T12:41:41.684Z",
+    "m_config": null,
+    "m_initial": null,
+    "m_logic_type": null,
+    "m_code_type": null
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 10,
+  "fields": {
+    "m_value": "Hebdomadaire",
+    "m_decoupage": "Semaine 1|Semaine 2|Semaine 3|Semaine 4|Semaine 5|Semaine 6|Semaine 7|Semaine 8|Semaine 9|Semaine 10|Semaine 11|Semaine 12|Semaine 13|Semaine 14|Semaine 15|Semaine 16|Semaine 17|Semaine 18|Semaine 19|Semaine 20|Semaine 21|Semaine 22|Semaine 23|Semaine 24|Semaine 25|Semaine 26|Semaine 27|Semaine 28|Semaine 29|Semaine 30|Semaine 31|Semaine 32|Semaine 33|Semaine 34|Semaine 35|Semaine 36|Semaine 37|Semaine 38|Semaine 39|Semaine 40|Semaine 41|Semaine 42|Semaine 43|Semaine 44|Semaine 45|Semaine 46|Semaine 47|Semaine 48|Semaine 49|Semaine 50|Semaine 51|Semaine 52|Semaine 53",
+    "m_decoupage_description": "",
+    "m_date_creation": "2022-07-29T13:36:05.107Z",
+    "m_config": true,
+    "m_initial": true,
+    "m_logic_type": 2,
+    "m_code_type": ""
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 11,
+  "fields": {
+    "m_value": "Mois",
+    "m_decoupage": "Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Aout|Septembre|Octobre|Novembre|Décembre",
+    "m_decoupage_description": "",
+    "m_date_creation": "2022-07-29T13:45:57.407Z",
+    "m_config": true,
+    "m_initial": true,
+    "m_logic_type": 3,
+    "m_code_type": ""
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 12,
+  "fields": {
+    "m_value": "Trimestre",
+    "m_decoupage": "Trimestre 1|Trimestre 2| Trimestre 3 |Trimestre 4",
+    "m_decoupage_description": "",
+    "m_date_creation": "2022-07-29T13:50:31.423Z",
+    "m_config": true,
+    "m_initial": true,
+    "m_logic_type": 9,
+    "m_code_type": ""
+  }
+},
+{
+  "model": "ctn_bpf.periode",
+  "pk": 13,
+  "fields": {
+    "m_value": "Semestre",
+    "m_decoupage": "Semestre 1|Semestre 2",
+    "m_decoupage_description": "",
+    "m_date_creation": "2022-07-29T14:17:30.494Z",
+    "m_config": true,
+    "m_initial": true,
+    "m_logic_type": 6,
+    "m_code_type": ""
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 1,
+  "fields": {
+    "m_periode": 1,
+    "m_sub_value": "Semaine",
+    "m_decoupage": "S1|S2|S3|S4|S5 ",
+    "m_decoupage_description": "Semaine 1|Semaine 2|Semaine 3|Semaine 4|Semaine 5 ",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 4,
+  "fields": {
+    "m_periode": 3,
+    "m_sub_value": "Mois",
+    "m_decoupage": " 01|02|03|04|05|06|07|08|09|10|11|12 \t",
+    "m_decoupage_description": " 01|02|03|04|05|06|07|08|09|10|11|12",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 5,
+  "fields": {
+    "m_periode": 4,
+    "m_sub_value": "Mois",
+    "m_decoupage": "Jan |Fev |Mar |Avr |Mai |Jui |Jul |Aou |Sep |Opt |Nov |Dec ",
+    "m_decoupage_description": "Jan |Fev |Mar |Avr |Mai |Jui |Jul |Aou |Sep |Opt |Nov |Dec ",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 6,
+  "fields": {
+    "m_periode": 5,
+    "m_sub_value": "Mensuel 2022",
+    "m_decoupage": "Janvier |Février |Mars |Avril |Mai |Juin |Juillet |Aout |Septembre |Octobre |Novembre |Décembre",
+    "m_decoupage_description": "Janvier |Février |Mars |Avril |Mai |Juin |Juillet |Aout |Septembre |Octobre |Novembre |Décembre",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 8,
+  "fields": {
+    "m_periode": 6,
+    "m_sub_value": "Mois",
+    "m_decoupage": "T1-Septembre|T1-Octobre|T1-Novembre|T1-Décembre|T2-Janvier|T2-Février|T2-Mars|T3-Avril|T3-Mai |T3-Juin",
+    "m_decoupage_description": "T1-Septembre|T1-Octobre|T1-Novembre|T1-Décembre|T2-Janvier|T2-Février|T2-Mars|T3-Avril|T3-Mai |T3-Juin",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 9,
+  "fields": {
+    "m_periode": 7,
+    "m_sub_value": "Jour",
+    "m_decoupage": "Lun |Mar |Mer |Jeu |Ven |Sam |Dim",
+    "m_decoupage_description": "Lundi |Mardi |Mercredi |Jeudi |Vendredi |Samedi |Dimanche",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 10,
+  "fields": {
+    "m_periode": 4,
+    "m_sub_value": "Mois",
+    "m_decoupage": "Mois 1| Mois 2| Mois 3",
+    "m_decoupage_description": "M1| M2| M3",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 11,
+  "fields": {
+    "m_periode": 12,
+    "m_sub_value": "Mensuel",
+    "m_decoupage": "Mois 1|Mois 2|Mois 3",
+    "m_decoupage_description": "Mois 1|Mois 2|Mois 3",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 12,
+  "fields": {
+    "m_periode": 13,
+    "m_sub_value": "Mensuel",
+    "m_decoupage": "Mois 1|Mois 2|Mois 3|Mois 4|Mois 5|Mois 6",
+    "m_decoupage_description": "Mois 1|Mois 2|Mois 3|Mois 4|Mois 5|Mois 6",
+    "m_config_type": null
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 13,
+  "fields": {
+    "m_periode": 10,
+    "m_sub_value": "Journalier",
+    "m_decoupage": "Lundi| Mardi| Mercredi| Jeudi| Vendredi| Samedi| Dimanche",
+    "m_decoupage_description": "Lundi| Mardi| Mercredi| Jeudi| Vendredi| Samedi| Dimanche",
+    "m_config_type": 2
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 14,
+  "fields": {
+    "m_periode": 11,
+    "m_sub_value": "Journalier",
+    "m_decoupage": "Auto",
+    "m_decoupage_description": "Auto",
+    "m_config_type": 2
+  }
+},
+{
+  "model": "ctn_bpf.subperiode",
+  "pk": 15,
+  "fields": {
+    "m_periode": 11,
+    "m_sub_value": "Hebdomadaire",
+    "m_decoupage": "S1| S2| S3| S4| S5",
+    "m_decoupage_description": "Semaine 1 | Semaine 2 | Semaine 3 | Semaine 4 | Semaine 5",
+    "m_config_type": null
+  }
+}
+]

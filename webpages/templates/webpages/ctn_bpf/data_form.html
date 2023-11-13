@@ -187,9 +187,35 @@ function LaunchFormData(indi_id,Idiv="dF_Div"){
 		success: function (data) {
 			dF_Div = document.getElementById(Idiv);
 			tmp = "<div id='saisie_period' class='my-2'> Periode de Saisie </div>"
-			if (true){//data.periode == "0"
+			if (data.periode == "0"){//data.periode == "0"
 				tmp += "<div style='border-bottom:1px solid #aaa;' class='py-2 col-12 d-flex'> <div class='col-6 px-3'> <label> Année </label>  <div>  <input class='form-control' name='period1_saisie' value='2023' type='number'> </div> </div>"
-				if (true){//data.subperiode == "Mensuelle"
+		}
+		if (data.periode == "1"){
+			tmp += "<div> <label> Mois </label> <div> <select name='period1_saisie' class='form-control'>"
+				for (var j=0;j<months.length;j++){
+					tmp += "<option value='"+months[j]+"' ";
+					if (j == actual_month){
+							tmp += " selected ";
+					} 
+					tmp +=">"+months[j]+"</option>";	
+				}
+				tmp += "</select> </div> <div> </div> </div> ";
+				}
+				if(data.periode == "2"){
+					tmp += "<div> <label> Hebdomadaire </label> <div> <select name='period1_saisie' class='form-control'>";
+						for (var i = 1; i <= 52; i++) {
+						  tmp += "<option value='Semaine " + i + "'>Semaine " + i + "</option>";
+						}
+				
+  						tmp += "</select> </div> <div> </div> </div>";
+				}
+
+
+
+
+
+				
+				if (data.subperiode == "Mensuelle"){//data.subperiode == "Mensuelle"
 					
 				tmp += "<div> <label> Mois </label> <div> <select name='period2_saisie' class='form-control'>"
 				for (var j=0;j<months.length;j++){
@@ -200,9 +226,55 @@ function LaunchFormData(indi_id,Idiv="dF_Div"){
 					tmp +=">"+months[j]+"</option>";	
 				}
 				tmp += "</select> </div> <div> </div> </div> ";
+				}if (data.subperiode == "Hebdomadaire") {
+					// Code HTML pour la période hebdomadaire
+					var currentWeek = Math.ceil(new Date().getDate() / 7); // Déterminez la semaine actuelle
+					tmp += "<div> <label> Hebdomadaire </label> <div> <select name='period2_saisie' class='form-control'>";
+				
+					for (var i = 1; i <= 52; i++) {
+						tmp += "<option value='Semaine " + i + "'";
+						if (i == currentWeek) {
+							tmp += " selected"; // Sélectionner la semaine actuelle
+						}
+						tmp += ">Semaine " + i + "</option>";
+					}
+					tmp += "</select> </div> <div> </div> </div>";
 				}
-			}
+				
+				if (data.subperiode == "Trimestriel") {
+					tmp += "<div> <label> Trimestrielle </label> <div> <select name='period2_saisie' class='form-control'>";
+				
+					// Code HTML pour la période trimestrielle
+					//var tmp = "<div> <label> Trimestrielle </label> <div> <select name='period2_saisie' class='form-control'>";
+					for (var i = 1; i <= 4; i++) {
+						var currentMonth = new Date().getMonth() + 1; // Obtenez le mois actuel
+						var currentTrimester = Math.ceil(currentMonth / 3); // Déterminez le trimestre actuel
+					
+						tmp += "<option value='Trimestre " + i + "'";
+						if (i == currentTrimester) {
+							tmp += " selected"; // Sélectionner le trimestre actuel
+						}
+						tmp += ">Trimestre " + i + "</option>";
+					}
+					tmp += "</select> </div> <div> </div> </div>";
+				}
+				
+				if(data.subperiode == "Semestriel"){
+					tmp += "<div> <label> Semestrielle </label> <div> <select name='period2_saisie' class='form-control'>";
+						for (var i = 1; i <= 2; i++) {
+						  var currentSemester = (new Date().getMonth() < 6) ? 1 : 2; // Déterminer le semestre actuel
+						  tmp += "<option value='Semestre " + i + "'";
+						  if (i == currentSemester) {
+							tmp += " selected"; // Sélectionner le semestre actuel
+						  }
+						  tmp += ">Semestre " + i + "</option>";
+						}
+						tmp += "</select> </div> <div> </div> </div>";
+
+				}
+			
 			tmp +=  "</div>";
+
 
 			tmp2 = "<div class='my-2'> Strucures concernees </div> <div id='saisie_structures' style='border-bottom:1px solid #aaa;' Class='py-2 d-flex'>"
 			for (var i=0;i<data.structures.length;i++){

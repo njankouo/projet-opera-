@@ -13,12 +13,14 @@
     <link rel="stylesheet" href="{% static 'webpages/ctn_bpf/agenda/css/style.css' %}" >
     <link href="{% static 'webpages/ctn_bpf/icons.min.css' %}" rel="stylesheet" type="text/css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
     <link href="{% static 'webpages/ctn_bpf/theme.min.css' %}" rel="stylesheet" type="text/css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Licorice&family=Ubuntu:wght@300&display=swap" rel="stylesheet">    
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
     <style type="text/css">
         body *{
             font-family: Ubuntu,Corbel,sans-serif;
@@ -181,7 +183,7 @@
                                 <a class=" badge badge-light text-success" href="/alert_notifs/0/0/" >
                                     <i class="fas fa-envelope"></i>
                                     <span class="badge">R</span>
-                                    <span class="badge badge-light count_to_done" >0</span>
+                                    <span class="badge badge-light count_to_done2" >0</span>
                                 </a>    
                             </div>
                             
@@ -234,7 +236,7 @@
                             {% if permissions > 0 and not_add == None %}
                             <a href="/" class="text-success d-block col-6 col-md-4 col-lg-3 p-4 text-center">
                                 <div><i class="fas fa-home fa-2x text-secondy"></i></div>
-                                <div class="menu_littleWid_text"><small class="">Tableau de Bord</small></div>
+                                <div class="menu_littleWid_text"><small class="" style="font-weight:bold">Tableau de Bord</small></div>
                             </a>
                             {% elif entity_manage != None and no_simple_user %}
                             <a href="/" class="text-success d-block col-6 col-md-4 col-lg-3 p-4 text-center">
@@ -249,7 +251,7 @@
                             </a>
                             <a href="/gestionnaire/-1/" style="color:purple;" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center">
                                 <div><i class="fas fa-sticky-note fa-2x"></i></div>
-                                <div class="menu_littleWid_text"><small>Aperçu : {{last_entity}}</small></div>
+                                <div class="menu_littleWid_text"><small>Aper&ccedil;u : {{last_entity}}</small></div>
                             </a> 
                             <a href="/evaluer/0/" class="text-danger d-block col-6 col-md-4 col-lg-3 p-4 text-center">
                                 <div><i class="fas fa-flag fa-2x tey"></i></div>
@@ -259,7 +261,7 @@
 
                             <a href="/chaine_indicateurs/" style="color:#940334;" class="d-block col-6 col-md-4 col-lg-3 p-4 text-center">
                                 <div><i class="fas fa-globe fa-2x"></i></div>
-                                <div class="menu_littleWid_text"><small>Chaîne de Résultats</small></div>
+                                <div class="menu_littleWid_text"><small>Cha&icirc;ne de R&eacute;sultats</small></div>
                             </a>
                             {% endif %} 
                             {% if permissions >= 0 %}
@@ -347,8 +349,8 @@
                     <div class="mr-2">
                         <a href="/" class="d-block pt-1">
                             <img style="width:40px;height:40px;border-radius:100%; " src="{{actual_institution.img.url}}"><span class="btn text-white" style="font-size:14px;">OPERA+</span>
-                            <span class="btn text-white d-none d-md-inline" style="text-transform:capitalize;">{{actual_institution.nom}}</span>
-                            <span class="text-white d-none" style="text-transform:capitalize;">{{actual_institution.sigle}}</span>
+                            <span class="btn text-white d-none d-md-inline" style="text-transform:capitalize;font-family:quartz">{{actual_institution.nom}}</span>
+                            <span class="text-white d-none" style="text-transform:capitalize;font-family:quartz">{{actual_institution.sigle}}</span>
                             <!-- <b class="btn d-md-none"><i class="text-white fas fa-bars"></i></b> -->
                         </a>
 
@@ -361,7 +363,7 @@
                     <div class="d-flex" style='display:flex;'>
                         <div class="mr-4 ">
                             <!-- <a style="color:#fff;{% if menu == 'o' %}font-weight: bold;text-decoration:underline;{% else %} text-white {% endif %}" class=" " href="/operations/">
-                                Exécution
+                                Ex&eacute;cution
                             </a> K5mriXNrjf67KcrYeI83 -->
                         </div>
 
@@ -378,30 +380,64 @@
                         <div class='d-none d-md-block mr-4 text-success'> 
                             <a class=" badge badge-light text-success" href="/alert_notifs/0/0/" >
                                 <i class="fas fa-envelope"></i>
+					 {% for operation_s in operation_m%}
+                                {%if operation_s.etat == "0" and request.user.personnel == operation_s.personnel and operation_s.m_institution_id == actual_institution.id%}
+				{%if operation_s.delai_restant == "Le délai est écoulé !"%}
+				
+                                <i class="fa fa-star fa-spin text-danger"></i>
+				{%endif%}
+                                {%endif%}
+{%if operation_s.m_institution_id == "2"%}
+
+etoile
+{%endif%}
+                                       {%endfor%}
+                                                         
                                 <span class="badge">R</span>
-                                <span class="badge badge-light count_to_done" >0</span>
-                            </a>    
-                        </div>
-                        
+                                <span class="badge badge-light count_to_done2">0
+                                  
+                                </span>
+                            </a>                            </div>
+                       
                         <div class='d-none d-md-block mr-4 text-white'> 
                             <a class=" badge badge-light text-danger " href="/alert_notifs/0/1/" >
                                 <i class="fas fa-envelope"></i>
+				
+					 {% for operation_detail in operation_details%}
+                                {%if operation_detail.etat == "1" and operation_detail.m_institution_id == actual_institution and operation_detail.personnel_id == request.user.personnel.id %}
+					
+                            <i class="fa fa-star fa-spin"></i>
+                                {%endif%}
+                              
+                                     {%endfor%}
+ 
+
                                 <span class="badge">A</span>
                                 <span class="badge badge-light count_is_observ" >0</span>
                             </a>
                         </div>
 
                         <div class='d-none d-md-block mr-4 text-white'> 
-                            <a class=" badge badge-light text-primary " href="/alert_notifs/0/2/" >
+                            <a class=" badge badge-light text-primary " href="/tache_consulted" >
                                 <i class="fas fa-envelope"></i>
+					 {% for operation_s in operation_m%}
+                                        {%if operation_s.etat == "0" and request.user.personnel == operation_s.personnel%}
+{%comment%}
+                                <i class="fa fa-star fa-spin"></i>{%endcomment%}
+                                {%endif%}
+                              
+                                       {%endfor%}
+
                                 <span class="badge">C</span>
-                                <span class="badge badge-light count_is_consulted" >0</span>
+                                <span class="badge badge-light count_to_done2" >0</span>
                             </a>
                         </div>
 
                         <div class='d-none d-md-block mr-4 text-white'> 
                             <a class=" badge badge-light text-warning" href="/alert_notifs/0/3/" >
                                 <i class="fas fa-envelope"></i>
+	 
+
                                 <span class="badge">I</span>
                                 <span class="badge badge-light count_is_informed" >0</span>
                             </a>
@@ -441,7 +477,7 @@
 
                                 </a>
                                 <a  class="dropdown-item d-flex align-items-center justify-content-between" href="/log/1/">
-                                    <span>Déconnexion</span>
+                                    <span>D&eacute;connexion</span>
                                 </a>
                             </div>
                         </div>
@@ -496,7 +532,7 @@
                             {% if permissions >= 0 %}
                             <!-- <a  data-toggle='modal' href="#NewModal" class="p-2 text-center text-white card bg-success btn-rounded rounded d-block"> Nouveau + </a> -->
                             {% else %}
-                            <!-- <a href="/operations/" class="mt-3 p-2 text-center text-white card bg-info btn-rounded rounded d-block"> Exécution </a> -->
+                            <!-- <a href="/operations/" class="mt-3 p-2 text-center text-white card bg-info btn-rounded rounded d-block"> ExÃ©cution </a> -->
 
                             <!-- <a href="#" class="mt-3 p-2 text-center btn-danger btn-rounded rounded d-block">  <i class="fas fa-network-wired"></i> Evaluation</a> -->
                             {% endif %}
@@ -526,40 +562,55 @@
 
                 {% if permissions >= 0 %}
 
-                <div class="mt-3 mb-3">
+                <div class="mt-3 mb-3" style="font-weight:bold">
                     <div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
-                        <div class="btn text-primary"> {{operations_name}}</div>
+                        <div class="btn text-primary"  style="font-weight:bold"> {{operations_name}}</div>
                         <div><i class="fas text-primary fa-angle-down"></i></div>
                     </div>
-                    <a href="/notifications/" class="text-dark d-block">
-                        <span class="btn">Non Effectuées</span>
-                        <span class="badge badge-light count_to_done2"></span>
+                    <a href="/list_tach" class="text-dark d-block">
+                        <span class="btn" style="font-style:italic;font-weight:bold;font-family:quartz">Non Effectu&eacute;es</span>
+                        <span class="badge badge-danger" id="count"></span>
                     </a>
+{%comment%} count_to_done2{%endcomment%} 
                     <div class="">
-                        <span class="btn">Effectuées</span>
-                        <span class="badge badge-light count_done2"></span>
+			<a href="/tache_effectuee">
+                        <span class="btn" style="font-style:italic;font-weight:bold; font-family:quartz" >Effectu&eacute;es</span>
+                        <span class="badge badge-primary" id="count_effect">
+</span>
+			</a>
                     </div>
+{%comment%} count_done2{%endcomment%}
                             <!-- <div>
                                 <span class="btn">En Attente</span>
-                                <span class="badge badge-light count_to_report2"></span>
+                                <span class="badge badge-light" id="count_attente"></span>
                             </div> -->
                         </div>
                         {% endif %}
                         {% if permissions > 1 %}
                         <div class="mb-3">
                             <div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary">
-                                <div class="btn text-primary">Rapports</div>
+                                <div class="btn text-primary" style="font-weight:bold">Rapports</div>
                                 <div><i class="fas text-primary fa-angle-down"></i></div>
                             </div>
+                            
                             <div>
-                                <a href="/alert_notifs/0/1/" class="text-dark d-block">
-                                    <span class="btn text-danger">En Attente</span>
-                                    <span class="badge badge-light count_to_report2">0</span>
+                                  <a href="/tache_effectuee" class="text-dark d-block">
+                                    <span class="btn text-danger" style="font-style:italic;font-weight:bold;font-family:quartz">En Attente</span>
+                                    <span class="badge badge-danger" id="count_attente">0</span>
                                 </a>
                                 <div>
-                                    <span class="btn text-success">Validés</span>
-                                    <span class="badge badge-light count_is_report2">0</span>
+				<a href='/tache_valide'>
+                                    <span class="btn text-success" style="font-style:italic;font-weight:bold;font-family:quartz">Valid&eacute;s</span>
+                                    <span class="badge badge-success" id="valide_count">0</span>
+				</a>
                                 </div>
+				 <div>
+				<a href='/tache_archive'>
+                                    <span class="btn text-secondary" style="font-style:italic;font-weight:bold;font-family:quartz">Archives</span>
+                                    <span class="badge badge-secondary" id="restore">0</span>
+				</a>
+                                </div>
+
                                 <!--
                                 <div>
                                     <small class="btn">Observations</small>
@@ -573,13 +624,13 @@
                     {% if permissions > 0 and not_add == None %}
                     <div class="">
                         <div style="width:100%;" class="d-flex justify-content-between border-bottom border-primary">
-                            <div class="btn text-primary">Niveau </div>
+                            <div class="btn text-primary"  style="font-weight:bold">Niveau </div>
                             <div><i class="fas text-primary fa-angle-down"></i></div>
                         </div>
-                        <div style="" >
+                        <div style="" style="font-family:quartz" >
                             {% for entity in get_entities %}
-                            <div class="">
-                                <a {% if hierachy == entity.m_hierachie %}style='font-weight:bold;'{% endif %} href="/gestionnaire/{{entity.m_hierachie}}/" class="btn text-dark"> {{entity}} </a>
+                            <div class="" style="font-weight:bold;font-family:quartz">
+                                <a {% if hierachy == entity.m_hierachie %}style='font-weight:bold; font-family:quartz;'{% endif %} href="/gestionnaire/{{entity.m_hierachie}}/" class="btn text-dark"> {{entity}} </a>
                             </div>
                             {% endfor %}
                         </div>       
@@ -596,7 +647,7 @@
                         <div><i class="fas fa-book text-primary"></i></div>
                     </a>
                     <div class="text-secondary mt-3">
-                        <span> 2022 © BeinInfo. </span>
+                     <span style="font-family:quartz"> 2023 Solution BeinInfo.</span> 
                     </div>
 
                 </div>
@@ -652,7 +703,7 @@
                                         </div>
 
                                         <div class="card-body" style="width:100%;" >
-                                            <!--h4 class="card-title">Menu à la carte</h4-->
+                                            <!--h4 class="card-title">Menu Ã  la carte</h4-->
 
 
                                             {% block search_filters %}
@@ -662,7 +713,7 @@
                                                 <div class="row d-flex d-sm-block d-md-flex flex-wrap" style='border-bottom:2px solid #eee;width:100%;'>
                                                     <div class="col-sm-6 col-md-3">
                                                         <div class="form-group">
-                                                            <label for="exampleFormControlSelect1">Niveau d'éxécution</label>
+                                                            <label for="exampleFormControlSelect1">Niveau d'ex&eacute;cution</label>
                                                             <select class="form-control" name="niveau" id="exampleFormControlSelect1">
                                                                 {% for  niveau in get_entities.reverse %}
                                                                 {% if permissions >= niveau.hierachie_lvl or niveau.m_entity_type.is_tache == True %} <option value="{{niveau.m_hierachie}}" {% if lvl == niveau.m_hierachie %} selected {% endif %}>{{niveau}}</option>{% endif %}
@@ -674,7 +725,7 @@
                                                     
                                                     <div class=" d-flex col-sm-12 col-md-5 flex-wrap">
                                                         <div class="col-md-12 col-lg-9 px-2 form-group">
-                                                            <label for="typeperiode">Période</label>
+                                                            <label for="typeperiode">P&eacute;riode</label>
                                                             {% if periode != '#' %}
                                                             <small>{{periode}}</small>
                                                             {% endif %}
@@ -687,7 +738,7 @@
 
                                                         </div>
                                                         <div class="col-md-6 col-lg-3 form-group ">
-                                                            <label for="typeperiode">Année</label>
+                                                            <label for="typeperiode">Ann&eacute;e</label>
                                                             <input type="number" id="year_plan" value=2022 class="form-control">
 
                                                         </div>
@@ -715,7 +766,7 @@
 
                                                     <div>
                                                         <input id="only_not" type="checkbox" name="only_not" value="1">
-                                                        <label for="only_not"> <small> Afficher uniquement :  {{operations_name}} non réalisées </small></label>
+                                                        <label for="only_not"> <small> Afficher uniquement :  {{operations_name}} non r&eacute;alis&eacute;e </small></label>
                                                     </div>
                                                     <div>
                                                         <input id="only_not2" type="checkbox" name="only_not2" checked value="1">
@@ -745,7 +796,7 @@
                                         {% block print_bar %}
                                         <div class="mb-4" style="border-bottom:1px solid #ddd;">
                                             <div class="d-md-block text-secondary">
-                                                <label style="padding:10px;" class="text-secondary"> {% if gest_val != None %}<label style="padding:10px;"><a class="text-secondary" href="/gestionnaire/{{gest_val}}/"> Généralités</a></label>{% endif %} </label>
+                                                <label style="padding:10px;" class="text-secondary"> {% if gest_val != None %}<label style="padding:10px;"><a class="text-secondary" href="/gestionnaire/{{gest_val}}/"> GÃ©nÃ©ralitÃ©s</a></label>{% endif %} </label>
                                                 <!-- <label style="padding:10px;"> Trier</label> -->
                                                 {% if menu == 'g' %}<label style="padding:10px;"><a class="text-secondary" href="/evaluer/{{gest_val}}/{% if gest_id != None %}{{gest_id}}/{% endif %}"> Objectifs</a></label>{% endif %}
                                                 <label class="d-none d-md-inline" style="padding:10px;color:#ccc;"> Filtres</label>
@@ -968,10 +1019,10 @@
                 <div class="modal fade" id="NewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header"> Nouvelle Entité</div>
+                            <div class="modal-header"> Nouvelle Entit&eacute;</div>
                             <div class="modal-body">
                                 <div>
-                                    <div> Créer Nouveau</div>
+                                    <div> Cr&eacute;er Nouveau</div>
                                     <div>
                                         <div class="list-group">
                                             {% for entity in get_entities %}
@@ -1007,7 +1058,7 @@
                 tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" id='commentOperModal'>
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
-                        <div class="modal-header btn-light">Commentaire sur l'Opération</div>
+                        <div class="modal-header btn-light">Commentaire sur l'Op&eacute;ration</div>
                         <div class="modal-body">
                             <div class="d-flex">
                                 <div class="btn"> Operation : </div>
@@ -1034,7 +1085,7 @@
                             <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
                             <h4 class="modal-title ">Rapport <b id='type_rapport' class="h4 text-success"> Technique </b> de l'Operation <span class="h4 text-info" id='tache-nom'></span></h4>
                             <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
+                                <span aria-hidden="true">Ã—</span>
                             </button>
                         </div>
 
@@ -1048,7 +1099,7 @@
                                 <div class="card-body">
                                     <div>
                                         <div class="">
-                                            <legend>Ajouter une pièce jointe pour l'opération <i id="codeoperation"></i></legend>
+                                            <legend>Ajouter une piece jointe pour l'op&eacute;ration <i id="codeoperation"></i></legend>
                                             <form enctype="multipart/form-data" action="/save_rapport/" class="form-horizontal form-chrono-file bordered-row"  method="post">
                                                 {% csrf_token %}
                                                 <input type="hidden" id="rapport_input" name="rapport_input">
@@ -1096,7 +1147,7 @@
                         <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
                         <h4 class="modal-title ">Rapport <b class="h4 text-success"> Financier </b> de l'Operation <span class="h4 text-info"></span></h4>
                         <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+                            <span aria-hidden="true">Ã—</span>
                         </button>
                     </div>
 
@@ -1110,14 +1161,14 @@
                             <div class="card-body">
                                 <div>
                                     <div class="">
-                                        <legend>Renseigner le Montant Dépensé <i id="codeoperation"></i></legend>
+                                        <legend>Renseigner le Montant D&eacute;pens&eacute; <i id="codeoperation"></i></legend>
                                         <form enctype="multipart/form-data" action="/save_rapport/" class="form-horizontal form-chrono-file bordered-row"  method="post">
                                             {% csrf_token %}
                                             <input type="hidden" id="rapport_input2" name="rapport_input">
                                             <div class="row">
-                                                <div class="text-center h6 pl-4"> <legend style="font-weight:normal;"> Montant Alloué </legend><label id='tache-montant2' class="text-success"></label></div>
+                                                <div class="text-center h6 pl-4"> <legend style="font-weight:normal;"> Montant Allou&eacute; </legend><label id='tache-montant2' class="text-success"></label></div>
                                                 <div class="col-lg-12 mb-2 mt-2">
-                                                    <small>Montant Dépensé</small>
+                                                    <small>Montant D&eacute;pens&eacute;</small>
                                                     <input required="" type="number" class="form-control" name="operation_montant" id="fichier2">
                                                     <input type="hidden" id='tache-id-op2' class="form-control" name="operation_id">
                                                 </div>
@@ -1150,25 +1201,25 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <b>Générer un PDF</b>
+                        <b>G&eacute;n&eacute;rer un PDF</b>
                     </div>
                     <div class="modal-body mb-3">
                         <div class="d-flex flex-wrap justify-content-between">
                             <div>
-                                <div style="cursor: pointer;"  onclick="printDoc(1,'Plan de Travail Opérationnel')" class="mb-3">
+                                <div style="cursor: pointer;"  onclick="printDoc(1,'Plan de Travail Operationnel')" class="mb-3">
                                     <i class="fas fa-3x text-danger fa-file-pdf"></i>
-                                    <b>Plan de Travail Opérationnel </b>
+                                    <b>Plan de Travail Op&eacute;rationnel </b>
                                 </div>
                                 
                                 {% if periode != '#' %}
                                 <div style="cursor: pointer;" onclick="printDoc(2,'Plan de Travail Personnel')"  class="mb-3">
                                     <i class="fas fa-3x text-danger fa-file-pdf"></i>
-                                    <b>Plan de Travail Opérationnel - </b> <b class="text-success">{{periode}}</b>
+                                    <b>Plan de Travail Op&eacute;rationnel - </b> <b class="text-success">{{periode}}</b>
                                 </div>
                                 {% for sub in actual_institution.default_subperiod.decoup_desc_slip %}
                                 <div style="cursor: pointer;" onclick="printDoc(2,'Plan de Travail Personnel')"  class="mb-3">
                                     <i class="fas fa-3x text-warning fa-file-pdf"></i>
-                                    <b>Plan de Travail Opérationnel - {{sub}} </b> <b class="text-success">{{periode}}</b>
+                                    <b>Plan de Travail Op&eacute;rationnel - {{sub}} </b> <b class="text-success">{{periode}}</b>
                                 </div>
                                 {% endfor %}
                                 {% endif %}
@@ -1216,7 +1267,7 @@
                     <div class="modal-header bg-success text-white">
                         <h4 class="modal-title">Valider le Rapport</h4>
                         <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+                            <span aria-hidden="true">Ã—</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -1244,7 +1295,7 @@
                     <div class="modal-header bg-danger text-white">
                         <h4 class="modal-title">Annuler le Rapport</h4>
                         <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+                            <span aria-hidden="true">Ã—</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -1334,7 +1385,7 @@
                         </div>
                         {% else %}
                         <div class="modal-header text-success">
-                            <b>Rapport Soumis avec Succès</b>
+                            <b>Rapport Soumis avec Succ&egrave;s</b>
                         </div>
                         <div class="modal-body mb-3">
                             <div class="d-flex flex-wrap justify-content-between">
@@ -1342,7 +1393,7 @@
                                     <div class="text-center">
                                         <img src="{% static 'webpages/ctn_bpf/smile-eyes-smiley.gif' %}">
                                     </div>
-                                    <div class="h4 text-center">Votre <span class="h4 text-success">Rapport</span> a été enrégistrée, encore merci pour votre collaboration</div>
+                                    <div class="h4 text-center">Votre <span class="h4 text-success">Rapport</span> Action Enregistr&eacute;e, encore merci pour votre collaboration</div>
                                 </div>
                             </div>
                         </div>
@@ -1374,7 +1425,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header btn-primary">
-                            <b>Message envoyé avec succes</b>
+                            <b>Message envoyÃ© avec succes</b>
                         </div>
                         <div class="modal-body mb-3">
                             <div class="d-flex flex-wrap justify-content-between">
@@ -1382,7 +1433,7 @@
                             <!-- <div class="text-center">
                                 <img src="{% static 'webpages/ctn_bpf/smile-eyes-smiley.gif' %}">
                             </div> -->
-                            <div class="h4 text-center">Nous avons pris part de votre préoccupation, vous aurez bientot une réponse de notre équipe technique </div>
+                            <div class="h4 text-center">Nous avons pris part de votre prÃ©occupation, vous aurez bientot une rÃ©ponse de notre Ã©quipe technique </div>
                         </div>
                     </div>
 
@@ -1871,11 +1922,11 @@ $(".bg-comment").click(function(){
         dataType: 'json',
         success: function (data) {
             $(".count_work").text(data.result);
-            $(".count_to_done").text(data.have_to_done);
+            $(".count_to_done").text(data.have_to_done2);
             $(".count_done").text(data.is_done);
             $(".count_rapported").text(data.have_rapported);
 
-            $(".count_to_done2").text(data.have_to_done2);
+            $(".count_to_done2").text(data.have_to_done);
             $(".count_done2").text(data.is_done2);
             $(".count_rapported2").text(data.have_rapported2);
             $(".count_is_observ").text(data.nb_observations);
@@ -1914,7 +1965,7 @@ $(".bg-comment").click(function(){
     {x:5, y:10}
     ];
 
-    personnels = [{% for perso in personnel %}"{{perso}}",{% endfor %}""]
+
 
 /*
 new Chart("myChart3", {
@@ -2023,6 +2074,21 @@ function launch_dataPeriod(){
                 week_detail[k].innerHTML = the_weeks[k%4]
             }
         }
+  else if (data_period == 8){
+           
+            for (var k=0;k<9;k++){
+                first_day = new Date(actual_year,k*12,1);
+                last_day = new Date(actual_year,12*(k+1),0);
+                tmp_first = first_day.getDate()+" "+months[first_day.getMonth()]+" "+first_day.getFullYear()
+                tmp_last = last_day.getDate()+" "+months[last_day.getMonth()]+" "+last_day.getFullYear()
+        
+                the_weeks[k] = "du "+tmp_first+" au "+tmp_last
+            }
+            for (var k=0;k<week_detail.length;k++){
+                week_detail[k].innerHTML = the_weeks[k%4]
+            }
+        }
+
         else if (data_period == 9){
             for (var k=0;k<4;k++){
                 first_day = new Date(actual_year,k*3,1);
@@ -2056,7 +2122,7 @@ function launch_dataPeriod(){
     type_month = new Date().getMonth();
     typeperiode = document.getElementById('typeperiode');
     function launchPeriode(){
-        months = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+        months = ["Janvier","FÃ©vrier","Mars","Avril","Mai","Juin","Juillet","AoÃ»t","Septembre","Octobre","Novembre","DÃ©cembre"];
         for (var m=0; m<months.length; m++){
             if (m == type_month){
                 message = "<option value='"+m+"' selected>"+months[m]+" 2022 </option>"
@@ -2164,6 +2230,7 @@ function annulerTache(element){
     $("#opera_invalider_title").text(element.getAttribute('data-operation'));
     $("#opera_invalider_id").val(element.getAttribute('data-id'));
 }
+
 var ast = setTimeout(function(){
     $("#loader").fadeOut('slow');
 },3000);
@@ -2203,7 +2270,7 @@ function editBTN(element,html_div="addActionModal",mdf="#",new_design="#",task_e
 
     $(".remove-on-modal").css('display','none');
     if (mdf == '#'){
-        $("#modify_title").text("Modifier {% if sub_entity != None  %} {{sub_entity}} {% else %}{{entity}}{% endif %}");//Opération
+        $("#modify_title").text("Modifier {% if sub_entity != None  %} {{sub_entity}} {% else %}{{entity}}{% endif %}");//OpÃ©ration
         edit_or_create = document.getElementById("edit_or_create");
         edit_or_create.value = 'e';
         edit_id = document.getElementById("edit_id");
@@ -2336,7 +2403,7 @@ function editBTN(element,html_div="addActionModal",mdf="#",new_design="#",task_e
         choosen_period.innerHTML = dps_tmp_2;
 
         dataStructs = element.getAttribute("data-structs");
-        dataStructs = dataStructs.split("§");
+        dataStructs = dataStructs.split("Â§");
         struc_grp_div = document.getElementById("struc_grp_div");
         data_roles = new Array();
         struc_grp_div.innerHTML = "";
@@ -2393,7 +2460,7 @@ function filter_lines(type_search,value_search="|",sub_search="#"){
                 }
             }
             else{
-                message =" <tr> <td> Aucune Donnée ne correspond à votre Recherche </td></tr>";
+                message =" <tr> <td> Aucune DonnÃ©e ne correspond Ã  votre Recherche </td></tr>";
             }
             $("#table_body").html(message);
             $("#table_body").show('');
@@ -2495,7 +2562,7 @@ $(".charter_launch").click(function(){
                         legend: {display: false},
                         title: {
                             display: true,
-                            text: "Réalisation de la Tâche "
+                            text: "RÃ©alisation de la TÃ¢che "
                         }
                     }
                 });
@@ -2589,7 +2656,7 @@ function ajax_grapher(element,type_graph){
                 new Chart("canvas_modal", {
                     type: "bar",
                     data: {
-                      labels: [data.sub_names], //Sous-entité
+                      labels: [data.sub_names], //Sous-entitÃ©
                       datasets: x_axes
                   },
                   options: {
@@ -2765,12 +2832,12 @@ for (var i=0; i<targets.length; i++){
                     Veuillez Obtenir un Code Valable
                 </div>
                 <div class="modal-body">
-                    Désolé, mais le Code utilisé ne vous permet pas de créer plus d'institutions au sein d'Opera,
+                    DÃ©solÃ©, mais le Code utilisÃ© ne vous permet pas de crÃ©er plus d'institutions au sein d'Opera,
                     Pour renseigner plus d'institutions, veuillez renouveler <b> votre Formule </b>
                 </div>
                 <div class="modal-footer">
                     <div class="px-2">
-                        <span> 2022 © BeinInfo. </span>
+                        <span> 2022 Â© BeinInfo. </span>
                     </div>
                 </div>
             </form>
@@ -2805,5 +2872,114 @@ for (var i=0; i<targets.length; i++){
         replace_n[i].innerHTML = replace_n[i].innerHTML.replace("\n","<br>");
     }
 </script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+ 
+
+$(document).ready(function() {
+    $.ajax({
+        url: "/count_operations/",
+        type: 'GET',
+        
+        
+        success: function(data) {
+            $('#count').text(data.count);
+            console.log(data.count);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log('error');
+          }
+    });
+});
+</script>
+<script>
+ 
+
+$(document).ready(function() {
+    $.ajax({
+        url: "/count_informed/",
+        type: 'GET',
+        
+        
+        success: function(data) {
+            $('#count_informed').text(data.count_informed);
+            console.log(data.count_informed);
+        },
+           });
+});
+</script>
+<script>
+ 
+
+$(document).ready(function() {
+    $.ajax({
+        url: "/count_persos/",
+        type: 'GET',
+        
+        
+        success: function(data) {
+          $('#valide_count').text(data.count_persos)
+            console.log('operation pour notre institution:',data.count_persos);
+        },
+           });
+});
+</script>
+   <script>
+ 
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "/count_accountable/",
+                type: 'GET',
+                
+                
+                success: function(data) {
+                    $('#count_attente').text(data.m_operation_consulted);
+                    console.log(data.m_operation_consulted);
+                },
+                   });
+        });
+        </script>
+   <script>
+ 
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "/count_effectuee/",
+                type: 'GET',
+                
+                
+                success: function(data) {
+                    $('#count_effect').text(data.count_effect);
+		   console.log(data.count_effect);
+                    
+                },
+                   });
+        });
+        </script>
+
+
+ <script>
+ 
+
+        $(document).ready(function() {
+            $.ajax({
+                url: "/count_restored/",
+                type: 'GET',
+                
+                
+                success: function(data) {
+                    $('#restore').text(data.count_restore);
+		   
+                    
+                },
+                   });
+        });
+        </script>
+
+        
 </body>
 </html>
+

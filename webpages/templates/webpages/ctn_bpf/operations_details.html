@@ -119,6 +119,7 @@
 
 									</div>
 									<div class="col-md-4 col-12 p-4">
+{%comment%}
 										<div><small> Rapports existant </small></div>
 										<div class="pt-3">
 											{% for line in operation.get_operation_details %}
@@ -129,7 +130,7 @@
 											{% endfor %}											
 										</div>
 									</div>
-
+{%endcomment%}
 									<input type="hidden" value='f' id="rapport_input" name="rapport_input">
 									<input type="hidden" name="operation_id" value="{{operation.id}}">
 								</form>

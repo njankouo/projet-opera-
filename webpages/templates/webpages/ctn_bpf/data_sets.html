@@ -1,3 +1,5 @@
+
+
 {% extends './entities.html' %}
 {% load static %}
 
@@ -6,9 +8,6 @@ Formulaires de Donnees - Edition
 {% endblock %}
 
 {% block search_filters %}
-
-<h3> Formulaire de Donnee
-   : <span class="h3 text-success"> {% if dataset != None %} {{dataset}} {% else %}  Nouveau {% endif %} </span> </h3>
 
 <div class="mb-3 text-success">	
 	<small class="badge badge-success">	 Etape 1/2 : Creation des Elements du Formulaire</small>
@@ -33,14 +32,14 @@ Formulaires de Donnees - Edition
 {% endblock %}
 
 {% block table %}
-<form onsubmit="loadDataSet()" action="/save_gestion/" method="POST">
+<form onsubmit="loadDataSet()" action="/save_design" method="POST" name="dataset" class="dataset">
 {% csrf_token%}
 <input type="hidden" name="variables_list" id="variables_list" value="">
 <input type="hidden" name="indicateurs_list" id="indicateurs_list" value="">
 
 <input type="hidden" id="structures_list" name="structures_list" value="">
 <input type="hidden" id="roles_list" name="roles_list" value="">
-<input type="hidden" name="indicateur" value="{{indicateur.id}}">
+{% comment %} <input type="hidden" name="indicateur" value="{{indicateur.id}}"> {% endcomment %}
 <textarea style="display:none;" name="form_html" id="form_html"></textarea>
 
 <input type="hidden" name="generator" value="d_s_1">
@@ -48,26 +47,31 @@ Formulaires de Donnees - Edition
 {% if dataset != None %} <input type="hidden" id="edit_id" name="edit_id" value="{{dataset.id}}"> {% endif %}
 
 
-<section class="col-md-12 flex-wrap d-flex pt-2">
-	<div class="col-12">
-	<div class="col-lg-4 pb-4 px-2">
-		<label><small>Nom du Formulaire</small></label>
-		<input value="{{dataset}}" type="text" class="form-control" name="form_name">
-	</div>
-	</div>
-	<div class="col-md-12 pl-4">	
-		<div class="d-flex ">
-			<div><label><small>Periode de renseignement : </small></label></div>
-			<div class="d-flex pl-3">
-				<div class="pr-3">
-					<select readonly name="periode" class="form-control">
+<div class="card col-md-8 flex-wrap d-flex pt-2 mx-4">
+			<div class="card-header bg-primary text-light">
+				<h5 style="font-weight:bold">Formulaire de Donnee:  {% if dataset != None %} {{dataset}} {% else %}  Nouveau {% endif %}</h5>
+			</div>
+		<div class="card-body">
+				<div class="row">
+			<div class="col-12">
+			
+				<label>Nom du Formulaire</label>
+				<input value="{{dataset}}" type="text" class="form-control" name="form_name" required>
+			
+			</div>
+			<div class="col-md-6">	
+				<hr/>
+			<p class="text-center" style="font-weight:bold">Periode de renseignement : </p>
+			<select readonly name="periode" class="form-control " name="periode" required>
 						<option value="0">Annee</option>
 						<option value="1">Mensuel</option>
 						<option value="2">Hebomadaire</option>
 					</select>
 				</div>
-				<div class="pr-3">
-					<select readonly name="sub_periode" class="form-control">
+				<div class="col-6">
+					<hr/>
+					<p class="text-center text-primary" style="font-weight:bold">Periode de renseignement : </p>
+					<select readonly name="sub_periode" class="form-control" required>
 						<option value="Mensuelle">Mensuelle</option>
 						<option value="Trimestriel">Trimestriel</option>
 						<option value="Semestriel">Semestriel</option>
@@ -75,66 +79,31 @@ Formulaires de Donnees - Edition
 					</select>
 				</div>			
 			</div>
-		</div>
-	<div class="d-flex" >	
-		<div class="col-lg-8" >
-			<div><label><small>Structures associees : </small></label></div>
-			<div class="px-3 list-group">
-				<div class="d-flex flex-wrap">
-				{% if actual_institution.Structure_Hierachy != None %}
-				{% for Hierachy in actual_institution.Structure_Hierachy %}
-				{% for he in Hierachy.get_levels %}
-				<div class="px-2">
-					<label><small>{{he.field}}</small></label>
-					<select onchange="loadselectHIERA({{forloop.counter}})" data-hierachy="{{forloop.counter}}" class="hieraSelec form-control">
-						{% for v in he.values %}
-						<option class="hieraSelec_option" value="{{v}}">{{v}}</option>
-						{% endfor %}
+					</div>
+					<div class="col-12">
+					<p class="text-center" style="font-weight:bold">Structure(s)  Associée(s) </p>
+					<select class="form-select" id="multiple-select-clear-field" data-placeholder="Selection des Structures Associ&eacute;es" multiple name="structure" required>
+						
+						{% for s in actual_institution.structures %}
+						<option value="{{s.id}}">{{s}}</option>
+						{%endfor%}
+					
 					</select>
-				</div>
-				{% endfor %}
-				{% endfor %}
-				{% endif %}
-				</div>
-				<div id="structures_list_sel" class="d-flex pt-2 flex-wrap">
-				{% for s in actual_institution.structures %}
-					<div class="px-2">	
-						<input value="{{s.id}}" data-name="{{s}}" class="struct-group" type="checkbox" name="">
-						<label class="btn btn-light">{{s}}</label>
 					</div>
-				{% endfor %}
-				</div>
-			</div>
-		</div>
-		<div class="col-lg-4">
-			<div><small>Structures selectionnees</small></div>
-			<div id="struct-group-container"></div>
-		</div>
-	</div>
-	<div class="d-flex">
-		<div class="col-lg-8">
-			<div><label><small>Groupes d'Utilisateurs concernes : </small></label></div>
-			<div class="px-3 d-flex flex-wrap">
-				{% for s in actual_institution.roles %}
-					<div data-type="0" data-value="{{s.id}}" class="elt_Role pr-2 py-1">	
-						<label class="btn btn-light text-info"><i class="fas fa-users"></i></label>
-						<label class="btn btn-info">{{s}}</label>
-					</div>
-				{% endfor %}
-			</div>
-		</div>
-		<div class="col-lg-4">
-			<div><small>Groupe d'Utilisateurs concernes</small></div>
-			<div id="elt_Role_container"></div>
-		</div>
-	</div>
-	<div class="col-12">
-		<div> Choix des Variables & Indicateurs</div>
-		<!--
-		<div><small>Variables et Interfaces GUI</small></div>
-		<div><small class="text-danger">Une edition detaille du Formulaire est possible ( Necessite une maitrise HTML & Javascript )</small></div>
-		-->
-		<div class="col-12 d-flex flex-wrap">
+					<div class="col-12">
+					<p class="text-center" style="font-weight:bold">Groupes d'Utilisateurs concernes </p>
+			<select class="form-select" id="multiple-select-field" data-placeholder="Choix des Utilisateurs" multiple name="role" required>
+					
+					{% for s in actual_institution.roles %}
+											<option value='{{ s.id }}'>{{s}}</option>
+					{% endfor %}
+				</select>
+
+						</div>
+
+	
+		
+			<div class="col-12 d-flex flex-wrap">
 			{% if design_phase != None %}
 			<div class="col-12 col-lg-9 d-flex">
 				<input type="hidden" id="ephoxVariables_input" name="ephoxVariables_input" value="#">
@@ -148,58 +117,66 @@ Formulaires de Donnees - Edition
 					</div>
 				</div>
 			</div>
-			{% else %}
-			<div class="col-12 col-lg-7">
-				<div class="mb-1">
-					<div> <span class="text-success"> Data Elements  selectionnes </span></div>
-					<div id="elts_DIV">
-						
-					</div>
-				</div>				
-				<div>
-					<div> <span class="text-success"> Indicateurs  selectionnes </span></div>
-					<div id="indi_DIV">
-						
-					</div>
-				</div>
-			</div>
+			
 			{% endif %}
-			<div class="pl-2 col-lg-5">
-				<div>
-					<div><small>Data Elements</small></div>
-					<div class="pt-2">
-						<div><input type="text" onkeypress="testDE(this.value)" class="form-control" name=""></div>
-						<div id="dataelts_list_sel" class="pt-2 list-group" style="max-height:250px;overflow-y:auto;">
-							{% for d in dataelts %}
-							<div class="list-group-item mb-2"><input type="checkbox" value="{{d.id}}" class="eltChecker eltChecker1" data-type="0" data-code="{{d}}" name="">&nbsp;{{d}}</div>
-							{% endfor %}
-						</div>
-					</div>
-				</div>
-				<div class="mt-2">
-					<div><small>Indicateurs</small></div>
-					<div class="pt-2">
-						<div><input type="text" onkeypress="testDE(this.value,1)" class="form-control" name=""></div>
-						<div id="dataelts_list_sel2" class="pt-2 list-group" style="max-height:250px;overflow-y:auto;">
-							{% for d in indicateurs %}
-							<div class="list-group-item mb-2"><input type="checkbox" class="eltChecker eltChecker2" data-type="1" data-code="{{d}}" value="{{d.id}}" name="">&nbsp;{{d}}</div>
-							{% endfor %}
-						</div>
-					</div>
-				</div>
 			</div>
+			<div class="col-12">
+				<p class="text-center" style="font-weight:bold"> Choix des Variables & Indicateurs</p>
+				<div class="pt-2">
+					{% comment %} <div><input type="text" onkeypress="testDE(this.value)" class="form-control" name="elements"></div> {% endcomment %}
+					<div id="dataelts_list_sel" class="pt-2 list-group" style="max-height:250px;overflow-y:auto;">
+						
+						<div class="list-group-item mb-2">
+			<select class="form-select" id="multiple-select-optgroup-field" data-placeholder="Choix des indicateurs" multiple name="indicateur" required>
+				<optgroup label="Choix des indicateurs">
+					{% for d in indicateurs %}
+								<option value="{{d.id}}">{{d}}</option>
+								{% endfor %}
+				</optgroup>
+				
+			</select>
+			</div>
+			</div>
+			<div class="pl-2 col-12">
+				<div>
+					<p class="text-center" style="font-weight:bold"> Choix Data Elements</p>
+					<div class="pt-2">
+						{% comment %} <div><input type="text" onkeypress="testDE(this.value)" class="form-control" name="elements"></div> {% endcomment %}
+						<div id="dataelts_list_sel" class="pt-2 list-group" style="max-height:250px;overflow-y:auto;">
+							
+							<div class="list-group-item mb-2">
+								<select class="form-select" id="multiple-select-custom-field" data-placeholder="Choix des data Elements" name="element" multiple>
+									{% for d in dataelts %}
+									<option value="{{d.id}} ">{{d}}</option>
+										{% endfor %}
+								</select>
+								{% comment %} <input type="checkbox" value="" class="eltChecker eltChecker1" data-type="0" data-code="{{d}}" name="element">&nbsp; {% endcomment %}
+							</div>
+					
+						</div>
+					</div>
+				</div>
+				<div class="card-footer">
+					{%if dataset == None%}
+				<button  type="submit" class="btn btn-success" style="float:right">Design du Formulaire</button>
+				{%else%}
+				<button  type="submit" class="btn btn-success" style="float:right" disabled>Mise A Jour du Formulaire</button>
+			{%endif%}	
+			</div>
+					</div>
+				</div>
+		
+			</div>
+			
 		</div>
+	
 	</div>
-	<div class="d-flex ">
-		{% if dataset == None %}
-		<div class="mt-2 px-2"><input type="submit" class="btn btn-success" value="Design du Formulaire" name=""></div>
-		{% else %}
-		<div class="mt-2 px-2"><input type="submit" class="btn btn-success" value="Enregistrer" name=""></div>
-		{% endif %}
-		<!-- <div class="mt-2 px-2"><input type="submit" class="btn btn-info" value="Visualiser" name=""></div> -->
-	</div>
-</section>
+
 </div>
+
+
+
+
 
 {% endblock %}
 
@@ -737,6 +714,47 @@ loadselectHIERA(1);
 
 
 
+</script>
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+	$(".js-example-templating").select2({
+		templateResult: formatState
+	  });
+</script> {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+<script>
+	$( '#multiple-select-clear-field' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+    allowClear: true,
+} );
+</script>
+<script>
+	$( '#multiple-select-field' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+} );
+</script>
+<script>
+	$( '#multiple-select-optgroup-field' ).select2( {
+		theme: "bootstrap-5",
+		width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+		placeholder: $( this ).data( 'placeholder' ),
+		closeOnSelect: false,
+	} );
+</script>
+<script>
+	$( '#multiple-select-custom-field' ).select2( {
+		theme: "bootstrap-5",
+		width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+		placeholder: $( this ).data( 'placeholder' ),
+		closeOnSelect: false,
+		tags: true
+	} );
 </script>
 {% block add_script %}
 {% endblock %}

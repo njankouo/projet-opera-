@@ -73,7 +73,7 @@ Archives et Historique
        {% endfor %}
        {% else %}
        {% for line in pages_o %}
-       <tr>
+       <tr id='tache'>
         <td>{{line.tache}}</td>
         <td class='bg-light'>{{line}}</td>
         {% for val in line.values_spl2 %}
@@ -91,7 +91,7 @@ Archives et Historique
     </table>
     {% else %}
     <div class="mt-5">
-      <div class="h3 text-center">Vous n'avez actuellement aucune Tâche à suivre l'évolution.</div>
+      <div class="h3 text-center">Vous n'avez actuellement aucune T&acirc;che &acirc;  suivre l'&eacute;volution.</div>
     </div>
     {% endif %}
   {% endblock %}

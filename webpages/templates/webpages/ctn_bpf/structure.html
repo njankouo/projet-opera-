@@ -73,7 +73,7 @@
 	<td class="t_cell"><img style="width:30px;height:30px;" src="{% if line.photo != None and line.photo.url != None %}{{line.photo.url}} {% else %} {{actual_institution.img.url}} {% endif %}"> </td>
 	<td class="t_cell" onclick="document.location='/structures/{{line.id}}/'"> {{line.nom}}</td>
 	<td class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {{line.designation}}</td>
-	<td data-id="{% if line.responsable != None %}{{line.responsable.id}}{% else %}0{% endif %}" class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {% if line.responsable != None %}{{line.responsable}}{% else %}Par Défaut {% endif %}</td>
+	<td data-id="{% if line.responsable != None %}{{line.responsable.id}}{% else %}0{% endif %}" class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {% if line.responsable != None %}{{line.responsable}}{% else %}Par D&eacute;faut {% endif %}</td>
 	<td class="t_cell" onclick="document.location='/structures/{{line.id}}/'">  {{line.nb_taches}}</td>
 	<td>
 		<div class="d-flex flex-wrap">
@@ -124,7 +124,7 @@
 						<input type="hidden" name="Institution" value="{{actual_institution.id}}">
 						<div class="col-sm-12">
 							<div class="form-group">
-								Désignation
+								D&eacute;signation
 								<input type="text" class="form-control" name="designation" id="nomAct" required="">
 							</div>
 						</div>
@@ -132,7 +132,7 @@
 							<div class="form-group">
 								Responsable - {{actual_institution.default_struc_name}}
 								<select class="form-control" name="responsable" id="nomAct" required="">
-									<option value="0">Par Défaut</option>
+									<option value="0">Par D&eacute;faut</option>
 									{% for perso in personnels %}
 									<option value="{{perso.id}}">{{perso}}</option>
 									{% endfor %}

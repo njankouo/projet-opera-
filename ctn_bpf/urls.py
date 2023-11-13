@@ -46,7 +46,28 @@ urlpatterns = [
    path('set_period/<int:period>/',views.set_default_period,name='set_session'),
    path('set_institution/<int:institution_id>/',views.set_institution,name='set_institution'),
    path('set_period/<int:period>/<int:sub_period>/',views.set_default_period,name='set_session2'),
-   path('consult_oper/',views.consult_oper,name="consult_oper")
+   path('consult_oper/',views.consult_oper,name="consult_oper"),
+   path('list_tach',views.List,name='List'),
+   path('tache_effectuee',views.taches_effectuee,name="tache_effectuee"),
+   path('Avis/c/<int:id>',views.Avis,name='Avis'),
+   path('Avis/i/<int:id>/',views.Avis_informed,name='Avis'),
+   path('recuperer_personnel/',views.recuperer_personnel,name="recuperer_personnel"),
+   path('save_design',views.design_form,name="save_design"),
+   path('data_sets_edit/<int:id>/',views.edit_dataset,name="data_sets_edit"),
+   path('count_operations/',views.count_operations,name="count_operations"),
+   path('count_informed/',views.count_informed,name="count_informed"),
+   path('count_tache_consulted/',views.count_tache_consulted,name="count_tache_consulted"),
+   path('tache_consulted/',views.tache_consulted,name='tache_consulted'),
+   path('edit_data/<int:id>',views.edit_data,name="edit_data"),
+   path('count_persos/',views.count_persos,name="count_persos"),
+   path('count_accountable/',views.count_accountable,name="count_accountable"),
+   path('count_effectuee/',views.count_effectuee,name="count_effectuee"),
+   path('tache_valide/',views.tach_valid,name="tache_valide"),
+   path('soft_delete/<int:id>',views.archive,name="soft_delete"),
+   path('tache_archive/',views.archive_list,name="tache_archive"),
+   path('soft_deleted/<int:id>',views.restore,name="soft_deleted"),
+   path('count_restored/',views.count_restored,name="count_restored")
+
 ]
 gestionnaire_url_patterns = [
    path('duplicate/',views.duplicate,name='duplicate'),
@@ -71,6 +92,7 @@ gestionnaire_url_patterns = [
 	path('taches/<int:tache_id>/',views.ges_taches,name='ges_taches'),
    path('taches/<int:tache_id>/<int:arg_period>/',views.ges_taches,name='ges_taches'),
    path('alert_notifs/<str:tree>/<int:report>/',views.alert_notifs,name='alert_notifs')
+
 ]
 ajax_urls_patterns = [
    path('count_notifs/',views.notifs,name='notifs'),
@@ -138,3 +160,4 @@ urlpatterns += save_url_patterns
 urlpatterns += filter_urls
 urlpatterns += log_urls
 #path('calendar/',views.calendar,name='calendar'),
+

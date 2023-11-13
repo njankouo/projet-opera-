@@ -1,0 +1,368 @@
+{% extends './index.html' %}
+<style>
+	.card {
+		box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+	}
+	
+	.avatar-md {
+		height: 5rem;
+		width: 5rem;
+	}
+	
+	.fs-19 {
+		font-size: 19px;
+	}
+	
+	.primary-link {
+		color: #314047;
+		-webkit-transition: all .5s ease;
+		transition: all .5s ease;
+	}
+	
+	a {
+		color: #02af74;
+		text-decoration: none;
+	}
+	
+	.bookmark-post .favorite-icon a, .job-box.bookmark-post .favorite-icon a {
+		background-color: #da3746;
+		color: #fff;
+		border-color: danger;
+	}
+	.favorite-icon a {
+		display: inline-block;
+		width: 30px;
+		height: 30px;
+		font-size: 18px;
+		line-height: 30px;
+		text-align: center;
+		border: 1px solid #eff0f2;
+		border-radius: 6px;
+		color: rgba(173,181,189,.55);
+		-webkit-transition: all .5s ease;
+		transition: all .5s ease;
+	}
+	
+	
+	.candidate-list-box .favorite-icon {
+		position: absolute;
+		right: 22px;
+		top: 22px;
+	}
+	.fs-14 {
+		font-size: 14px;
+	}
+	.bg-soft-secondary {
+		background-color: rgba(116,120,141,.15)!important;
+		color: #74788d!important;
+	}
+	
+	.mt-1 {
+		margin-top: 0.25rem!important;
+	}
+img {
+  transition: transform 0.2s ease-in-out;
+}
+
+img:hover, img:focus {
+  transform: scale(1.2);
+}
+</style>
+
+{% load static %}
+{% block miniBigLeft %}
+
+<div class="mb-3">
+	<div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary mb-2">
+		<a class="btn text-primary" href="/">Tableau de Bord</a>
+		<div><i class="fas text-primary fa-angle-down"></i></div>
+	</div>
+</div>
+{% endblock%}
+{% load humanize %}
+{% block add_title %} 
+Notifications
+{% endblock %}
+
+{% block content %}
+
+	<div class="container">
+
+		<div class="col-lg-5 mb-4">
+			<form action="/search2/{{menu}}/" method="POST">
+			{% csrf_token %}
+			<div class="d-flex">
+				<div><input type='text' name='search' class='chercher form-control' style='border:0px;border-radius:0px;' placeholder="Recherche..."> </div>
+
+				<div><input type="submit" class="btn btn-success" value="Ok"></div>
+			</div>
+			</form>
+		</div>
+		<div class="d-flex flex-wrap col-12">
+			<form action="/alert_notifs/1/{{report}}/" method="POST" onsubmit="entFiller()" class="col-md-3 mb-4">
+				{% csrf_token %}
+
+				{% for es in get_entities %}
+				<select data-hierachy="{{es.m_hierachie}}" onchange="get_subsent(this);" class="mb-2 entChanger form-control">
+					<option value="0">Tous</option>
+					{% for e in es.m_entity_type.lines %}
+					<option value="{{e.id}}">{{e}}</option>
+					{% endfor %}
+				</select>
+				{% endfor %}
+				<input type="hidden" id="entHidden" name="entHidden">
+				{% if n > 0 %}
+				<div><input type="submit" class="btn btn-success" value="Filtrer" name=""></div>
+				{% endif %}
+			</form>
+			<div class="pl-3 col-md-9">
+					<div class="card">
+
+					<div class="card-body">
+							<div class="h2 text-center text-secondary"> <i class="fas fa-star h2"></i> Consultations </div>	
+	<div class="text-center p-1">
+		<span class="text-secondary">Apportez vos Avis</span>
+	</div>
+					</div>
+			
+					{% for operations in operation %}
+                    {%if operations.etat == "0" and request.user.personnel == operations.personnel%}
+                 
+					<div class="mb-4 flex-wrap  col-12  h4">
+					
+                        <section class="section">
+								
+									
+									<div class="row">
+										<div class="col-lg-12">
+										   
+											<div class="candidate-list">
+												<div class="candidate-list-box card mt-1 {%if operations.delai_restant == 'Le délai est écoulé !'%} bg-danger {%else%} bg-light {%endif%}">
+													<div class="p-4 card-body">
+														<div class="align-items-center row">
+															<div class="col-auto">
+																<div class="candidate-list-images">
+																	<a href="#"><img src="{{operations.institution.img.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																</div>
+															</div>
+															<div class="col-lg-6">
+																<div class="candidate-list-content mt-3 mt-lg-0">
+																	<h6 class="fs-19 mb-0">
+																		<a class="{%if operations.delai_restant == 'Le délai est écoulé !'%} text-light {%else%}  {%endif%}" href="/Avis/i/{{operations.id}}" style="font-weight:bold; text-transform:uppercase">{{operations.nom}} </a>
+													{%if actual_institution.id == operations.m_institution_id%}		
+														<span class="badge {%if operations.delai_restant == 'Le délai est écoulé !'%} bg-danger {%else%} bg-success {%endif%} ms-1">
+															<i class="fa fa-star align-middle text-light fa-spin"></i></span>
+													{%endif%}
+																	</h6>
+																	<p class=" mb-2 {%if operations.delai_restant == 'Le délai est écoulé !'%} text-light{%else%}  {%endif%}">Responsable: {{operations.personnel}}</p>
+																	<ul class="list-inoperations mb-0 text-muted">
+																		<li class="list-inoperations-item {%if operations.delai_restant == 'Le délai est écoulé !'%} text-light {%else%} {%endif%}"><i class="fa fa-calendar"></i>Attribu&eacute;&eacute; le: {{operations.date_creation}}</li>
+																	
+																	</ul>
+																</div>
+															</div>
+															<div class="col-lg-4">
+																<div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+
+
+
+                                                                {%if operations.delai_restant == 'Le délai est écoulé !'%}	
+
+                                                                <span style="font-weight:bold" class="text-light">&eacute;ch&eacute;ance:&nbsp;&nbsp;{{operations.date_echeance}} </span>
+
+                                                                {%else%}
+                                                                <span style="font-weight:bold" class="text-danger">&eacute;ch&eacute;ance:&nbsp;&nbsp;{{operations.date_echeance}} </span>
+
+                                                                {%endif%}
+																<span> <a class="btn btn {%if operations.delai_restant == 'Le délai est écoulé !'%} text-light{%else%} text-primary{%endif%}" data-toggle="modal" data-target="#staticBackdrop{{operations.id}}" style="font-weight:bold">HISTORIQUE</a> </span>
+																</div>
+															</div>
+														</div>
+				
+													</div>
+												</div>
+												{%for operation_historics in operation_historic%}
+												{%if operations.id == operation_historics.m_operation_id%}
+											<span class="badge badge-success">Conseil Transmit</span>
+
+
+											{%endif%}
+												{%endfor%}
+											   
+								
+							</section>
+
+
+<div class="modal fade" id="staticBackdrop{{operations.id}}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel" style="font-weight:bold">Historique De l'op&eacute;ration: {{operations.nom}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	
+      <div class="modal-body">
+	
+        <table class="table table-striped table-hover table-responsive text-center" style="font-weight:bold">
+  	<thead>
+	<tr>
+	<th class="text-success">R:&nbsp;&nbsp;{{operations.personnel}}</th>
+	<th class="text-danger">A:&nbsp;&nbsp; {{operations.accountable}}</th>
+	<th class="text-primary">C:&nbsp;&nbsp; {{operations.consulted}}</th>
+	<th class="text-warning">I: &nbsp;&nbsp;{{operations.informed}}</th>
+	<th>
+
+														
+	</th>
+	</tr>
+	</thead>
+</table>
+		<h6 style="font-weight:bold">Historique</h6>
+
+
+<table class="table table-hover table-responsive text-center" style="width:100%">
+  <thead>
+    <tr>
+      <th>Date</th>
+<th>Responsables</th>
+      <th>Commentaires</th>
+
+      
+   
+    </tr>
+  </thead>
+  <tbody>
+<tr>
+<td style="font-weight:bold"><span class="badge badge-primary">{{operations.date_creation}}</span></td>
+<td><i class ="fa fa-user fa-2x text-primary"></i></td>
+<td style="font-weight:bold">Affectation de L'op&eacute;ration {{operations.nom}}</td>
+</tr>
+{%for operation_historics in operation_historic%}
+{%if operations.id  == operation_historics.m_operation_id%}
+    <tr style="font-weight:bold">
+     <td><span class="badge badge-primary">{{operation_historics.m_date_realisation}}</span></td>
+     <td class="text-success" style="font-weight:bold;text-transform:uppercase">{{operation_historics.m_role}}:&nbsp;&nbsp;<span class="badge badge-success">Soumission Du Rapport</span> <i class="fa fa-paper-plane text-success"></i>&nbsp;</td>
+     <td>{{operation_historics.m_commentaire}}</td>
+    
+    </tr>
+{%endif%}
+{%endfor%}
+     </tbody>
+</table>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            </div>
+    </div>
+  </div>
+</div>
+						<div class="">
+							<a class="d-block my-3" href="/operations/{{o.id}}" >  </a>
+						</div>
+						
+					</div>
+					
+                    {%endif%}
+                    {% empty %}
+					<div class="text-center h1 w-100">
+						Aucune {{operations_name}} de prevu
+					</div>
+					<div class="text-center py-3">
+						<a href="/messengers/" style="background-color:pink;" class="text-dark btn"> <i class="fas fa-envelope"></i> Messagerie Personnel</a>
+					</div>
+					{% endfor %}
+			
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if num_pages > 1 %}
+<nav>
+	<ul class="pagination">
+		<li>
+			{% if pages.number > 1 %}
+			<a href="?page={{pages_o.previous_page_number}}" aria-label="Previous"><span aria-hidden="true">&laquo;</span>
+			</a>
+			{% endif %}
+		</li>
+		{% for num in page_range %}
+		<li ><a {% if pages_o.number == num %} class="btn btn-info pagers"  {% else %} class="btn btn-light text-secondary pagers"  {% endif %} href="?page={{num}}">{{num}}</a></li>
+		{% endfor %}
+		<li>
+			{% if pages.number < num_pages %}
+			<a href="?page={{pages_o.next_page_number}}" aria-label="Next">
+				<span aria-hidden="true">&raquo;</span>
+			</a>
+			{% endif %}
+		</li>
+	</ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+	entChanger = document.getElementsByClassName("entChanger");
+		
+	function get_subsent(elt){
+		hierachy = elt.getAttribute("data-hierachy")
+		val = elt.value;
+		
+		if ( hierachy != "0") {
+			pre_hierachy = entChanger[parseInt(hierachy)-1].value;
+		}
+		else{
+			pre_hierachy = -1;
+		}
+		$.ajax({
+			url: '/get_elements_subsequency/',
+			data: {
+				'nature':hierachy,
+				'entity':val,
+				'report':{{report}},
+				'pre_hierachy':pre_hierachy
+			},
+			dataType: 'json',
+			success: function (data) {
+				for (var i=0;i<data.data_ids.length;i++){
+
+					html = ""
+
+					tmp = data.data_ids[i];
+					tmp2 = data.data_names[i];
+					for (var j=0;j<tmp.length;j++){
+						html += "<option value='"+tmp[j]+"'>"+tmp2[j]+"</option>"; 
+					}
+					html += "<option value='0'>Tous</option>"
+					entChanger[(parseInt(hierachy)+i+1)].innerHTML = html ;
+				}
+			},
+			error: function(data){
+			}
+		});
+	}
+
+	function entFiller(){
+		entHidden = document.getElementById("entHidden");
+		tmp = "";
+		for(var i=0;i<entChanger.length;i++){
+			tmp += entChanger[i].value + "#";
+		}
+		entHidden.value = tmp
+	}
+
+	{% if entHidden != None %}
+	 {% for ent in entHidden %}
+	 	entChanger[parseInt({{forloop.counter}})-1].value = "{{ent}}"
+	 {% endfor %}
+	{% endif %}
+</script>
+{% endblock %}
+
+
+
+

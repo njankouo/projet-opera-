@@ -1,6 +1,85 @@
 {% extends './index.html' %}
-{% load static %}
+<style>
+	.card {
+		box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+	}
+	
+	.avatar-md {
+		height: 5rem;
+		width: 5rem;
+	}
+	
+	.fs-19 {
+		font-size: 19px;
+	}
+	
+	.primary-link {
+		color: #314047;
+		-webkit-transition: all .5s ease;
+		transition: all .5s ease;
+	}
+	
+	a {
+		color: #02af74;
+		text-decoration: none;
+	}
+	
+	.bookmark-post .favorite-icon a, .job-box.bookmark-post .favorite-icon a {
+		background-color: #da3746;
+		color: #fff;
+		border-color: danger;
+	}
+	.favorite-icon a {
+		display: inline-block;
+		width: 30px;
+		height: 30px;
+		font-size: 18px;
+		line-height: 30px;
+		text-align: center;
+		border: 1px solid #eff0f2;
+		border-radius: 6px;
+		color: rgba(173,181,189,.55);
+		-webkit-transition: all .5s ease;
+		transition: all .5s ease;
+	}
+	
+	
+	.candidate-list-box .favorite-icon {
+		position: absolute;
+		right: 22px;
+		top: 22px;
+	}
+	.fs-14 {
+		font-size: 14px;
+	}
+	.bg-soft-secondary {
+		background-color: rgba(116,120,141,.15)!important;
+		color: #74788d!important;
+	}
+	
+	.mt-1 {
+		margin-top: 0.25rem!important;
+	}
+img {
+  transition: transform 0.2s ease-in-out;
+}
 
+img:hover, img:focus {
+  transform: scale(1.2);
+}
+</style>
+
+{% load static %}
+{% block miniBigLeft %}
+
+<div class="mb-3">
+	<div style="width: 100%;" class="d-flex justify-content-between border-bottom border-primary mb-2">
+		<a class="btn text-primary" href="/">Tableau de Bord</a>
+		<div><i class="fas text-primary fa-angle-down"></i></div>
+	</div>
+</div>
+{% endblock%}
+{% load humanize %}
 {% block add_title %} 
 Notifications
 {% endblock %}
@@ -10,6 +89,7 @@ Notifications
 	{% if report == 0 %}
 	<div class="h2 text-center text-secondary"> <i class="fas fa-bell h2"></i> Notifications </div>
 	<div class="text-center p-1">
+		{%comment%}ceci affiche juste le titre de notre notification{% endcomment %}
 		<small>Liste des {{operations_name}} a effectuer</small>
 	</div>
 	{% elif report == 1 %}
@@ -63,18 +143,260 @@ Notifications
 				{% endif %}
 			</form>
 			<div class="pl-3 col-md-9">
-				{% if report != 1 and report != 2 %}
+				{% if report != 1 and report != 2 and report != 3 %}
 					{% for line in lines %}
 					<div class="mb-4 flex-wrap  col-12  h4">
-						<div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+						
+						{% comment %} <div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+						
 							<div  class="mr-3 "><img src="{{line.institution.img.url}}" style="width:30px;height:30px;border-radius:100%;"></div>
-							<p class=""> <a href="/operations/{{line.id}}" class="text-success">{{line.nom}}</a> 
+						
+							<p class=""> <a href="/operations/{{line.id}}" class="text-success">{{line.nom}}
+					
+							</a> 
 								<small>{{line.date_creation}}</small>
+							
 							</p>
-						</div>
+							
+							<p>{{line.etat}}</p>
+						{% if actual_institution.id == line.m_institution_id %}
+							<i class='fa fa-star text-success'></i>
+							{%else%}
+							
+							{%endif%}
+							
+						</div> {% endcomment %}
+						{%comment%}
+						<section class="section">
+							<div class="container">
+								
+								<div class="row">
+									<div class="col-lg-12">
+									   
+										<div class="candidate-list">
+											<div class="candidate-list-box card mt-1">
+												<div class="p-4 card-body">
+													<div class="align-items-center row">
+														<div class="col-auto">
+															<div class="candidate-list-images">
+																<a href="#"><img src="{{line.institution.img.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+															</div>
+														</div>
+														<div class="col-lg-5">
+															<div class="candidate-list-content mt-3 mt-lg-0">
+																<h5 class="fs-19 mb-0">
+																	<a class="primary-link" href="/operations/{{line.id}}" style="font-weight:bold;text-transform:uppercase">  {{line.nom}} </a>
+																</h5>
+																<p class="text-muted mb-2" style="font-weight:bold">Responsable: {{line.personnel}}</p>
+																<ul class="list-inline mb-0 text-muted">
+																	<li class="list-inline-item" style="font-weight:bold"><i class="fa fa-calendar"></i>Attribu&eacute;e Le: {{line.date_creation}}</li>
+																	<li>
+																<p style="font-weight:bold">priorite: {{line.priorite}} 
+																{% if line.priorite == 'Basse' %}
+																<i class="fas fa-heart text-secondary"></i>
+																{% elif line.priorite == "Normale" %}
+																<i class="fas fa-heart text-warning"></i>
+																<i class="fas fa-heart text-warning"></i>
+																{%else%}
+																<i class="fas fa-heart text-danger"></i>
+																<i class="fas fa-heart text-danger"></i>
+																<i class="fas fa-heart text-danger"></i>
+																
+																{%endif%}
+											
+																	</p>
+																	</li>
+																	<li>
+																		<button class="btn btn-primary" >Historique Op&eacute;rations</button>
+																	</li>
+																</ul>
+															</div>
+														</div>
+														<div class="col-lg-4">
+															<div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+															
+															<ul class="list-inline mb-0 text-muted">
+																
+															<li><p style="font-weight:bold">Date D'&eacute;ch&eacute;ance:{{line.date_echeance}}  </p></li>
+															<li><p style=" font-weight:bold" class="text-danger">Delai: ....</p></li>
+															</ul>
+															</span>
+															</div>
+														</div>
+													</div>
+			
+												</div>
+
+											</div>
+										   
+							</div>
+						</section>
+  						{%endcomment%}
+
+				
+<section class="section">
+								
+									
+									<div class="row">
+										<div class="col-lg-12">
+										   
+											<div class="candidate-list">
+												<div class="candidate-list-box card mt-1 {%if line.delai_restant == 'Le délai est écoulé !'%} bg-danger {%else%} bg-light {%endif%}">
+													<div class="p-4 card-body">
+														<div class="align-items-center row">
+															<div class="col-auto">
+																<div class="candidate-list-images">
+																	<a href="#"><img src="{{line.institution.img.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																</div>
+															</div>
+															<div class="col-lg-6">
+																<div class="candidate-list-content mt-3 mt-lg-0">
+																	<h6 class="fs-19 mb-0">
+																		<a class="{%if line.delai_restant == 'Le délai est écoulé !'%} text-light {%else%}  {%endif%}" href="/operations/{{line.id}}" style="font-weight:bold; text-transform:uppercase">{{line.nom}} </a>
+													{%if actual_institution.id == line.m_institution_id%}		
+														<span class="badge {%if line.delai_restant == 'Le délai est écoulé !'%} bg-danger {%else%} bg-success {%endif%} ms-1">
+															<i class="fa fa-star align-middle text-light fa-spin"></i></span>
+													{%endif%}
+																	</h6>
+																	<p class=" mb-2 {%if line.delai_restant == 'Le délai est écoulé !'%} text-light{%else%}  {%endif%}">Responsable: {{line.personnel}}</p>
+																	<ul class="list-inline mb-0 text-muted">
+																		<li class="list-inline-item {%if line.delai_restant == 'Le délai est écoulé !'%} text-light {%else%} {%endif%}"><i class="fa fa-calendar"></i>Attribu&eacute;&eacute; le: {{line.date_creation}}</li>
+																	
+																	</ul>
+																</div>
+															</div>
+															<div class="col-lg-4">
+																<div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+{%comment%}
+																	<span>priorite: 
+																	{% if line.priorite == 'Basse' %}
+																	<i class="fas fa-comment text-secondary"></i>
+																	{% elif line.priorite == "Normale" %}
+																	<i class="fas fa-comment  fas-shake text-warning"></i>
+																	<i class="fas fa-comment text-warning"></i>
+																	{%else%}
+																	<i class="fas fa-comment text-danger"></i>
+																	<i class="fas fa-comment text-danger"></i>
+																	<i class="fas fa-comment text-danger"></i>
+																	
+																	{%endif%}
+																
+																	</span>
+
+{%endcomment%}
+
+
+
+
+{%if line.delai_restant == 'Le délai est écoulé !'%}	
+
+<span style="font-weight:bold" class="text-light">&eacute;ch&eacute;ance:&nbsp;&nbsp;{{line.date_echeance}} </span>
+
+{%else%}
+<span style="font-weight:bold" class="text-danger">&eacute;ch&eacute;ance:&nbsp;&nbsp;{{line.date_echeance}} </span>
+
+{%endif%}
+
+
+
+
+{%comment%}			
+
+
+{%if line.delai_restant == 'Le délai est écoulé !'%}															
+<span style="font-weight:bold" class="text-light">D&eacute;lai:&nbsp;
+														
+{{ line.delai_restant }}<span>
+																		
+{%else%}
+<span style="font-weight:bold" class="text-danger">D&eacute;lai:&nbsp;
+														
+{{ line.delai_restant }}<span>
+
+{%endif%}
+
+			{%endcomment%}													<span> <a class="btn btn {%if line.delai_restant == 'Le délai est écoulé !'%} text-light{%else%} text-primary{%endif%}" data-toggle="modal" data-target="#staticBackdrop{{line.id}}" style="font-weight:bold">HISTORIQUE</a> </span>
+																</div>
+															</div>
+														</div>
+				
+													</div>
+												</div>
+											   
+								
+							</section>
+
+
+<div class="modal fade" id="staticBackdrop{{line.id}}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel" style="font-weight:bold">Historique De l'op&eacute;ration: {{line.nom}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+	
+      <div class="modal-body">
+	
+        <table class="table table-striped table-hover table-responsive text-center" style="font-weight:bold">
+  	<thead>
+	<tr>
+	<th class="text-success">R:&nbsp;&nbsp;{{line.personnel}}</th>
+	<th class="text-danger">A:&nbsp;&nbsp; {{line.accountable}}</th>
+	<th class="text-primary">C:&nbsp;&nbsp; {{line.consulted}}</th>
+	<th class="text-warning">I: &nbsp;&nbsp;{{line.informed}}</th>
+	<th>
+
+														
+	</th>
+	</tr>
+	</thead>
+</table>
+		<h6 style="font-weight:bold">Historique</h6>
+
+
+<table class="table table-hover table-responsive text-center" style="width:100%">
+  <thead>
+    <tr>
+      <th>Date</th>
+<th>Responsables</th>
+      <th>Commentaires</th>
+
+      
+   
+    </tr>
+  </thead>
+  <tbody>
+<tr>
+<td style="font-weight:bold"><span class="badge badge-primary">{{line.date_creation}}</span></td>
+<td><i class ="fa fa-user fa-2x text-primary"></i></td>
+<td style="font-weight:bold">Affectation de L'op&eacute;ration {{line.nom}}</td>
+</tr>
+{%for operation_historics in operation_historic%}
+{%if line.id  == operation_historics.m_operation_id%}
+    <tr style="font-weight:bold">
+     <td><span class="badge badge-primary">{{operation_historics.m_date_realisation}}</span></td>
+     <td class="text-success" style="font-weight:bold;text-transform:uppercase">{{operation_historics.m_role}}:&nbsp;&nbsp;<span class="badge badge-success">Soumission Du Rapport</span> <i class="fa fa-paper-plane text-success"></i>&nbsp;</td>
+     <td>{{operation_historics.m_commentaire}}</td>
+    
+    </tr>
+{%endif%}
+{%endfor%}
+     </tbody>
+</table>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            </div>
+    </div>
+  </div>
+</div>
 						<div class="">
 							<a class="d-block my-3" href="/operations/{{o.id}}" >  </a>
 						</div>
+						
 					</div>
 					{% empty %}
 					<div class="text-center h1 w-100">
@@ -84,23 +406,229 @@ Notifications
 						<a href="/messengers/" style="background-color:pink;" class="text-dark btn"> <i class="fas fa-envelope"></i> Messagerie Personnel</a>
 					</div>
 					{% endfor %}
-				{% else %}
+				{% elif report == 1 %}
 					{% for line in lines %}
 					
 					<div class="mb-4 flex-wrap justify-content-between col-12  h4">
-						<div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+						{% comment %} <div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
 							<div  class="mr-3 "><img src="{{line.m_institution.img.url}}" style="width:30px;height:30px;border-radius:100%;"></div>
 							<p class=""> <a class="text-success d-block" href="/decision/o/{{line.id}}/"><i class="fas  fa-envelope "></i>&nbsp;{{line.nom}}</a>
 								<small>{{line.date_creation}}</small>
 							</p>
-						</div>
-						<div><small>Rapport a Valider</small></div>
+							
+						</div> {% endcomment %}
+						<section class="section">
+								
+									
+									<div class="row">
+										<div class="col-lg-12">
+										   
+											<div class="candidate-list">
+												<div class="candidate-list-box card mt-1">
+													<div class="p-4 card-body">
+														<div class="align-items-center row">
+															<div class="col-auto">
+																<div class="candidate-list-images">
+																	<a href="#"><img src="{{line.institution.img.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																</div>
+															</div>
+															<div class="col-lg-7">
+																<div class="candidate-list-content mt-3 mt-lg-0">
+																	<h6 class="fs-19 mb-0">
+																		<a class="primary-link" href="/decision/o/{{line.id}}/" style="font-weight:bold; text-transform:uppercase"> {{line.nom}} </a>
+																		{%if actual_institution.id == line.m_institution_id%}<span class="badge bg-success ms-1"><i class="fa fa-star align-middle text-light fa-spin"></i></span> {%endif%}
+																	</h6>
+																	<p class="text-muted mb-2">{{line.personnel}}</p>
+																	<ul class="list-inline mb-0 text-muted">
+																		<li class="list-inline-item"><i class="fa fa-calendar"></i>Attribu&eacute;e le: {{line.date_creation}}</li>
+																	
+																	</ul>
+																</div>
+															</div>
+															<div class="col-lg-2">
+																<div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+<a href="#"><img src="{{line.personnel.photo.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																	
+{%comment%}
+																	<span class="badge bg-soft-secondary fs-14 mt-1"><p style="font-weight:bold"></p> priorite: {{line.priorite}}
+																	{% if line.priorite == 'Basse' %}
+																	<i class="fas fa-bell text-secondary"></i>
+																	{% elif line.priorite == "Normale" %}
+																	<i class="fas fa-bell  fas-shake text-warning"></i>
+																	<i class="fas fa-bell text-warning"></i>
+																	{%else%}
+																	<i class="fas fa-bell text-danger"></i>
+																	<i class="fas fa-bell text-danger"></i>
+																	<i class="fas fa-bell text-danger"></i>
+																	
+																	{%endif%}
+																	</span>
+																	{%endcomment%}
+																</div>
+															</div>
+														</div>
+				
+													</div>
+												</div>
+											   
+								
+							</section>
+						{% comment %} <div><small>Rapport a Valider</small></div> {% endcomment %}
 					</div>
 					{% empty %}
 					<div class="text-center h1 w-100">
 						Aucun Rapport pour le Moment
 					</div>
 					{% endfor %}
+{% elif report != 3 and report != 1 and report %}
+					{% for line in lines %}
+					
+					<div class="mb-4 flex-wrap justify-content-between col-12  h4">
+						{% comment %} <div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+							<div  class="mr-3 "><img src="{{line.m_institution.img.url}}" style="width:30px;height:30px;border-radius:100%;"></div>
+							<p class=""> <a class="text-success d-block" href="/decision/o/{{line.id}}/"><i class="fas  fa-envelope "></i>&nbsp;{{line.nom}}</a>
+								<small>{{line.date_creation}}</small>
+							</p>
+							
+						</div> {% endcomment %}
+						<section class="section">
+								
+									
+									<div class="row">
+										<div class="col-lg-12">
+										   
+											<div class="candidate-list">
+												<div class="candidate-list-box card mt-1">
+													<div class="p-4 card-body">
+														<div class="align-items-center row">
+															<div class="col-auto">
+																<div class="candidate-list-images">
+																	<a href="#"><img src="{{line.institution.img.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																</div>
+															</div>
+															<div class="col-lg-7">
+																<div class="candidate-list-content mt-3 mt-lg-0">
+																	<h6 class="fs-19 mb-0">
+																		<a class="primary-link" href="/Avis/c/{{line.id}}" style="font-weight:bold; text-transform:uppercase"> {{line.nom}} </a>
+																		{%if actual_institution.id == line.m_institution_id%}<span class="badge bg-success ms-1"><i class="fa fa-star align-middle text-light fa-spin"></i></span> {%endif%}
+																	</h6>
+																	<p class="text-muted mb-2">{{line.personnel}}</p>
+																	<ul class="list-inline mb-0 text-muted">
+																		<li class="list-inline-item"><i class="fa fa-calendar"></i>Attribu&eacute;e le: {{line.date_creation}}</li>
+																	
+																	</ul>
+																</div>
+															</div>
+															<div class="col-lg-2">
+																<div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+<a href="#"><img src="{{line.personnel.photo.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																	
+{%comment%}
+																	<span class="badge bg-soft-secondary fs-14 mt-1"><p style="font-weight:bold"></p> priorite: {{line.priorite}}
+																	{% if line.priorite == 'Basse' %}
+																	<i class="fas fa-bell text-secondary"></i>
+																	{% elif line.priorite == "Normale" %}
+																	<i class="fas fa-bell  fas-shake text-warning"></i>
+																	<i class="fas fa-bell text-warning"></i>
+																	{%else%}
+																	<i class="fas fa-bell text-danger"></i>
+																	<i class="fas fa-bell text-danger"></i>
+																	<i class="fas fa-bell text-danger"></i>
+																	
+																	{%endif%}
+																	</span>
+																	{%endcomment%}
+																</div>
+															</div>
+														</div>
+				
+													</div>
+												</div>
+											   
+								
+							</section>
+						{% comment %} <div><small>Rapport a Valider</small></div> {% endcomment %}
+					</div>
+					{% empty %}
+					<div class="text-center h1 w-100">
+						Aucun Rapport pour le Moment
+					</div>
+					{% endfor %}
+	{% elif report == 3 %}
+					{% for line in lines %}
+					
+					<div class="mb-4 flex-wrap justify-content-between col-12  h4">
+						{% comment %} <div style="border-bottom:2px solid #f0f0f0;" class="pb-1 d-flex">
+							<div  class="mr-3 "><img src="{{line.m_institution.img.url}}" style="width:30px;height:30px;border-radius:100%;"></div>
+							<p class=""> <a class="text-success d-block" href="/decision/o/{{line.id}}/"><i class="fas  fa-envelope "></i>&nbsp;{{line.nom}}</a>
+								<small>{{line.date_creation}}</small>
+							</p>
+							
+						</div> {% endcomment %}
+						<section class="section">
+								
+									
+									<div class="row">
+										<div class="col-lg-12">
+										   
+											<div class="candidate-list">
+												<div class="candidate-list-box card mt-1">
+													<div class="p-4 card-body">
+														<div class="align-items-center row">
+															<div class="col-auto">
+																<div class="candidate-list-images">
+																	<a href="#"><img src="{{line.institution.img.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																</div>
+															</div>
+															<div class="col-lg-7">
+																<div class="candidate-list-content mt-3 mt-lg-0">
+																	<h6 class="fs-19 mb-0">
+																		<a class="primary-link" href="/Avis/i/{{line.id}}" style="font-weight:bold; text-transform:uppercase"> {{line.nom}} </a>
+																		{%if actual_institution.id == line.m_institution_id%}<span class="badge bg-success ms-1"><i class="fa fa-check align-middle text-light"></i></span> {%endif%}
+																	</h6>
+																	<p class="text-muted mb-2">{{line.personnel}}</p>
+																	<ul class="list-inline mb-0 text-muted">
+																		<li class="list-inline-item"><i class="fa fa-calendar"></i>Attribu&eacute;e le: {{line.date_creation}}</li>
+																	
+																	</ul>
+																</div>
+															</div>
+															<div class="col-lg-2">
+																<div class="mt-2 mt-lg-0 d-flex flex-wrap align-items-start gap-1">
+<a href="#"><img src="{{line.personnel.photo.url}}" alt="" class="avatar-md img-thumbnail rounded-circle" /></a>
+																	
+{%comment%}
+																	<span class="badge bg-soft-secondary fs-14 mt-1"><p style="font-weight:bold"></p> priorite: {{line.priorite}}
+																	{% if line.priorite == 'Basse' %}
+																	<i class="fas fa-bell text-secondary"></i>
+																	{% elif line.priorite == "Normale" %}
+																	<i class="fas fa-bell  fas-shake text-warning"></i>
+																	<i class="fas fa-bell text-warning"></i>
+																	{%else%}
+																	<i class="fas fa-bell text-danger"></i>
+																	<i class="fas fa-bell text-danger"></i>
+																	<i class="fas fa-bell text-danger"></i>
+																	
+																	{%endif%}
+																	</span>
+																	{%endcomment%}
+																</div>
+															</div>
+														</div>
+				
+													</div>
+												</div>
+											   
+								
+							</section>
+						{% comment %} <div><small>Rapport a Valider</small></div> {% endcomment %}
+					</div>
+					{% empty %}
+					<div class="text-center h1 w-100">
+						Aucun Rapport pour le Moment
+					</div>
+					{% endfor %}
+	
 				{% endif %}
 			</div>
 		</div>
@@ -189,3 +717,7 @@ Notifications
 	{% endif %}
 </script>
 {% endblock %}
+
+
+
+

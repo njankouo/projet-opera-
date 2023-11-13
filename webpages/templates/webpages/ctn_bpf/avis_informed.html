@@ -1,0 +1,182 @@
+{% extends './decision.html' %}
+{% load static %}
+{% load humanize %}
+{% block main_content %}
+<div class="row">
+
+	<div class="col-lg-4 mt-5">
+		<div> <h6 class="text-center" style="font-weight:bold;text-transform:uppercase">Niveau De Responsabilt&eacute;s</h6> </div>
+		<table class="table caption-top text-center table-responsive">
+ 
+  <thead class="text-success">
+
+    <tr>
+      <th>R</th>
+     <th>{{operation.personnel}}</th>
+     
+      
+    </tr>
+
+  </thead>
+  <tbody class="text-danger" style=" font-weight:bold">
+    <tr>
+     <td>A</td>
+      <td>{{operation.accountable}}</td>
+       
+    </tr>
+
+  </tbody>
+
+  <tbody class="text-primary" style="font-weight:bold">
+    <tr>
+     <td>C</td>
+   <td> {{operation.consulted}}</td>
+       
+    </tr>
+
+  </tbody>
+
+  <tbody class="text-warning" style="font-weight:bold">
+    <tr>
+     <td>I</td>
+   <td> {{operation.informed}}</td>
+       
+    </tr>
+
+  </tbody>
+
+
+</table>
+</div>
+<div class="col-8 mt-5">
+<h6  style=" font-weight:bold;text-transform:uppercase; font-weight:bold" class="text-center">HISTORISATION DE L'OP&eacute;ration</h6>
+
+<table class="table table-hover table-responsive text-center" style="width:100%">
+<caption style="font-weight:bold;text-transform:uppercase">operation affect&eacute;e {{operation.date_creation|naturaltime}}</caption>
+  <thead>
+    <tr>
+      <th>Date</th>
+   <th>Responsables</th>
+      <th>Commentaires</th>
+
+   
+   	<th>Fichier Joint</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for operation_historics in operation_historic%}
+{%if operation_historics.m_operation_id == operation.id%}
+    <tr>
+	
+     <td><span class="badge badge-primary">{{operation_historics.m_date_realisation}}</td>
+{%if operation_historics.m_role == "A"%}
+<td class="text-danger" style="font-weight:bold">
+
+{{operation_historics.m_role}}
+<i class="fa fa-eye"></i>
+</td>
+{%elif operation_historics.m_role == "R"%}
+<td class="text-primary" style="font-weight:bold">
+
+{{operation_historics.m_role}}
+<i class="fa fa-paper-plane"></i>
+</td>
+{%elif operation_historics.m_role == "C"%}
+<td class="text-warning" style="font-weight:bold">
+
+{{operation_historics.m_role}}
+<i class="fa fa-file"></i>
+</td>
+{%elif operation_historics.m_role == "I"%}
+<td class="text-danger" style="font-weight:bold">
+
+{{operation_historics.m_role}}
+<i class="fa fa-eye"></i>
+</td>
+
+{%endif%}
+
+     <td style="font-weight:bold">{{operation_historics.m_commentaire}}</td>
+     <td>
+{%if operation_historics.m_role == "R"%}
+{% if actual_institution.default_options == True %}
+
+										{% else %}
+										{% for elt in operation_rapport.aggregate_values %}
+										<div class="d-flex my-2">
+										
+												{% if elt.type == 'file' %}
+												
+													<div>
+														<a href="{{elt.value.m_file.url}}"><i class="fas fa-file"></i>
+														{{elt.value.m_file}}</a>
+													</div>
+												
+											
+												
+																								{% endif %}
+											</div>
+										{% endfor %}
+
+										{% endif %}
+{%else%}
+<a href="{{operation_historics.file}}">
+{{operation_historics.file}}</a>
+
+{% endif %}
+
+</td>
+     
+{%endif%}
+{%empty%}
+	<td colspan="3">
+	<h6 style="font-weight:bold" class="text-center text-danger" >Aucun Historique Pour L'instant</h6>
+
+	</td>
+    </tr>
+{%endfor%}
+     </tbody>
+</table>
+</div>
+								
+</div>
+</div>
+										<form method="POST" action="/consult_oper/" enctype="multipart/form-data">
+										{% csrf_token %}
+<label>Attachez Votre Fichier</label>
+										<input type="file" class="form-control" name="file">
+										<input type="hidden" name="operation_rapport" value="{{operation_rapport.id}}">
+										<input type="hidden" name="operation" value="{{operation.id}}">
+										<input type="hidden" name="nb_stars" id="nb_stars">
+									<h5 style="font-weight:bold"> Donnez vos Avis ( sur 5 Etoiles )</h5>
+									<div class="starDiv d-flex">
+										<div>
+											<i data-id="1" class="fas fa-star"></i>
+										</div>
+
+										<div>
+											<i data-id="2" class="fas fa-star"></i>
+										</div>
+										<div>
+											<i data-id="3" class="fas fa-star"></i>
+										</div>
+										<div>
+											<i data-id="4" class="fas fa-star"></i>
+										</div>
+										<div>
+											<i data-id="5" class="fas fa-star"></i>
+										</div>
+									</div>
+									<div>
+										<textarea class="form-control" name="observations"  rows="6"></textarea>
+										<div class="my-3">
+											<input type="submit" value="Enregistrer" class="btn btn-success" name="">
+										</div>
+									</div>
+									</form>
+
+									
+</div>
+
+{% endblock %}

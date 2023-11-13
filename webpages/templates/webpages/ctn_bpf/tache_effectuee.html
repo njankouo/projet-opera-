@@ -1,0 +1,388 @@
+
+
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Utilities */
+.card::after,
+.card img {
+  border-radius: 50%;
+}
+body,
+.card,
+.stats {
+  display: flex;
+}
+
+.card {
+  
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, .5);
+
+  box-shadow: 0 0 30px rgba(0, 0, 0, .15);
+  margin: 1rem;
+  position: relative;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+}
+.card::before {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #FFF;
+  border-radius: 10px;
+  top: -.7rem;
+  left: -.7rem;
+}
+.card::after {
+  height: 15rem;
+  width: 15rem;
+  background-color: #4172f5aa;
+  top: -8rem;
+  right: -8rem;
+  box-shadow: 2rem 6rem 0 -3rem #FFF
+}
+
+.card img {
+  width: 8rem;
+  min-width: 80px;
+  box-shadow: 0 0 0 5px #FFF;
+}
+
+.infos {
+  margin-left: 1.5rem;
+}
+
+.name {
+  margin-bottom: 1rem;
+}
+.name h2 {
+  font-size: 1.3rem;
+}
+.name h4 {
+  font-size: .8rem;
+  color: #333
+}
+
+.text {
+  font-size: .9rem;
+  margin-bottom: 1rem;
+}
+
+.stats {
+  margin-bottom: 1rem;
+}
+.stats li {
+  min-width: 5rem;
+}
+.stats li h3 {
+  font-size: .99rem;
+}
+.stats li h4 {
+  font-size: .75rem;
+}
+
+.links button {
+  font-family: 'Poppins', sans-serif;
+  min-width: 120px;
+  padding: .5rem;
+  border: 1px solid #222;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all .25s linear;
+}
+.links .follow,
+.links .view:hover {
+  background-color: #222;
+  color: #FFF;
+}
+.links .view,
+.links .follow:hover{
+  background-color: transparent;
+  color: #222;
+}
+
+@media screen and (max-width: 450px) {
+  .card {
+    display: block;
+  }
+  .infos {
+    margin-left: 0;
+    margin-top: 1.5rem;
+  }
+  .links button {
+    min-width: 100px;
+  }
+}
+
+ section{
+      float:left;
+      width:100%;
+      padding:30px 0; 
+      position:relative; 
+      overflow:hidden; 
+      background:#6F8D8A;
+      margin: 30px;
+    }
+    
+    section:before{
+      content:"";
+      position:absolute; 
+      width:110%; 
+      height:100%;   
+      background-color:#fff; 
+      filter: blur(10px); 
+      z-index:0; 
+      transform: scale(2);-ms-transform: scale(2); 
+      -webkit-transform: scale(2);
+    }
+    
+    .btn-default{
+      background:#006EFF; width: 100%; color:#fff; font-weight:700; text-shadow:1px 1px 0 rgba(0,0,0,0.2); font-size:14px;
+    }
+    .card{
+      box-shadow:2px 2px 20px rgba(0,0,0,0.3); border:none; margin-bottom:30px;
+    }
+    .card:hover{
+      transform: scale(1.15);
+      transition: all 1s ease;
+      z-index: 999;
+    }
+    .card-01 .card-body{
+      position:relative; padding-top:40px;
+   
+    }
+    .card-01 .badge-box{
+      position:absolute; 
+      top:-20px; left:50%; width:100px; height:100px;margin-left:-50px; text-align:center;
+    }
+    .card-01 .badge-box i{
+      background:#006EFF; color:#fff; border-radius:50%;  width:50px; height:50px; line-height:50px;  font-size:20px;
+    }
+.card-01 .badge-box1 i{
+      background:red; color:#fff; border-radius:50%;  width:50px; height:50px; line-height:50px;  font-size:20px;
+    }
+
+    .card-01 .height-fix{
+      height:455px; overflow:hidden;
+    }
+    
+    .card-01 .height-fix .card-img-top{width:auto!imporat;}
+    
+    .profile-box{
+      background-size:cover; float:left; width:100%; text-align:center; padding:30px 0; position:relative; overflow:hidden;
+    }
+    
+    .profile-box:before{
+      filter: blur(10px);background:url("https://images.pexels.com/photos/195825/pexels-photo-195825.jpeg?h=350&auto=compress&cs=tinysrgb") no-repeat; background-size:cover; width:120%; position:absolute; content:""; height:120%; left:-10%;top:0;z-index:0;
+    }
+    
+    .profile-box img{
+      width:170px; height:170px; position:relative; border:5px solid #fff;
+    }
+    
+    .social-box i {
+      border:1px solid #006EFF; color:#006EFF; width:30px; height:30px; border-radius:50%;line-height:30px;
+    }
+    
+    .social-box i:hover{
+      background:#DFC717; color:#fff;
+    }
+    
+    .social-box a{margin: 0 5px;}
+    
+    .video-foreground{float:left;width:100%; height:500px;}
+    
+    .card-01.height-fix .card-img-overlay{
+      top:unset; 
+      color:#fff;
+      background: -moz-linear-gradient(top, rgba(26,96,111,0) 0%, rgba(26,96,111,0) 1%, rgba(24,87,104,0.91) 31%, rgba(21,65,89,0.91) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(26,96,111,0) 0%,rgba(26,96,111,0) 1%,rgba(24,87,104,0.91) 31%,rgba(21,65,89,0.91) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(26,96,111,0) 0%,rgba(26,96,111,0) 1%,rgba(24,87,104,0.91) 31%,rgba(21,65,89,0.91) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#001a606f', endColorstr='#e8154159',GradientType=0 );
+    }
+    .card-01.height-fix .fa{color: #fff;font-size: 22px;margin-right: 18px;};
+    
+    /*flipper-card*/
+    .card-flipper {
+      position: relative;
+      float: left;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .card__front,
+    .card__back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .card__back .card{
+        width:100%;
+        height:65vh;
+    }
+    
+    .card__front,
+    .card__back {
+      -webkit-backface-visibility: hidden;
+              backface-visibility: hidden;
+      -webkit-transition: -webkit-transform 0.3s;
+              transition: transform 0.3s;
+    }
+    
+    .card__front {
+      background-color: #ff5078;
+    }
+    
+    .card__back {
+      background-color: #1e1e1e;
+      -webkit-transform: rotateY(-180deg);
+              transform: rotateY(-180deg);
+    }
+    .card-flipper.effect__hover{position:relative;}
+    .card-flipper.effect__hover:hover .card__front {
+      -webkit-transform: rotateY(-180deg);
+              transform: rotateY(-180deg);
+    }
+    
+    .card-flipper.effect__hover:hover .card__back {
+      -webkit-transform: rotateY(0);
+              transform: rotateY(0);
+    }
+    
+    .card-flipper.effect__random.flipped .card__front {
+      -webkit-transform: rotateY(-180deg);
+              transform: rotateY(-180deg);
+    }
+    
+    .card-flipper.effect__random.flipped .card__back {
+      -webkit-transform: rotateY(0);
+              transform: rotateY(0);
+    }
+
+.hm-gradient {
+    background-image: linear-gradient(to top, #f3e7e9 0%, #e3eeff 99%, #e3eeff 100%);
+}
+.navbar .dropdown-menu a:hover {
+    color: #616161 !important;
+}
+.darken-grey-text {
+    color: #2E2E2E;
+}
+
+
+ .btn-circle.btn-sm { 
+            width: 70px; 
+            height: 70px; 
+            padding: 10px 16px; 
+            border-radius: 35px; 
+            font-size: 12px; 
+            text-align: center; 
+        } 
+
+</style>
+
+{% extends './index.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+<div class="row">
+    <div class="col-md-12">
+        
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+<div class="card">
+<div class="card-body ">
+            
+               <h6 style="font-weight:bold;text-transform:uppercase;" class="text-center"> Op&eacute;rations Globales &eacute;ffectu&eacute;es De L'institution {{actual_institution}}
+                            <h6>
+</div>
+</div>
+</div>
+</div>
+      
+
+
+              
+
+<div class="row">
+    {%for operation_details in operation_detail%}
+    {%if operation_details.etat == "1" and actual_institution == operation_details.m_institution_id %}
+  
+    {% comment %} <div class="col-4">
+    
+      <div class="card">
+        <div class="card-header">
+          <img src="{{operation_details.institution.img.url}}" alt="" class="roundedcard-img-top rounded"  />
+        </div>
+        <div class="card-body">
+          <span class="tag tag-teal">R&eacutealis&eacute; par: {{operation_details.personnel.nom}}</span>
+          <h6 style="font-weight:bolder">{{operation_details.m_operation.nom}}</h6>
+          
+          <div class="user">
+            <img src="{{operation_details.personnel.img.url}}" alt="" />
+            <div class="user-info">
+                
+              <small>R&eacute;alis&eacute;e {{operation_details.date_created|naturaltime}}</small>
+            </div>
+          </div>
+        </div>
+   
+     
+     
+    </div> {% endcomment %}
+    <div class="col-md-4">
+        <div class="card card-01">
+        <div class="profile-box">
+            <img class="card-img-top rounded-circle" src="{{operation_details.institution.img.url}}" alt="Card image cap">
+        </div>
+        <div class="card-body text-center">
+          <span class="badge-box"><i class="fa fa-check"></i></span>
+        
+          <h4 class="card-text" style="  overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        ">{{operation_details.m_operation.nom}}</h4>
+          <p class="card-title" style="  overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        ">R&eacute;alis&eacute;e Par: {{operation_details.personnel.nom}} {{operation_details.date_created|naturaltime}}</p>
+        </div>
+      </div>
+      </div>
+    
+    {%endif%}
+    {%endfor%}
+</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}

@@ -1,0 +1,793 @@
+
+
+{% extends './entities.html' %}
+{% load static %}
+
+{% block add_title %} 
+Formulaires de Donnees - Edition
+{% endblock %}
+
+{% block search_filters %}
+
+<div class="mb-3 text-success">	
+	<small class="badge badge-success">	 Etape 1/2 : Creation des Elements du Formulaire</small>
+	{% if dataset != None %}
+	<a href="/data_sets/design/{{dataset.id}}/"><small class="badge"> Etape 2/2 : Edition & Design du Formulaire</small></a>
+	{% endif %}
+</div>
+
+<div id="editableDIV" class="d-none">
+	<div class="myeditablediv p-2" style="height:400px;background:red;border:1px solid #aaa;" id="myeditablediv2"></div>
+</div>
+
+
+{% endblock %}
+
+{% block style %}
+<style type="text/css">
+	textarea{
+		min-height: 400px;
+	}
+</style>
+{% endblock %}
+
+{% block table %}
+<form onsubmit="loadDataSet()" action="/save_design" method="POST" name="dataset" class="dataset">
+{% csrf_token%}
+<input type="hidden" name="variables_list" id="variables_list" value="">
+<input type="hidden" name="indicateurs_list" id="indicateurs_list" value="">
+
+<input type="hidden" id="structures_list" name="structures_list" value="">
+<input type="hidden" id="roles_list" name="roles_list" value="">
+{% comment %} <input type="hidden" name="indicateur" value="{{indicateur.id}}"> {% endcomment %}
+<textarea style="display:none;" name="form_html" id="form_html"></textarea>
+
+<input type="hidden" name="generator" value="d_s_1">
+<input type="hidden" name="edit_or_create" {% if dataset == None %} value="c" {% else %} value="e" {% endif %}>
+{% if dataset != None %} <input type="hidden" id="edit_id" name="edit_id" value="{{dataset.id}}"> {% endif %}
+
+<div class="row">
+<div class="card col-md-7"  style="margin-left:2%;">
+			<div class="card-header bg-primary text-light">
+				<h5 style="font-weight:bold">Formulaire de Donnee:  {% if dataset != None %} {{dataset}} {% else %}  Nouveau {% endif %}</h5>
+			</div>
+		<div class="card-body">
+				<div class="row">
+			<div class="col-12">
+			
+				<label>Nom du Formulaire</label>
+				<input value="{{dataset}}" type="text" class="form-control" name="form_name">
+			
+			</div>
+			<div class="col-md-6">	
+				<hr/>
+			<p class="text-center" style="font-weight:bold">Periode de renseignement : </p>
+			<select readonly name="periode" class="form-control " name="periode">
+						<option value="0">Annee</option>
+						<option value="1">Mensuel</option>
+						<option value="2">Hebomadaire</option>
+					</select>
+				</div>
+				<div class="col-md-6">
+					<hr/>
+					<p class="text-center text-primary" style="font-weight:bold">Periode de renseignement : </p>
+					<select readonly name="sub_periode" class="form-control">
+						<option value="Mensuelle">Mensuelle</option>
+						<option value="Trimestriel">Trimestriel</option>
+						<option value="Semestriel">Semestriel</option>
+						<option value="Hebdomadaire">Hebdomadaire</option>
+					</select>
+				</div>			
+		
+					<div class="col-12">
+					<p class="text-center" style="font-weight:bold">Structure(s)  Associée(s) </p>
+					<select class="form-select" id="multiple-select-clear-field" data-placeholder="Selection des Structures Associées" multiple name="structure">
+						
+						{% for s in actual_institution.structures %}
+						<option value="{{s.id}}">{{s}}</option>
+						{%endfor%}
+					
+					</select>
+				</div>
+					<div class="col-12">
+					<p class="text-center" style="font-weight:bold">Groupes d'Utilisateurs concernes </p>
+			<select class="form-select" id="multiple-select-field" data-placeholder="Choix des Utilisateurs" multiple name="role">
+					
+					{% for s in actual_institution.roles %}
+											<option value='{{ s.id }}'>{{s}}</option>
+					{% endfor %}
+				</select>
+
+						</div>
+
+	
+		
+			<div class="col-12 d-flex flex-wrap">
+			{% if design_phase != None %}
+			<div class="col-12 col-lg-9 d-flex">
+				<input type="hidden" id="ephoxVariables_input" name="ephoxVariables_input" value="#">
+				<div class="card col-12">	
+					<div style='width:100%;height:100vh;max-height:500px;border:none;overflow:auto;' name="text" id="textPlan">
+						<div class="d-flex deleteSBM">
+							<div class="px-2"><small style="cursor:pointer;" onclick="insertText(this)">+ Zone de Design </small></div>
+							<div class="px-2"><small style="cursor:pointer;" onclick="insertVariable(this)">+ Inserer une Variable</small></div>
+							<div class="px-2"><small onclick="insertIndic(this)" style="cursor:pointer;">+ Inserer Indicateur</small></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			{% endif %}
+			</div>
+			<div class="col-12">
+				<p class="text-center" style="font-weight:bold"> Choix des Variables & Indicateurs</p>
+				<div class="pt-2">
+					{% comment %} <div><input type="text" onkeypress="testDE(this.value)" class="form-control" name="elements"></div> {% endcomment %}
+					<div id="dataelts_list_sel" class="pt-2 list-group" style="max-height:250px;overflow-y:auto;">
+						
+						<div class="list-group-item mb-2">
+			<select class="form-select" id="multiple-select-optgroup-field" data-placeholder="Choix des indicateurs" multiple name="indicateur">
+				<optgroup label="Choix des indicateurs">
+					{% for d in indicateurs %}
+								<option value="{{d.id}}">{{d}}</option>
+								{% endfor %}
+				</optgroup>
+				
+			</select>
+			</div>
+			
+			<div class="col-12">
+				<div>
+					<p class="text-center" style="font-weight:bold"> Choix Data Elements</p>
+					<div class="pt-2">
+						{% comment %} <div><input type="text" onkeypress="testDE(this.value)" class="form-control" name="elements"></div> {% endcomment %}
+						<div id="dataelts_list_sel" class="pt-2 list-group" style="max-height:250px;overflow-y:auto;">
+						
+							<div class="list-group-item mb-2">
+								<select class="form-select" id="multiple-select-custom-field" data-placeholder="Choix des data Elements" name="element" multiple>
+									{% for d in dataelts %}
+									<option value="{{d.id}} ">{{d}}</option>
+										{% endfor %}
+								</select>
+							
+					</div>
+				</div>
+				<div class="card-footer">
+					{%if dataset == None%}
+				<button  type="submit" class="btn btn-success" style="float:right">Design du Formulaire</button>
+				{%else%}
+				<button  type="button" class="btn btn-success" style="float:right">Mise A Jour du Formulaire</button>
+			{%endif%}	
+			</div>
+					</div>
+				</div>
+		
+			</div>
+			
+		</div>
+	
+	</div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="card col-md-4" style="margin-left:2%;">
+	<div class="card-header bg-primary">
+		<h6 style="font-weight:bold;text-transform:uppercase" class="text-light text-center" >Informations du formulaires</h6>
+	</div>
+	<div class="card-body">
+{%if dataset == None%}
+<h6 class="text-center"><i class="fa fa-exclamation fa-4x text-danger text-center"></i></h6>
+<h6 style="font-weight:bold" class="text-danger text-center">Aucune Information Pour Le Moment</h6>
+{%else%}
+<h6 style="text-transform:uppercase;font-weight:bold">Nom Du Formulaire</h6>
+<i class="fa fa-check text-primary">{{ dataset }}</i>
+<hr/>
+<h6 style="text-transform:uppercase;font-weight:bold">P&eacute;riode de renseignement</h6>
+<i class="fa fa-check text-primary">{{ data_set.m_sub_periode }}</i>
+<hr/>
+<h6 style="text-transform:uppercase;font-weight:bold">Utilisateurs Concern&eacute;s</h6>
+<i class="fa fa-check text-primary">{% for v in data_set.m_roles.all %}{{ v }} {%endfor%}</i>
+
+<hr/>
+<h6 style="text-transform:uppercase;font-weight:bold">Structures Associ&eacute;es</h6>
+<i class="fa fa-check text-primary">{% for v in data_set.m_structures.all %}{{ v }} {%endfor%}</i>
+<hr/>
+<h6 style="text-transform:uppercase;font-weight:bold">Indicateurs</h6>
+<i class="fa fa-check text-primary">{% for v in data_set.m_indicateurs.all %}{{ v }} {%endfor%}</i>
+<hr/>
+<h6 style="text-transform:uppercase;font-weight:bold">DataElements</h6>
+<i class="fa fa-check text-primary">{% for v in data_set.m_dataelements.all %}{{ v }} {%endfor%}</i>
+<hr/>
+<h6 style="text-transform:uppercase;font-weight:bold">Institution</h6>
+<i class="fa fa-check text-primary">{{ dataset.m_institution}}</i>
+{%endif%}
+	</div>
+</div>
+
+
+
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.tiny.cloud/1/8kf3xjr2ogr36s843rm077bwcavvwb5497fwpfuxrhqfl1bg/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script type="text/javascript">
+strGroup = document.getElementsByClassName("struct-group");
+strGroupContainer = document.getElementById("struct-group-container")
+for (var i=0;i<strGroup.length;i++){
+	strGroup[i].onchange = function(){
+		tmp = ""
+		for (var j=0;j<strGroup.length;j++){
+			if (strGroup[j].checked){
+				tmp += "<div> <small> <i class='fas fa-check'></i> &nbsp;"+strGroup[j].getAttribute("data-name")+" </small></div>"
+			}
+		}
+		strGroupContainer.innerHTML = tmp;
+	}
+}
+
+
+
+$(".elt_Role").click(function(){
+	typ = parseInt($(this).attr('data-type'));
+	
+	labels = this.getElementsByTagName("label");
+	if (typ == 0){
+		labels[0].setAttribute("class","btn btn-light text-success");
+		labels[1].setAttribute("class","btn btn-success");
+	}
+	else{
+		labels[0].setAttribute("class","btn btn-light text-info");
+		labels[1].setAttribute("class","btn btn-info");		
+	}
+	this.setAttribute("data-type",1-typ)
+	elt_Role = document.getElementsByClassName("elt_Role")
+	elt_Role_container = document.getElementById("elt_Role_container")
+	tmp = ""
+	for (var j=0;j<elt_Role.length;j++){
+		if (elt_Role[j].getAttribute('data-type') == "1"){
+			tmp += "<div> <small> <i class='fas fa-check'></i> &nbsp;"+elt_Role[j].textContent+" </small></div>"
+		}
+		elt_Role_container.innerHTML = tmp;
+	}
+})
+
+data_elts = [{% for d in dataelts %}"{{d}}",{% endfor %}"|"]
+indicats = [{% for d in indicateurs %}"{{d}}",{% endfor %}"|"]
+
+$(".eltChecker").change(function(){
+	typ = this.getAttribute("data-type")
+	if (typ == "0"){
+		elts_DIV = document.getElementById("elts_DIV");
+		eltChecker = document.getElementsByClassName("eltChecker1");
+	}
+	else{
+		elts_DIV = document.getElementById("indi_DIV");
+		eltChecker = document.getElementsByClassName("eltChecker2");		
+	}
+
+	elts_DIV.innerHTML = "";
+	tmp = "";
+	for (var i=0;i<eltChecker.length;i++){
+		if (eltChecker[i].checked == true){
+			tmp += "<div class='py-2'> <i class='fas fa-check'></i>&nbsp;"+eltChecker[i].getAttribute("data-code")+"</div>"
+		}	
+	}
+	elts_DIV.innerHTML = tmp; 
+});
+
+{% if dataset != None and design == None %}
+structures_list_dataset = "{{dataset.join_structures}}"
+roles_list_dataset = "{{dataset.join_roles}}"
+dataelts_list_dataset = "{{dataset.join_dataelts}}"
+indicateurs_list_dataset = "{{dataset.join_indicateurs}}"
+//alert(dataelts_list_dataset)
+
+structures_list_init =  document.getElementById("structures_list")
+roles_list_init = document.getElementById("roles_list")
+structures_list_init.value = structures_list_dataset;
+roles_list_init.value = roles_list_dataset;
+
+struct_init = document.getElementsByClassName("struct-group")
+tmp_init1 = structures_list_dataset.split("#");
+console.log(tmp_init1)
+for (var i=0;i<struct_init.length;i++){
+	//alert(struct_init[i].value)
+	for (var j=0;j<tmp_init1.length;j++){
+		if (tmp_init1[j] == ""+struct_init[i].value){
+			struct_init[i].click();
+		}
+	}
+}
+role_init = document.getElementsByClassName("elt_Role")
+tmp_init1 = roles_list_dataset.split("#");
+
+for (var i=0;i<role_init.length;i++){
+	//alert(struct_init[i].value)
+	for (var j=0;j<tmp_init1.length;j++){
+		if (tmp_init1[j] == ""+role_init[i].getAttribute("data-value")){
+			role_init[i].click();
+		}
+	}
+}
+eltChecker1_init = document.getElementsByClassName("eltChecker1");
+tmp_init1 = dataelts_list_dataset.split("#");
+
+for (var i=0;i<eltChecker1_init.length;i++){
+	//alert(struct_init[i].value)
+	for (var j=0;j<tmp_init1.length;j++){
+		if (tmp_init1[j] == ""+eltChecker1_init[i].getAttribute("value")){
+			eltChecker1_init[i].click();
+		}
+	}
+}
+eltChecker2_init = document.getElementsByClassName("eltChecker2");
+tmp_init1 = indicateurs_list_dataset.split("#");
+
+for (var i=0;i<eltChecker2_init.length;i++){
+	//alert(struct_init[i].value)
+	for (var j=0;j<tmp_init1.length;j++){
+		if (tmp_init1[j] == ""+eltChecker2_init[i].getAttribute("value")){
+			eltChecker2_init[i].click();
+		}
+	}
+}
+{% endif %}
+
+
+function testDE(elt,index=0){
+	if (index == 0)
+	{
+		dataelts_list_sel = document.getElementById("dataelts_list_sel")
+		tmp_elts = data_elts;
+	}
+	else
+	{
+		dataelts_list_sel = document.getElementById("dataelts_list_sel2")
+		tmp_elts = indicats;	
+	}
+	tmp_da = dataelts_list_sel.getElementsByClassName("list-group-item")
+	tmp = ""
+	for (var i=0;i<tmp_elts.length-1;i++){
+		if (tmp_elts[i].includes(elt) == true){
+			$(tmp_da[i]).show('slow')
+			console.log("sdsd")
+		}
+		else{
+			$(tmp_da[i]).hide('slow')
+			console.log("wwew")
+		}
+	}
+}
+{% if design == True %}
+data_elts_tiny = [{% for s in dataset.m_dataelements.filter %}{ text: "{{s}}".replace("&#x27;","'"), value: '{{s.id}}' },{% endfor %}{ text: '', value: '#' }];
+data_indics_tiny = [{% for s in dataset.m_indicateurs.filter %}{ text: "{{s}}".replace("&#x27;","'"), value: '{{s.id}}' },{% endfor %}{ text: '', value: '#' }];
+elts_tiny = [data_elts_tiny,data_indics_tiny]
+daka = ["dE","dI"]
+tinymce.PluginManager.add('example', function(editor, url) {
+  var openDialog = function (title_dialog="Exammmp",type_tiny=0) {
+    return editor.windowManager.open({
+      title: title_dialog,
+      body: {
+        type: 'panel',
+        items: [
+          {
+            type: 'listbox',
+            name: 'ListBoxIndic',
+            label: title_dialog,
+			items: elts_tiny[type_tiny]
+		  }
+         ],
+         val:"00"
+      },
+      buttons: [
+        {
+          type: 'cancel',
+          text: 'Close'
+        },
+        {
+          type: 'submit',
+          text: 'Save',
+          primary: true
+        }
+      ],
+      onSubmit: function (api) {
+        var data = api.getData();
+        /* Insert content when the window form is submitted */
+        elt = document.getElementsByClassName("tox-listbox")[0].getAttribute("data-value")
+        editor.insertContent(daka[type_tiny]+'$' + elt+'$')
+        //editor.insertContent('dE$' + this.body.items[0].val+'$');
+        api.close();
+      }
+    });
+  };
+
+  /* Add a button that opens a window */
+  editor.ui.registry.addButton('example2', {
+    text: 'Selectionner un Data Element',
+    onAction: function () {
+      /* Open window */
+      openDialog("Selectionner un Data Element");
+    }
+  });
+
+
+  editor.ui.registry.addButton('example', {
+    text: 'Selectionner un Indicateur',
+    color: 'red',
+    onAction: function () {
+      /* Open window */
+      openDialog("Selection d'Indicateur",1);
+    }
+  });
+
+
+  /* Adds a menu item, which can then be included in any menu via the menu/menubar configuration */
+  editor.ui.registry.addMenuItem('example', {
+    text: 'Example plugin',
+    onAction: function() {
+      /* Open window */
+      openDialog();
+    }
+  });
+
+  /* Return the metadata for the help plugin */
+  return {
+    getMetadata: function () {
+      return  {
+        name: 'Example plugin',
+        url: 'http://exampleplugindocsurl.com'
+      };
+    }
+  };
+});
+
+      	sdsd = document.getElementById("sdsd")
+      	sdsd.innerHTML = sdsd.textContent;
+      	sdsd = sdsd.innerHTML
+tinymce.init({
+    selector: '.myeditablediv',
+      setup: function (editor) {
+      editor.on('init', function (e) {
+      	
+      	text = "{{dataset.m_formulaire}}".replace("\"","'")
+        editor.setContent(sdsd);
+      });
+    },  
+    inline: true,
+    plugins: ["table",'example help',"link","media","spellchecker"],
+    toolbar:"example example2 help" });	
+
+{% endif %}
+</script>
+
+<script type="text/javascript">
+function updatSelHie(){
+		hieraSelec = document.getElementsByClassName("hieraSelec")
+		tmp = ""
+		for (var i=0; i<hieraSelec.length; i++){
+			tmp += hieraSelec[i].value+"|"
+		}
+		$.ajax({
+				url: '/ajax_hiera_struc/',
+				data: {
+					'institution':{{actual_institution.id}},
+					'logic_strc':tmp
+				},
+				dataType: 'json',
+				success:function(data){
+					structures_list_sel = document.getElementById("structures_list_sel");
+					tt = ""
+					for (var i=0;i<data.ids.length;i++){
+						tt +="<div class='px-2'><input value='"+data.ids[i]+" class='struct-group' type='checkbox' name=''><label class='btn btn-light'>"+data.names[i]+"</label></div>"
+					}
+					structures_list_sel.innerHTML = tt;
+				},
+				error:function(){
+					alert("Error")
+				}
+		});
+}
+
+function closeElement(element,pa){
+	if (pa == 0){
+		parent1 = element.parentNode.parentNode;
+	}
+	else{
+		parent1 = element.parentNode.parentNode;		
+	}
+	parent2 = parent1.parentNode;
+	parent2.removeChild(parent1);
+}
+
+id_insert = 1;
+
+function insertText(element,null_parent=false){
+	if(null_parent == false){parent = element.parentNode.parentNode.parentNode;}
+	else {parent = element}
+	node = document.createElement("div");
+	node.setAttribute('class','py-2 dFEL');
+	node.setAttribute("data-type","0");
+	node.innerHTML = "<textarea style='height:400px;' id='mytextarea"+id_insert+"' class='form-control' name='textarea"+id_insert+"' placeholder='Entrez un Texte '></textarea>  ";	
+	if (null_parent == false){
+	node.innerHTML = document.getElementById("editableDIV").innerHTML + "<div class='pt-1 deleteSBM'> <i class='fas fa-times btn btn-danger' onclick='closeElement(this,0)'> </i> </div> "
+	}
+	else{
+		console.log(document.getElementById("editableDIV").innerHTML)
+	node.innerHTML = ""+document.getElementById("editableDIV").innerHTML + ""		
+	}
+	parent.appendChild(node);
+	sdsd = document.getElementById("sdsd").innerHTML
+  	tinymce.init({
+    selector: '.myeditablediv',
+    setup: function (editor) {
+    	
+      editor.on('init', function (e) {
+        editor.setContent(sdsd.innerHTML);
+      });
+    },    
+    plugins: ["table",'example help',"link","media","spellchecker"],
+    toolbar:"example example2 help" });	
+
+
+	id_insert += 1;
+}
+
+function insertVariable(element){
+	parent = element.parentNode.parentNode.parentNode;
+	tmp = "";
+	tmp += "<div style='display:flex;' class='flex-wrap  pt-1 d-flex col-lg-12 justify-content-between'> <div class='labelSelector col-lg-6 pr-2'> <label<small>&nbsp;</small></label> <input type='text' class='form-control' style='border:none;font-weight:bold;' name='label"+id_insert+"' placeholder='Entrez un Texte'> </div>";
+	tmp += "<div class='pr-2 col-lg-6 variableSelector'> <label> <small> Choisissez une varible </small> </label> <select name='field"+id_insert+"' class='form-control'> {% for ind in dataelts %}<option value='{{ind.id}}'>{{ind}}{% endfor %} </select></div> ";
+	tmp += "<div class='pt-1 col-lg-1 deleteSBM'> <i class='fas fa-times btn btn-danger' onclick='closeElement(this,1)'> </i> </div> </div>";
+
+	tmp2 = document.createElement("div");
+	tmp2.setAttribute("class","dFEL flex-wrap pt-1 d-flex col-lg-12 justify-content-between")
+	tmp2.setAttribute("data-type","1")
+	tmp2.innerHTML = tmp
+	parent.appendChild(tmp2);
+	id_insert += 1;
+}
+
+
+function insertIndic(element){
+	parent = element.parentNode.parentNode.parentNode;
+	tmp = "";
+	tmp += "<div style='display:flex;' class='indicSelector flex-wrap  pt-1 d-flex col-lg-12 justify-content-between'>";
+	tmp += "<div class='pr-2 col-lg-6 '> <label> <small> Choisissez un Indicateur </small> </label> <select name='field"+id_insert+"' class='form-control badge'> {% for ind in indicateurs %}<option value='{{ind.id}}'>{{ind}}{% endfor %} </select></div> ";
+	tmp += "<div class='pt-1 col-lg-1 deleteSBM'> <i class='fas fa-times btn btn-danger' onclick='closeElement(this,1)'> </i> </div> </div>";
+
+	tmp2 = document.createElement("div");
+	tmp2.setAttribute("class","dFEL flex-wrap pt-1 d-flex col-lg-12 justify-content-between")
+	tmp2.setAttribute("data-type","1")
+	tmp2.innerHTML = tmp
+	parent.appendChild(tmp2);
+	id_insert += 1;
+}
+
+function loadDataSet(){
+
+	structures_list = document.getElementById("structures_list");
+	roles_list = document.getElementById("roles_list");
+	form_html = document.getElementById("form_html");
+
+	// Save the Set of Structures
+	str_grp = document.getElementsByClassName("struct-group")
+	tmp = "";
+	for (var i=0;i<str_grp.length;i++){
+		if (str_grp[i].checked){
+			tmp += str_grp[i].value + "$"
+		}
+	}
+	structures_list.value = tmp;
+
+	// Sve the Set of the roles	
+	elt_Role = document.getElementsByClassName("elt_Role");
+	tmp = "";
+	for (var i=0;i<elt_Role.length;i++){
+		if (elt_Role[i].getAttribute("data-type") == "1"){
+			tmp += elt_Role[i].getAttribute("data-value") + "$";
+		}
+	}
+	roles_list.value = tmp;
+
+	// Save the Form
+	textPlan = document.getElementById("textPlan");
+	deleteSBM = document.getElementsByClassName("deleteSBM");
+	variableSelector = document.getElementsByClassName("variableSelector");
+	labelSelector = document.getElementsByClassName("labelSelector");
+	indicSelector = document.getElementsByClassName("indicSelector");
+
+	variables = ""
+
+
+	for (var i=0;i<deleteSBM.length;i++){
+		deleteSBM[i].innerHTML = "";
+		deleteSBM[i].className = "";
+
+	}
+	
+	for (var i = labelSelector.length - 1; i >= 0; i--) {
+		inputLabel = labelSelector[i].getElementsByTagName("input")[0]
+		labelSelector[i].innerHTML ="<label>&nbsp;</label><div>" + inputLabel.value + " : </div>";
+	}
+
+	for (var i = indicSelector.length - 1; i >= 0; i--) {
+		inputSel = indicSelector[i].getElementsByTagName("select")[0]
+		active_option = "#";
+		options = inputSel.getElementsByTagName("options");
+		for (var j=0;j<options.length;j++){
+			if (options[j].value == inputSel.value){
+				active_option = options[j].textContent;
+			}
+		}
+		labelSel.parent.innerHTML ="<div data-id='"+labelSel.id+"'><label class='badge badge-primary'>" + active_option + " </label></div>";
+	}
+
+	for (var i = variableSelector.length - 1; i >= 0; i--) {
+		tmp_label = variableSelector[i].getElementsByTpagName("label")[0];
+		tmp_select = variableSelector[i].getElementsByTagName("select")[0];
+		opt_name = tmp_select.getElementsByTagName("option");
+		opt_select = ""
+		for (var j=0;j<opt_name.length;j++){
+			if ( opt_name[j].selected ){
+				opt_select = opt_name[j].textContent
+			}
+		}
+		tmp = "<label data-value='"+tmp_select.value+"'>"+opt_select+"</label><input required class='form-control' name='"+tmp_select.getAttribute('name')+"' type='text'>";
+		variableSelector[i].innerHTML = tmp;
+		variables += tmp_select.value + "#"
+	}
+	dFEL = document.getElementsByClassName("dFEL")
+	html_content = "";
+	/*
+	ephoxVariables = "#";
+	ephoxVariables_input = document.getElementById("ephoxVariables_input");
+	for(var i=0;i<dFEL.length;i++){
+		if (dFEL[i].getAttribute("data-type") == "0"){
+			textarea = dFEL[i].getElementsByClassName("myeditablediv")[0]
+			//dFEL[i].getElementsByClassName("mce-content-body")[0].innerHTML
+			html_content += "<div>"+textarea.innerHTML+"</div>" 
+			ephoxRows = textarea.getElementsByTagName("td"); //document.getElementsByClassName("ephox-snooker-resizer-rows");
+			alert(ephoxRows.length);
+
+			for (var i=0;i<ephoxRows.length;i++){
+				tC = ephoxRows[i].textContent;
+				alert(tC)
+				for (var j=0;j<tC.length;j++){
+					if (tC[j] == "d"){
+						if (tC[(j+1)] == "e"){
+							if (tC[(j+2)] == "$"){
+								k = j+3;
+								l = j+3;
+								while(tC[k] != "$"){
+									k++;
+								}
+								vari = ""
+								for (var m=l;m<k;m++){
+									vari += tC[m];
+								}
+								ephoxVariables += vari + "#";
+							}	
+						}
+					}
+				}
+			}
+		}
+		else{
+			html_content += dFEL[i].innerHTML
+		}
+	}
+	*/
+
+	//ephoxVariables_input.value = ephoxVariables
+	form_html.textContent=html_content;
+	//return false;
+	variables_list = document.getElementById("variables_list");
+	variables_ELT = document.getElementsByClassName("eltChecker1");
+	for (var i=0;i<variables_ELT.length;i++){
+		if (variables_ELT[i].checked == true){
+			variables_list.value+=variables_ELT[i].value+"#"
+		}
+	}
+
+	indicateurs_list = document.getElementById("indicateurs_list");
+	indicateurs_ELT = document.getElementsByClassName("eltChecker2");
+	for (var i=0;i<indicateurs_ELT.length;i++){
+		if (indicateurs_ELT[i].checked == true){
+			indicateurs_list.value+=indicateurs_ELT[i].value+"#"
+		}
+	}
+
+
+	//variables_list.value = variables;
+}
+
+hieraSelec = document.getElementsByClassName("hieraSelec");
+hieraSelec_option = document.getElementsByClassName("hieraSelec_option");
+for (var i=0;i<hieraSelec_option.length;i++){
+	if (hieraSelec_option[i].value.split("#").length > 1){
+			hieraSelec_option[i].textContent = hieraSelec_option[i].value.split("#")[1]
+	}
+}
+function selectHIERA(select=1){
+	select = select-1;
+	element = hieraSelec[select].value;
+	if (element.split("#").length > 1){
+		element = element.split("#")[1];
+	}
+	//alert(select)
+	for (var i=select+1;i<select+2;i++){
+		options= hieraSelec[i].getElementsByTagName("option");
+		for (var j=0; j<options.length; j++){
+			val = options[j].value.split("#");
+			if (val[0] != element){
+				options[j].style.display = "none";
+			}
+			else{
+				options[j].style.display = "block";
+				options[j].selected = true;
+			}
+		}
+	}	
+}
+
+function loadselectHIERA(value){
+	for (var i=value; i<hieraSelec.length; i++){
+		selectHIERA(i);
+	}
+	updatSelHie();
+}
+{% if actual_institution.Structure_Hierachy == None %}
+loadselectHIERA(1);
+{% endif %}
+
+
+
+</script>
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+	$(".js-example-templating").select2({
+		templateResult: formatState
+	  });
+</script> {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+<script>
+	$( '#multiple-select-clear-field' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+    allowClear: true,
+} );
+</script>
+<script>
+	$( '#multiple-select-field' ).select2( {
+    theme: "bootstrap-5",
+    width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+    placeholder: $( this ).data( 'placeholder' ),
+    closeOnSelect: false,
+} );
+</script>
+<script>
+	$( '#multiple-select-optgroup-field' ).select2( {
+		theme: "bootstrap-5",
+		width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+		placeholder: $( this ).data( 'placeholder' ),
+		closeOnSelect: false,
+	} );
+</script>
+<script>
+	$( '#multiple-select-custom-field' ).select2( {
+		theme: "bootstrap-5",
+		width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+		placeholder: $( this ).data( 'placeholder' ),
+		closeOnSelect: false,
+		tags: true
+	} );
+</script>
+{% block add_script %}
+{% endblock %}
+{% endblock %}

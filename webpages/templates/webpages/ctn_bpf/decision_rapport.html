@@ -1,34 +1,91 @@
 {% extends './decision.html' %}
 {% load static %}
-
+{% load humanize %}
 {% block main_content %}
 <div class=" mt-4 row col-12 pl-3" style='display:flex;justify-content:center;margin-top:10px;'>
-	<div class="col-lg-4">
-		<div> <b>Liste des Rapports</b> </div>
+	<div class="col-lg-6">
+		<div> <h6 class="text-center" style="font-weight:bold">RESPONSABILITÉS</h6> </div>
 		<div> 
 			<div class="p-3">
-				<div> Rapports en attente</div>
+				
 				<div class="py-2">
-					{% for rapport in operation.get_operation_details_invalid %}
-					<div class="py-2" style="border-bottom:1px solid #aaa;">
-						<a href="/decision/o/{{operation.id}}/{{rapport.id}}/" class="text-dangery"><i class="fas fa-file"></i>&nbsp;{{rapport}}</a>
-					</div>
-					{% endfor %}
-				</div>
-			</div>
-			<div class="p-3">
-				<div> Rapports valides </div>
-				<div class="py-2">
-					{% for rapport in operation.get_operation_details_valid %}
-					<div class="py-2" style="border-bottom:1px solid #aaa;">
-						<a href="#" class="text-success"> <i class="fas fa-file"></i>&nbsp; {{rapport}}</a>
-					</div>
-					{% endfor %}
+<table class="table caption-top text-center table-responsive">
+ 
+  <thead class="text-success">
+
+    <tr>
+      <th>R</th>
+     <th>{{operation.personnel}}</th>
+     
+      
+    </tr>
+
+  </thead>
+  <tbody class="text-danger" style=" font-weight:bold">
+    <tr>
+     <td>A</td>
+      <td>{{operation.accountable}}</td>
+       
+    </tr>
+
+  </tbody>
+
+  <tbody class="text-primary" style="font-weight:bold">
+    <tr>
+     <td>C</td>
+   <td> {{operation.consulted}}</td>
+       
+    </tr>
+
+  </tbody>
+
+  <tbody class="text-warning" style="font-weight:bold">
+    <tr>
+     <td>I</td>
+   <td> {{operation.informed}}</td>
+       
+    </tr>
+
+  </tbody>
+
+
+</table>
+					{%comment%}
+						{% for elt in operation_rapport.aggregate_values %}
+										<div class="d-flex my-2">
+											<div class="pr-2 ">{{elt.label}} : </div>
+												{% if elt.type == 'file' %}
+												{% if elt.value.m_file != None and elt.value.m_file != "" %}
+													<div>
+														<a href="{{elt.value.m_file.url}}"><i class="fas fa-file"></i>
+														{{elt.value.m_file}}</a>
+													</div>
+												{% endif %}
+												{% elif elt.type == 'image' %}
+												{% if elt.value.m_file != None and elt.value.m_file != "" %}
+												<div>
+													<img src="{{elt.value.m_file.url}}" style="width:80px;height:80px;">
+												</div>
+												{% endif %}
+												{% elif elt.type == 'choix' %}
+												<div>
+													{% for e in elt.extras_repported %}
+														{% if e.state == '1' %}<div class="text-success d-flex"> <div><i class="fas fa-check"></i></div> <div class="value_liner pl-2">{{e.label}}</div> </div>
+														{% else %}<div class="text-danger d-flex"> <div> <i class="fas fa-times">	</i> </div> <div class="value_liner pl-2">{{e.label}}</div> </div>
+														{% endif %}
+													{% endfor %}
+												</div>Soumi
+												{% else %}
+												<div class="value_liner text-success">{{elt.value}}</div> 
+												{% endif %}
+											</div>
+										{% endfor %}
+						{%endcomment%}
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="col-lg-8">
+	<div class="col-lg-6">
 								<div class="col-lg-12 ">
 									<div class="p-2">
 										{% if actual_institution.default_options == True %}
@@ -77,13 +134,17 @@
 	                      						{{operation_rapport.m_commentaire}}
 	                      					</div>
                       					</div>
+
                       					{% endif %}									
 									{% if operation.accountable.bd_user == user %}
 									<div class="my-2">
-										<div data-target="#validOperModal" data-operation="{{operation}}" data-personnel="{{operation.personnel}}" data-id="{{operation.id}}" data-toggle="modal" onclick="validerTache(this);" class="opera_valider btn btn-success"> Valider </div>
-										<div data-target="#annulerOperModal" data-toggle="modal" data-id="{{operation.id}}" data-rapport="{% if operation.tech_rapports.first != None %}{{operation.tech_rapports.first.id}}{% endif %}" onclick="annulerTache(this)" class="btn btn-danger"> Rejeter </div>
-									</div>
+										<div data-target="#validOperModal" data-operation="{{operation}}" data-personnel="{{operation.personnel}}" data-id="{{operation.id}}" data-toggle="modal" onclick="validerTache(this);" class="opera_valider btn btn text-success" style="font-weight:bold;text-transform:uppercase"> Valider </div>
+										<div data-target="#annulerOperModal" data-toggle="modal" data-id="{{operation.id}}" data-rapport="{% if operation.tech_rapports.first != None %}{{operation.tech_rapports.first.id}}{% endif %}" onclick="annulerTache(this)" class="btn btn text-danger" style="font-weight:bold;text-transform:uppercase"> Rejeter </div>
+									
+																
+	</div>
 									{% endif %}
+{%comment%}
 									{% if operation.consulted.bd_user == user %}
 									<form method="POST" action="/consult_oper/">
 										{% csrf_token %}
@@ -117,6 +178,64 @@
 									</div>
 									</form>
 									{% endif %}
+									{%endcomment%}
+
+</div>
+</div>
+								
+</div>
+
+<table class="table align-middle mb-0 bg-white">
+  <thead class="bg-light">
+    <tr>
+      <th>Identifiant</th>
+      <th>Date</th>
+      <th>Responsables</th>
+      <th>Commentaires</th>
+      <th>Fichier Joint</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for operation_historics in operation_historic%}
+{%if operation.id  == operation_historics.m_operation_id%}
+    <tr>
+      <td>
+
+        <div class="d-flex align-items-center">
+          <img
+              src="{{operation.personnel.photo.url}}"
+              alt=""
+              style="width: 45px; height: 45px"
+              class="rounded-circle"
+              />
+
+          <div class="ms-3">
+            <p class="fw-bold mb-1">{{operation.personnel}}</p>
+            <p class="text-muted mb-0">{{operation.personnel.mail}}</p>
+          </div>
+        </div>
+
+
+      </td>
+      <td>
+        <p class="fw-normal mb-1">{{operation_historics.m_date_realisation}}</p>
+        <p class="text-muted mb-0">{{operation_historics.m_date_realisation|naturaltime}}</p>
+      </td>
+      <td>
+        <span class="badge badge-success rounded-pill d-inline">{{operation_historics.m_role}}</span>
+      </td>
+      <td>{{operation_historics.m_commentaire}}</td>
+      <td>
+        <a href="{{operation_historics.value.file.url}}"type="button" class="btn btn-link btn-sm btn-rounded">
+       {{operation_historics.file}}
+        </a>
+      </td>
+    </tr>
+{%endif%}
+{%endfor%}
+      </tbody>
+</table>						</div>
+							</div>
 								</div>
 	</div>
 </div>

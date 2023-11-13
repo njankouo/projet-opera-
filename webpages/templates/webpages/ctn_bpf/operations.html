@@ -38,7 +38,7 @@
             </th>
             {% endfor %}
             {% endif %}
-            <th>Période</th>
+            <th>P&eacute;riode</th>
             <th>Personnel</th>
             {% if False %}<th>Chronogramme</th> {% else %} <th> Rapports </th> {% endif %}
             {% if actual_institution.default_options == False %}
@@ -49,7 +49,7 @@
             </th>
             {% endfor %} -->
             {% else %}
-            <th> Priorité </th>
+            <th> Priorit&eacute;</th>
             <th> Montant </th>
             <th> Rapport Technique </th>
             {% endif %}
@@ -72,7 +72,7 @@
             {% endfor %}
             {% endif %}
 
-            <td onclick="document.location='/operations/details/{{line.id}}/';" class="t_cell planni_life" data-id="{{line.m_tache_plannification}}">{% if line.m_tache_plannification != None %}{{line.m_tache_plannification}}{% else %} Par Défaut {% endif %}</td>
+            <td onclick="document.location='/operations/details/{{line.id}}/';" class="t_cell planni_life" data-id="{{line.m_tache_plannification}}">{% if line.m_tache_plannification != None %}{{line.m_tache_plannification}}{% else %} Par DÃ©faut {% endif %}</td>
 
             <td class="t_cell" style="max-height:120px;overflow:auto;" {% if line.personnel != None %} data-id="{{line.personnel.id}}" {% else %} data-id="0" {% endif %}>{% if line.is_RACI == 0 %}
                 {% if line.personnel != None %}
@@ -162,12 +162,12 @@
                             <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
                             <h4 class="modal-title" >Repartition RACI <span class="h4 text-primary" id="RACI_operation"></span>  </h4>
                             <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
+                                <span aria-hidden="true">Ã—</span>
                             </button>
                         </div>
 
                         <div class="modal-body">
-                            <div><small> Repartition des Rôles</small></div>
+                            <div><small> Repartition des RÃ´les</small></div>
                             <div id="RACI_details_div">
 
 
@@ -180,24 +180,19 @@
 
 
         <div class="modal fade bd-example-modal-xl" id="addActionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div style='max-width:1050px;' class="modal-dialog modal-lg">
+            <div style='max-width:1400px;' class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <!--button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button-->
-                        <h4 class="modal-title"  id="modify_title">Ajouter {{actual_institution.operations_name}}  </h4>
+                        <h4 class="modal-title text-primary"  id="modify_title" style="font-weight:bold">Ajouter {{actual_institution.operations_name}} </h4>
                         <button type="button" class="close waves-effect waves-light" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
+                            <span aria-hidden="true">Ã—</span>
                         </button>
+
                     </div>
-
+		<p style="font-weight:bold" class="text-primary mx-2">	 {{base_val}} </p>
                     <div class="modal-body">
-                        <div class="mb-4" style="border-bottom:2px solid #f0f0f0;">
-                            <div>
-                                <div class="h5">{{base_val}}</div>
-                            </div>
-
-                        </div>
-                        <form onsubmit="saveOperation(this)" class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post" data-toggle="validator" enctype="multipart/form-data" >
+                                             <form onsubmit="saveOperation(this)" class="form-horizontal bordered-row" action="/save_gestion/" id="addFormAction" data-toggle="validator" role="form" method="post" data-toggle="validator" enctype="multipart/form-data" >
                             {% csrf_token %}
                             <div class=" d-flex justify-content-center row">
                                 <div class="col-sm-8">
@@ -218,7 +213,7 @@
                                     {% elif th.type == 'int' or th.type == 'number'  %}
                                     <input type="number" class="form-control agg1">
                                     {% elif th.type == 'choix' %}
-                                    <div><small>Les valeurs doivent être séparées par des Sauts de Ligne</small></div>
+                                    <div><small>Les valeurs doivent Ãªtre sÃ©parÃ©es par des Sauts de Ligne</small></div>
                                     <textarea value="" class="form-control agg1"></textarea>
                                     {% elif th.type == 'file' or th.type == 'image'  %}
                                     <input type="file" name="{{th.field}}_nam" class="form-control agg1">
@@ -230,7 +225,7 @@
                             {% endif %}
                             <div  class=" d-flex justify-content-center row">
                                 <div class="col-sm-8 form-group">
-                                    <label> Période : {{base_val.m_type_entity}} </label>
+                                    <label> PÃ©riode : {{base_val.m_type_entity}} </label>
                                     {% for s in searches %}
                                     <select id='modal_per_select' name="tache_periode" class="col-sm-8 form-control">
                                         {% for val in s.values %}
@@ -258,15 +253,15 @@
                                         {% for perso in personnels %}
                                         <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                         {% endfor %}
-                                        <option value="0">Non Défini</option>
+                                        <option value="0">Non DÃ©fini</option>
                                     </select>
                                     <div class="d-none mt-1 form-group">
-                                        <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                        <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner Ã  un RÃ´le</span>
                                     </div>
                                 </div>
                             </div>
                             <div style='display:none;' class="assiDIV form-group">
-                                Rôle
+                                RÃ´le
                                 <div class="">
                                     <select name="role" class="form-control">
                                         {% for role in roles %}
@@ -274,7 +269,7 @@
                                         {% endfor %}
                                     </select>
                                     <div class="mt-1 form-group">
-                                        <span style="cursor:pointer;" data-launch='0' class="assiLAUNCH text-success">Assigner à un Personnel</span>
+                                        <span style="cursor:pointer;" data-launch='0' class="assiLAUNCH text-success">Assigner &acirc;  un Personnel</span>
                                     </div> 
                                 </div>  
                             </div>
@@ -297,13 +292,13 @@
 
                                     <div class="justify-content-around">
                                         <select name="accountable" class="accounted_selector form-control">
-                                            <option value="0">Non Défini</option>
+                                            <option value="0">Non D&eacute;fini</option>
                                             {% for perso in personnels %}
                                             <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                             {% endfor %}
                                         </select>
                                         <div class="d-none mt-1 form-group">
-                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner &agrave;  un R&ocirc;le</span>
                                         </div>
                                     </div>
                                 </div>
@@ -312,13 +307,13 @@
 
                                     <div class="justify-content-around">
                                         <select name="consulted" class="consulted_selector form-control">
-                                            <option value="0">Non Défini</option>
+                                            <option value="0">Non DÃ©fini</option>
                                             {% for perso in personnels %}
                                             <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                             {% endfor %}
                                         </select>
                                         <div class="d-none mt-1 form-group">
-                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner &agrave;  un R&ocirc;le</span>
                                         </div>
                                     </div>
                                 </div>
@@ -327,13 +322,13 @@
 
                                     <div class="justify-content-around">
                                         <select name="informed" class="informed_selector form-control">
-                                            <option value="0">Non Défini</option>
+                                            <option value="0">Non DÃ©fini</option>
                                             {% for perso in personnels %}
                                             <option value="{{perso.id}}">{{perso.get_structure}} - {{perso}}</option>
                                             {% endfor %}
                                         </select>
                                         <div class="d-none mt-1 form-group">
-                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner à un Rôle</span>
+                                            <span data-launch='1' style="cursor:pointer;" class="assiLAUNCH text-success" >Assigner &agrave; un Ro&circ;le</span>
                                         </div>
                                     </div>
                                 </div>
@@ -345,7 +340,7 @@
                         <input type="hidden" name="RACI_hidden" id="RACI_hidden">
                         <input type="hidden" name="RACI_hidden_roles" id="RACI_hidden_roles">
                         <div class="col-lg-12">
-                            <center><div><input type="checkbox" id="showRACI" value="1" name="showRACI" onclick="displayRACI()"><label for="showRACI">Découpage RACI</label></div></center>
+                            <center><div><input type="checkbox" id="showRACI" value="1" name="showRACI" onclick="displayRACI()"><label for="showRACI">D&eacute;coupage RACI</label></div></center>
                             <center>
                                 <div style="display:none;" id="RACI_DIV">
                                     <div class="d-flex justify-content-center flex-wrap my-2">
@@ -397,7 +392,7 @@
 
                             <div class="d-flex justify-content-center row mb-3">
                                 <div class="px-3 col-6 col-md-8">
-                                    <label> Découpage : Delai</label>
+                                    <label> D&eacute;coupage : Delai</label>
                                     <div>
 
                                         <select id='decoup_select' name="sub_period" class="form-control">
@@ -431,7 +426,7 @@
                             <div class="my-2 d-flex flex-wrap justify-content-center">
                                 <div class="col-6 col-sm-4">
                                     <div class="form-group">
-                                        Priorité
+                                        Priorit&eacute;
                                         <select name="priorite" class="form-control">
                                             <option value="Basse">Basse</option>
                                             <option value="Normale" selected="">Normale</option>
@@ -446,6 +441,12 @@
                                         <input type="number" class="form-control" name="montant" value=0 id="nomAct">
                                     </div>
                                 </div> 
+				  <div class="col-6 col-sm-4">
+                                    <div class="form-group">
+                                        Date Echeance
+                                        <input type="date" class="form-control" name="date_echeance" required>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="my-2 d-flex justify-content-center row">
@@ -598,7 +599,7 @@
 </script>
 <script type="text/javascript">
     var barColors = ["green","orange"];
-    structures = ["Effectuées","Non Effectuées"];
+    structures = ["EffectuÃ©es","Non EffectuÃ©es"];
     yValues= [{{base_val.operations_done_count}},{{base_val.operations_not_done_count}}];
     new Chart("myChartSub", {
         type: "doughnut",
@@ -612,7 +613,7 @@
         options: {
             title: {
                 display: true,
-                text: "Evolution des Opérations",
+                text: "Evolution des OpÃ©rations",
                 beginAtZero: true
             }
         }
@@ -693,7 +694,7 @@
             }
             topm += "</tr>"
         }
-        topm = "<table class='table'><thead><tr><td> Rôle </td><td> Personnel </td></tr></thead><tbody>"+topm+"</tbody></table>";
+        topm = "<table class='table'><thead><tr><td> RÃ´le </td><td> Personnel </td></tr></thead><tbody>"+topm+"</tbody></table>";
         RACI_details_div.innerHTML = topm;
     }
 

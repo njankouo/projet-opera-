@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 ]
 
 """
@@ -72,13 +73,14 @@ MIDDLEWARE = [
 ]
 
 #SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail12.lwspanel.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'operas@beininfoplus.com'
-EMAIL_HOST_PASSWORD = 'LWS1234BeinInf@'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'operaplusbeinfos@gmail.com'
+EMAIL_HOST_PASSWORD = 'Oxlidmktqqigyrkj'
+
+
 WSGI_APPLICATION = 'Opera_CTN.wsgi.application'
 
 ROOT_URLCONF = 'Opera_CTN.urls'
@@ -104,6 +106,7 @@ WSGI_APPLICATION = 'Opera_CTN.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+
 """
 DATABASES = {
     'default': {
@@ -111,19 +114,22 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 """
+"""
+django.db.backends.postgresql
+'PORT': '5432',
+"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'opera_sql',
+        'NAME': 'opera',
         'USER': 'postgres',
         'PASSWORD': 'corporate2019',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

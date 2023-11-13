@@ -27,7 +27,7 @@
 </div>
 </div>
 
-<div class="d-flex text-align h2"> Tableau de Bord <span id="tbprd_menu" class="text-primary h2"> &nbsp; Proccess </span>
+<div class="d-flex text-align h2" style="font-family:quartz"> Tableau de Bord <span id="tbprd_menu" class="text-primary h2"> &nbsp; Proccess </span>
 </div>
 
 
@@ -41,10 +41,10 @@
 		<div class=" col-12 d-md-flex flex-wrap mb-4">
 			<div class="d-flex flex-wrap col-lg-6 col-12">
 				<div class="col-8 col-lg-8">
-					<label> De la Période du : </label>
+					<label> De la P&eacute;riode du : </label>
 					<div class="d-flex justify-content-center">
 						<select id='period_select' class="col-lg-12 form-control">
-							<option value="0"> Toutes les Périodes </option>
+							<option value="0"> Toutes les P&eacute;riodes </option>
 							{% for per in default_period.decoup_slip %}
 							<option {% if default_period.m_logic_type == 3 and forloop.counter == this_period.month or default_period.m_logic_type == 2 and forloop.counter == this_week or default_period.m_logic_type == 1 and forloop.counter == this_period.isoweekday %} selected {% endif %} value="{{forloop.counter}}" class='week_plus'>{{per}}</option>
 							{% endfor %}
@@ -52,7 +52,7 @@
 					</div>
 				</div>
 				<div class="col-4 col-lg-4">
-					<label for="typeperiode">Année</label>
+					<label for="typeperiode">Ann&eacute;e</label>
 					<input type="number" id="year_plan" value=2022 class="form-control">
 
 				</div>	
@@ -67,7 +67,7 @@
 		</div>
 	</div>
 	<div class="pl-2 mb-3">
-		<div class="h5 title_div" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;">Informations Générales - {{actual_institution}} </div>
+		<div class="h5 title_div" style="width:99%;border-bottom:1Px solid #aaa;color:#aaa;font-family:quartz">Informations G&eacute;n&eacute;rales - {{actual_institution}} </div>
 		<!-- <div class="h2">
 		 Performance Globale 
 		</div>-->
@@ -141,12 +141,13 @@
 						<div class="d-flex mb-2"> 
 							<div class='' style="width:10px;height:10px;background:red"></div><div style="font-size:12px;">&nbsp;Critique</div>
 						</div>
+<div class="d-flex mb-2">
+							<div style="width:10px;height:10px;background:#d06910;"></div><div style="font-size:12px;"> &nbsp;Moyen </div> 
+						</div>
 						<div class="d-flex mb-2">
 							<div style="width:10px;height:10px;background:orange"></div><div style="font-size:12px;"> &nbsp; Faible </div> 
 						</div>
-						<div class="d-flex mb-2">
-							<div style="width:10px;height:10px;background:#d06910;"></div><div style="font-size:12px;"> &nbsp;Moyen </div> 
-						</div>
+						
 						<div class="d-flex mb-2"> 
 							<div style="width:10px;height:10px;background:#a0a345"></div><div style="font-size:12px;"> &nbsp;Bon </div> 
 						</div>
@@ -177,7 +178,7 @@
 						</div>
 						<div>
 							<div class="">
-								<small> Général</small>
+								<small> G&eacute;n&eacute;ral</small>
 							</div>
 							<div class="">
 								<label> Progression : </label> <label class="{% if actual_progression < 25 %} text-danger {% elif actual_progression < 75 %} text-warning {% else %} text-success {% endif %}"> {{actual_progression}}% </label>
@@ -258,7 +259,7 @@
 
 
 	<div class="proccess_section all_section">
-		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;">Progression par Période</div>
+		<div class="h5 title_div" style="width:99%;border-bottom:1px solid #aaa;color:#aaa;">Progression par P&eacute;riode</div>
 		<div  class="mt-4 row mb-5 px-2 d-flex pr-2">
 			<div id='chart6DIV' class="col-lg-9 col-12 col-md-8">
 				<canvas id='myChart6' class="text-center" style="width:100%;min-height:270px;"> </canvas> 

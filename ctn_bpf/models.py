@@ -2,7 +2,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .utilities import get_period_values,set_pv_tp,subperiods_value
-import datetime
+#import datetime
+from datetime import date, datetime, timedelta
 
 class Owner(models.Model):
 	m_user = models.OneToOneField(User,blank=True,null=True,on_delete=models.CASCADE)
@@ -306,7 +307,8 @@ class Personnel(models.Model):
 	photo = models.FileField(blank=True,null=True)
 	bd_user = models.OneToOneField(User,blank=True,null=True,on_delete=models.CASCADE)
 	actual_institution = models.ForeignKey(Institution,blank=True,null=True,on_delete=models.SET_NULL)
-
+	def __str__(self):
+		return str(self.photo)
 	def backgrounds_tat(self):
 		colors = {
 				"1":"blue","2":"green","3":"red","4":"blue","5":"blue","6":"blue","7":"blue","8":"blue","9":"blue","0":"blue",
@@ -1195,7 +1197,7 @@ class Personnel_File(models.Model):
 
 class DataElement(models.Model):
 	m_logo = models.FileField(blank=True,null=True)
-	m_name = models.CharField(max_length=64,blank=True,null=True)
+	m_name = models.CharField(max_length=255, blank=True, null=True, default='255')
 	m_fields_type = models.TextField(blank=True,null=True)
 	m_fields = models.TextField(blank=True,null=True)
 	m_description = models.TextField(blank=True,null=True)
@@ -1277,7 +1279,7 @@ class DataElement(models.Model):
 		ordering=('m_name',)
 
 class Indicateur(models.Model):
-	m_name = models.CharField(max_length=128)
+	m_name = models.CharField(max_length=255,null=True)
 	# Periode de Ciblage et de Suivi
 	m_periodicite = models.TextField(blank=True,null=True)
 	m_sub_periodicite = models.TextField(blank=True,null=True)
@@ -1953,12 +1955,12 @@ class Operation(models.Model):#PROTECT
 	consulted =models.ForeignKey(Personnel,related_name='consulted',on_delete=models.SET_NULL,blank=True,null=True)
 	informed = models.ForeignKey(Personnel,related_name='informed',on_delete=models.SET_NULL,blank=True,null=True)
 
-	#resultat_attendu = models.TextField(blank=True,null=True)
+	resultat_attendu = models.TextField(blank=True,null=True)
 	etat = models.CharField(max_length=32,default='0')#3 Inactif 4 Mort
 	tache = models.ForeignKey(Tache,on_delete=models.CASCADE,blank=True,null=True)
 	notification = models.CharField(max_length=128,blank=True,null=True)
 	
-	#semaines = models.CharField(max_length=128,blank=True,null=True)
+	semaines = models.CharField(max_length=128,blank=True,null=True)
 	date_creation = models.DateTimeField(db_index=True,auto_now=True,blank=True,null=True)
 	m_tache_plannification = models.CharField(max_length=64,blank=True,null=True)
 
@@ -1973,7 +1975,21 @@ class Operation(models.Model):#PROTECT
 	m_commentaire = models.TextField(default="",blank=True,null=True)
 
 	date_rapported = models.DateTimeField(blank=True,null=True)
-	fichier_joint = models.FileField(blank=True,null=True)		
+	fichier_joint = models.FileField(blank=True,null=True)	
+	date_echeance = models.DateField(null=True) 	
+	@property
+	def delai_restant(self):
+		  delai = self.date_echeance - datetime.now().date()
+		  total_secondes = int(delai.total_seconds()) 
+
+		  jours = total_secondes // (24 * 3600) 
+		  if jours < 0 :
+			     resultat = "Le délai est écoulé !"
+		  else:		 
+			  
+			  	 resultat = f"{jours} jour(s)"
+		  return resultat
+		
 
 	def sub_entities(self):
 		return list()
@@ -2351,6 +2367,8 @@ class HistoricRACI(models.Model):
 	m_role = models.CharField(max_length=3,blank=True,null=True)
 	m_commentaire=models.TextField(blank=True,null=True)
 	m_date_realisation = models.DateTimeField(auto_now_add=True)
+	file=models.FileField(null=True)
+	
 
 class OperationDetails(models.Model):
 	m_operation = models.ForeignKey(Operation,on_delete=models.CASCADE,blank=True,null=True)
@@ -2363,7 +2381,8 @@ class OperationDetails(models.Model):
 	accountable = models.ForeignKey(Personnel,related_name='accountable_2',on_delete=models.SET_NULL,blank=True,null=True)
 	consulted =models.ForeignKey(Personnel,related_name='consulted_2',on_delete=models.SET_NULL,blank=True,null=True)
 	informed = models.ForeignKey(Personnel,related_name='informed_2',on_delete=models.SET_NULL,blank=True,null=True)
-
+	m_institution_id=models.ForeignKey(Institution,on_delete=models.SET_NULL,null=True)
+	is_deleted = models.BooleanField(null=True,default=False)
 	# Etat Visualisation
 	etat = models.CharField(max_length=32,default='0')#3 Inactif 4 Mort
 
@@ -2455,6 +2474,9 @@ class OperationConsulted(models.Model):
 	m_operation = models.ForeignKey(Operation,on_delete=models.CASCADE,blank=True,null=True)
 	m_stars = models.IntegerField(blank=True,null=True)
 	m_observations = models.TextField(blank=True,null=True)
+	file = models.FileField(null=True)
+       
+
 
 class OperationFile(models.Model):
 	m_field = models.CharField(max_length=32,blank=True,null=True)

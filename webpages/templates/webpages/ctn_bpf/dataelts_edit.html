@@ -1,3 +1,141 @@
+<style>
+	@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700,900&display=swap');
+
+
+.container{
+	max-width: 1230px;
+	width: 100%;
+}
+
+h1{
+	font-weight: 700;
+	font-size: 45px;
+	font-family: 'Roboto', sans-serif;
+}
+
+.header{
+	margin-bottom: 80px;
+}
+#description{
+	font-size: 24px;
+}
+
+.form-wrap{
+	background: rgba(255,255,255,1);
+	width: 100%;
+	max-width: 850px;
+	padding: 50px;
+	margin: 0 auto;
+	position: relative;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+	box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+}
+.form-wrap:before{
+	content: "";
+	width: 90%;
+	height: calc(100% + 60px);
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	position: absolute;
+	top: -30px;
+	background: #00bcd9;
+	z-index: -1;
+	opacity: 0.8;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+	box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.15);
+}
+.form-group{
+	margin-bottom: 25px;
+}
+.form-group > label{
+	display: block;
+	font-size: 18px;	
+	color: #000;
+}
+.custom-control-label{
+	color: #000;
+	font-size: 16px;
+}
+.form-control{
+	height: 50px;
+	background: #ecf0f4;
+	border-color: transparent;
+	padding: 0 15px;
+	font-size: 16px;
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+}
+.form-control:focus{
+	border-color: #00bcd9;
+	-webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	-moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+textarea.form-control{
+	height: 160px;
+	padding-top: 15px;
+	resize: none;
+}
+
+.btn{
+	padding: .657rem .75rem;
+	font-size: 18px;
+	letter-spacing: 0.050em;
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.3s ease-in-out;
+	-o-transition: all 0.3s ease-in-out;
+	transition: all 0.3s ease-in-out;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #00bcd9;
+  border-color: #00bcd9;
+}
+
+.btn-primary:hover {
+  color: #00bcd9;
+  background-color: #ffffff;
+  border-color: #00bcd9;
+	-webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	-moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+
+.btn-primary:focus, .btn-primary.focus {
+  color: #00bcd9;
+  background-color: #ffffff;
+  border-color: #00bcd9;
+  -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	-moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+  color: #00bcd9;
+  background-color: #ffffff;
+  border-color: #00bcd9;
+}
+
+.btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-primary.dropdown-toggle:focus {
+  -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	-moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+	box-shadow: 0px 0px 20px rgba(0, 0, 0, .1);
+}
+</style>
 {% extends './dataelts.html' %}
 
 
@@ -9,6 +147,7 @@
 {% endblock %}
 
 {% block table %}
+
 <div class="mt-4">	
 		<div class="h2">
 			{% if dataelts.m_logo != None and dataelts.m_logo != '' %}
@@ -16,10 +155,15 @@
 			{% endif %}
 			Fiche : {{dataelts}}
 		</div>
-		<div class="d-flex col-12">
-			<div class="col-6">
-					<div>Parametres de Remplissage</div>
-					<div class="col-lg-9 p-2 mb-1"> 
+		<div class="d-flex col-md-12">
+		
+			<div class="col-md-8">
+					<div>
+						<h5 style="font-weight:bold;margin-left:12%" class="text-light">
+						Parametres de Remplissage
+					</h5>
+					</div>
+					{% comment %} <div class="col-lg-9 p-2 mb-1"> 
 						<div>Type de Domaine</div>
 						<div class="pt-1">
 							<select class="form-control">
@@ -66,7 +210,7 @@
 					<div>
 						<div>
 							<input type="checkbox" name="">
-							<label>Valeurs par Défaut</label>
+							<label>Valeurs par D&eacute;faut</label>
 						</div>
 						<div>
 							<input type="number" value="{{dataelts.m_default_value}}" class="form-control" name="">
@@ -79,13 +223,140 @@
 		<div>
 			<input type="submit" class="btn btn-success" value="Enregistrer" name="">
 		</div>
-</div>
-<div style="display:none;">
+</div> {% endcomment %}
+{% comment %} <div style="display:none;">
 	<div> Liste des Indicateurs </div>
 	<div class="pt-4 d-flex flex-wrap ">
 		{% for ind in indicateurs %}
 		<div class="p-2"> <span class="btn btn-light"> {{ind}}</span> </div>
 		{% endfor %}
 	</div>
+</div> {% endcomment %}
+<div class="container">
+	
+	<div class="form-wrap">	
+		<form id="survey-form" method="POST" action="/edit_data/{{dataelts.id}}">
+			{% csrf_token %}
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label id="name-label" for="name">Nom De L&eacute;lement de donn&eacute;e</label>
+						<input type="text" name="nom_donne" id="name" placeholder="nom de l'element de donnée " class="form-control" required value="{{ dataelts.m_name }}">
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<label id="name1-label" for="name1">Type de Données 
+							<span class="badge badge-info">	{{dataelts.m_value_type}}</span>
+						</label>
+						<select class="form-control" name="data_eltype">
+							{%if dataelts.m_value_type == "Number"%}
+							<option value="Number" selected>Num&eacute;rique</option>
+							<option value="Text">Texte</option>
+							{%else%}
+							<option value="Number">Num&eacute;rique</option>
+							<option value="Text" selected>Texte</option>
+							{%endif%}
+						</select>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label id="number-label" for="number">Nature Des Donn&eacute;s
+
+							<span class="badge badge-info">{{dataelts.m_domain_type}}</span>
+						</label>
+	
+					<select class="form-control" name="nature_donne">
+						<option value="Aggregate">Aggregat</option>
+					</select>
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Aggr&eacute;gation
+							<span class="badge badge-info">{{dataelts.m_aggregation_type}}</span>
+						</label>
+						<select id="dropdown" name="aggregation" class="form-control">
+							{%if dataelts.m_aggregation_type == 's'%}
+							<option value="s" selected>Somme</option>
+							<option value="a " >Moyenne</option>
+							<option value="M">Max</option>
+							<option value="m" >Minimum</option>
+							{%elif dataelts.m_aggregation_type == 'a'%}
+							<option value="a " selected>Moyenne</option>
+							<option value="s" >Somme</option>
+							
+							<option value="M">Max</option>
+							<option value="m" >Minimum</option>
+							{%elif dataelts.m_aggregation_type == 'M'%}
+							<option value="M" selected>Max</option>
+							<option value="s" >Somme</option>
+							<option value="a " >Moyenne</option>
+							
+							<option value="m" >Minimum</option>
+							{%else%}
+							<option value="m" selected>Minimum</option>
+							<option value="s" >Somme</option>
+							<option value="a " >Moyenne</option>
+							<option value="M">Max</option>
+							
+							{%endif%}
+								
+							
+								
+					
+						</select>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Options</label>
+						<div class="custom-control custom-radio custom-control-inline">
+						
+							{%if dataelts.is_zero_collect is True%}
+							<input type="checkbox" id="customRadioInline1"  name="valeur_null" class="custom-control-input" checked>
+							{%endif%}
+							<label class="custom-control-label" for="customRadioInline1">Garder Les Valeurs Nulles</label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="checkbox" id="customRadioInline2"  name="valeur_default" class="custom-control-input">
+							<label class="custom-control-label" for="customRadioInline2">Garder Les Valeurs Par D&eacute;faut</label>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Description</label>
+						<textarea  id="comments" class="form-control" name="comment" placeholder="Commentaire..........">{{ dataelts.m_description }}</textarea>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label>Valeur Par D&eacute;faut</label>
+						{% comment %} <textarea  id="comments" class="form-control" name="comment" placeholder="Commentaire.........." value="{{ dataelts.m_description }}"></textarea> {% endcomment %}
+					<input type="number" class="form-control" value="0" name="default_value"/>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-4">
+					<button type="submit"  class="btn btn-primary btn-block">Mise A Jour</button>
+				</div>
+			</div>
+
+		</form>
+	</div>	
 </div>
 {% endblock %}

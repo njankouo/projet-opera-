@@ -141,7 +141,7 @@
 {% endblock %}
 
 {% block modals %}
-<div class="modal fade bd-example-modal-xl" id="validOperModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade bd-example-modal-xl" id="validOperModal" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div style='max-width:450px;' class="modal-dialog modal-xl">
 		<div class="modal-content">
 			<div class="modal-header bg-success text-white">
@@ -169,9 +169,8 @@
 							</div>
 							<div>
 								<input type="hidden" id="opera_valider_id" name="opera_valider_id">
-								<input type="submit" class="btn btn-success" value="Oui" name="">
-								<span data-dismiss="modal" class="btn btn-danger">Non</span>
-							</div>
+								<button type="submit" class="btn btn-success">valider</button>
+															</div>
 						</p>
 					</div>
 				</form>
@@ -204,15 +203,17 @@
 							<div>
 								<input type="hidden" id="opera_invalider_id" name="opera_invalider_id">
 								<input type="hidden" name="opera_invalider_rapport" id="opera_invalider_rapport">
-								<input type="submit" class="btn btn-success" value="Oui" name="">
-								<span class="btn btn-danger">Non</span>
-							</div>
+								
+															</div>
 							<div>
 								<label>Veuillez associer un Commentaire Svp</label>
 								<textarea rows='5' required name="opera_invalider_comment" class="form-control"></textarea>
 							</div>
 						</p>
 					</div>
+<div class="modal-footer">
+<button type="submit" class="btn btn-danger">Rejeter</button>
+</div>
 				</form>
 			</div>
 		</div>
