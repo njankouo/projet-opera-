@@ -360,13 +360,93 @@ background: linear-gradient(to right, #CB60B3 0%, #C146A1 50%, #A80077 51%, #DB3
                <div class="links p-4 mx-4" style="margin-top:5px">
                   <button class="btn btn text-light" style="background-color: #D9AFD9;
 background-image: linear-gradient(0deg, #D9AFD9 0%, #97D9E1 100%);
-">Historique</button><br><br>
+" data-toggle="modal" data-target="#staticBackdrop{{ operations.id }}">Historique</button><br><br>
+
                   <button class="btn btn-light">Commentaire</button>
                 </div>
             </div>
           </div>
         </div>
       {% endif %}
+      <div class="modal fade" id="staticBackdrop{{ operations.id }}" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">Historique De L'op&eacute;ration: <b class="text-primaryz">{{operations.nom}}</b></h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <table class="table align-middle mb-0 bg-white">
+                <thead class="bg-light">
+                  <tr>
+                    <th>Niveaux De Responsabilt&eacute;s</th>
+                    <th>Commentaires</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+              {%for operation_historics in operation_historic%}
+              {%if operation_historics.m_operation_id == operations.id%}
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <img
+                            src="{{operations.personnel.photo.url}}"
+                            alt=""
+                            style="width: 45px; height: 45px"
+                            class="rounded-circle"
+                            />
+                        <div class="ms-3">
+                <span class="fw-bold mb-1 bagde badge-success" style="font-family:quartz">
+              {%if operation_historics.m_role == "R"%}
+              {{operation_historics.m_role}}: Responsible</span>
+              {%elif operation_historics.m_role == "A"%}
+                <span class="fw-bold mb-1 bagde badge-danger" style="font-family:quartz">
+              {{operation_historics.m_role}}: Accountable</span>
+              {%elif operation_historics.m_role == "C"%}
+               <span class="fw-bold mb-1 bagde badge-primary" style="font-family:quartz">
+              {{operation_historics.m_role}}: Consulted</span>
+              {%elif operation_historics.m_role == "I"%}
+               <span class="fw-bold mb-1 bagde badge-warning" style="font-family:quartz">
+              {{operation_historics.m_role}}: Informed</span>
+              
+              
+              {%endif%}
+                            <p class="text-muted fw-bold mb-1" style="font-family:quartz">{{operation_details.personnel.nom}}</p>
+                          <p class="text-muted mb-0" style="font-family:quartz">{{operation_details.personnel.mail}}</p>
+                 
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                     <p class="fw-normal mb-1"></p>
+                      <p class="text-muted mb-0">{{operation_historics.m_commentaire}}</p>
+                    </td>
+                    <td>
+                      <span class="d-inline"><i class="fa fa-check text-success"></i></span>
+                    </td>
+                   
+                  
+                     </tr>
+              {%endif%}
+              {%endfor%}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+            
+            </div>
+          </div>
+        </div>
+      </div>
     {% endfor %}
   </div>
   <div class="col-md-4 d-flex flex-column align-items-start">

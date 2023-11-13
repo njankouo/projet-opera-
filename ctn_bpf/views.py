@@ -862,7 +862,7 @@ def structure_details(request, structure_id=0):
 def users_simples(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-    fields_roles = ['Role', 'Description', 'EntitÃ©']
+    fields_roles = ['Role', 'Description', 'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -1998,14 +1998,14 @@ def roles(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
     fields_roles = ['Role', 'Description', 'Permissions',
-                    'EntitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s']
+                    'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution']).select_related('actual_institution')
     if search != None:
         roles = roles.filter(nom__contains=search)
     context[
-        'entity'] = 'RÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´le'
+        'entity'] = 'Role'
     context['fields1'] = fields_personnel
     context['personnel'] = personnel
     context['fields'] = fields_roles
@@ -5990,7 +5990,7 @@ def count_effectuee(request):
     def users_simples(request, search=None):
         template = "webpages/ctn_bpf/roles.html"
         fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-        fields_roles = ['Role', 'Description', 'EntitÃ©']
+        fields_roles = ['Role', 'Description', 'Entite']
         personnel = Personnel.objects.filter()
         context = basis(request)
         roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -7117,7 +7117,7 @@ def count_effectuee(request):
         template = "webpages/ctn_bpf/roles.html"
         fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
         fields_roles = ['Role', 'Description', 'Permissions',
-                        'EntitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s']
+                        'Entite']
         personnel = Personnel.objects.filter()
         context = basis(request)
         roles = Role.objects.filter(actual_institution=context['actual_institution']).select_related(
@@ -7125,7 +7125,7 @@ def count_effectuee(request):
         if search != None:
             roles = roles.filter(nom__contains=search)
         context[
-            'entity'] = 'RÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´le'
+            'entity'] = 'Role'
         context['fields1'] = fields_personnel
         context['personnel'] = personnel
         context['fields'] = fields_roles
@@ -11049,7 +11049,7 @@ def structure_details(request, structure_id=0):
 def users_simples(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-    fields_roles = ['Role', 'Description', 'EntitÃ©']
+    fields_roles = ['Role', 'Description', 'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -12185,14 +12185,14 @@ def roles(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
     fields_roles = ['Role', 'Description', 'Permissions',
-                    'EntitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s']
+                    'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution']).select_related('actual_institution')
     if search != None:
         roles = roles.filter(nom__contains=search)
     context[
-        'entity'] = 'RÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´le'
+        'entity'] = 'Role'
     context['fields1'] = fields_personnel
     context['personnel'] = personnel
     context['fields'] = fields_roles
@@ -16200,7 +16200,7 @@ def structure_details(request, structure_id=0):
 def users_simples(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-    fields_roles = ['Role', 'Description', 'EntitÃ©']
+    fields_roles = ['Role', 'Description', 'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -17336,14 +17336,14 @@ def roles(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
     fields_roles = ['Role', 'Description', 'Permissions',
-                    'EntitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s']
+                    'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution']).select_related('actual_institution')
     if search != None:
         roles = roles.filter(nom__contains=search)
     context[
-        'entity'] = 'RÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´le'
+        'entity'] = 'Role'
     context['fields1'] = fields_personnel
     context['personnel'] = personnel
     context['fields'] = fields_roles
@@ -21351,7 +21351,7 @@ def structure_details(request, structure_id=0):
 def users_simples(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-    fields_roles = ['Role', 'Description', 'EntitÃ©']
+    fields_roles = ['Role', 'Description', 'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -22487,14 +22487,14 @@ def roles(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
     fields_roles = ['Role', 'Description', 'Permissions',
-                    'EntitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s']
+                    'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution']).select_related('actual_institution')
     if search != None:
         roles = roles.filter(nom__contains=search)
     context[
-        'entity'] = 'RÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´le'
+        'entity'] = 'Role'
     context['fields1'] = fields_personnel
     context['personnel'] = personnel
     context['fields'] = fields_roles
@@ -26502,7 +26502,7 @@ def structure_details(request, structure_id=0):
 def users_simples(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
-    fields_roles = ['Role', 'Description', 'EntitÃ©']
+    fields_roles = ['Role', 'Description', 'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution'], is_simple_user=1).select_related(
@@ -27638,14 +27638,14 @@ def roles(request, search=None):
     template = "webpages/ctn_bpf/roles.html"
     fields_personnel = ['', 'Nom', 'Prenom', 'Adresse Mail', 'Structure', 'Fonction', '']
     fields_roles = ['Role', 'Description', 'Permissions',
-                    'EntitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©s']
+                    'Entite']
     personnel = Personnel.objects.filter()
     context = basis(request)
     roles = Role.objects.filter(actual_institution=context['actual_institution']).select_related('actual_institution')
     if search != None:
         roles = roles.filter(nom__contains=search)
     context[
-        'entity'] = 'RÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â´le'
+        'entity'] = 'Role'
     context['fields1'] = fields_personnel
     context['personnel'] = personnel
     context['fields'] = fields_roles
@@ -30620,7 +30620,8 @@ def List(request):
     template = "webpages/ctn_bpf/tache_non.html"
     context = basis(request)
     actual_institution = context['actual_institution']
-
+    operation_historic=HistoricRACI.objects.all()
+    context['operation_historic']=operation_historic
     operation = Operation.objects.filter(m_institution_id = actual_institution, etat = "0")
     count = Operation.objects.count()
    
